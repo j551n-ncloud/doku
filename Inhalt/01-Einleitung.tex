@@ -1,0 +1,92 @@
+% !TEX root = ../Projektdokumentation.tex
+\section{Einleitung}
+\label{sec:Einleitung}
+
+\subsection{Vorstellung der Arsandis GmbH}
+\label{sec:Vorstellung_Arsandis}
+Die Arsandis GmbH ist ein IT- und Dienstleistungsunternehmen in Angkofen, Pfaffenhofen an der Ilm.
+Gegründet wurde die Arsandis im Jahr 2015 und beschäftigt zur Zeit 13 Mitarbeiter.
+
+Das Hauptgeschäftsfeld der Arsandis GmbH liegt in der Beratung von Fertigungsunternehmen im Bereich des Product Lifecycle Managements (PLM).
+Darüber hinaus hat das Unternehmen ein starkes Interesse an zukunftsorientierten Technologien und verfolgt aktiv die Entwicklungen in Bereichen wie Augmented Reality, Virtual Reality und Internet of Things.
+Diese Technologien bieten innovative Lösungen für die Industrie der Zukunft.Weitere zukunftsorientierte Technologien werden ebenfalls verfolgt, darunter zum Beispiel AR-, VR- und IoT-basierte Lösungen für die Industrie der Zukunft.Die Arsandis GmbH hat ein breites Spektrum an Kunden aus verschiedenen Branchen.
+Dazu gehören Unternehmen aus dem Maschinenbau, der Automobil- und Luftfahrtindustrie sowie der HighTech- und Telekommunikationsbranche.
+
+Als offizieller Partner von PTC liegt das Hauptaugenmerk hier meist auf dem PTC-Portfolio, das ein umfangreiches Ökosystem für die Fertigungsindustrie bereitstellt.
+
+\subsection{Projektbeschreibung}
+\label{subsec:Projektbeschreibung}
+
+\subsection{Projektumfeld}
+\label{sec:Projektumfeld}
+Das Projekt wurde im Auftrag der amerikanischen Firma \ac{AWS} durchgeführt, die in der Herstellung von Wasserpumpen tätig ist.
+\ac{AWS} ist ein Tochterunternehmen von Xylem, einem Unternehmen, das sich auf die Entwicklung und Bereitstellung von Wassertechnologien spezialisiert hat.
+\ac{AWS} nutzt den Windchill Server von Xylem, der als \ac{XGV} bekannt ist.
+Die meisten Tochterunternehmen von Xylem, einschließlich \ac{AWS}, sind auf diesem Server als Organisation eingerichtet.
+
+Durchgeführt wurde das Projekt von mir in den Räumen von der Arsandis GmbH.
+Im Rahmen des Projekts wurde eine Windchill Entwicklungsumgebung auf unserem Unternehmensserver eingerichtet.
+Nach Abschluss der Implementierungsphase sollen die Softwareanpassungen in das Testsystem von Xylem integriert werden.
+
+\subsection{Projektziel} 
+\label{sec:Projektziel}
+Ziel des Projektes ist es, das bestehende \ac{ECM} von \ac{AWS} anzupassen und zu erweitern.
+Dabei sollen die folgenden Funktionen implementiert werden:
+\begin{itemize}
+	\item Übersichtlichere und besser nachvollziehbarere Darstellung der Workflowprozesse, die es einfacher macht, den Workflow in Zukunft zu erweitern.
+	\item Hinzufügen neuer Abteilungen zum Prozess
+	\item Die \ac{JSP}-Seite zur Auswahl von Rollen soll durch eine \ac{OOTB} Lösung ersetzt werden.
+	Dies gewährleistet, dass zukünftige Upgrades des Windchillsystems zu keinen Kompatibilitätsproblemen führen.
+	\item Die Implementierungsaufgaben der Abteilungen aus der \ac{ECN} sollen in eine \ac{ECA} ausgelagert werden, um den Change Prozess nachvollziehbarer zu gestalten.
+	Dies erlaubt es uns auch zusätzliche \ac{ECA} spezifische Windchill Features zu nutzen.
+	\item Die Logik der Startparameter soll angepasst werden, dazu muss Code im Workflow angepasst werden.
+	\item Objekte, die gerade vom Change Admin überprüft werden, sollen für eine weitere Bearbeitung per Programmierung gesperrt werden, damit keine ungewünschten Änderungen erfolgen können.
+	\item Workflowprozesse so anpassen, dass auch Windchill Admins ohne Zugriff zur Virtuellen Maschine des Produktivsystems Änderungen am Prozess durchführen können.
+	\item Umbenennen von Rollen, die am Prozess beteiligt sind.
+\end{itemize}
+
+\subsection{Projektbegründung} 
+\label{sec:Projektbegruendung}
+\begin{itemize}
+	\item Warum ist das Projekt sinnvoll (\zB Kosten- oder Zeitersparnis, weniger Fehler)?
+	\item Was ist die Motivation hinter dem Projekt?
+\end{itemize}
+
+
+\subsection{Projektschnittstellen} 
+\label{sec:Projektschnittstellen}
+\begin{itemize}
+	\item Mit welchen anderen Systemen interagiert die Anwendung (technische Schnittstellen)?
+	\item Wer genehmigt das Projekt \bzw stellt Mittel zur Verfügung? 
+	\item Wer sind die Benutzer der Anwendung?
+	\item Wem muss das Ergebnis präsentiert werden?
+\end{itemize}
+
+
+\subsection{Projektabgrenzung} 
+\label{sec:Projektabgrenzung}
+\begin{itemize}
+	\item Was ist explizit nicht Teil des Projekts (\insb bei Teilprojekten)?
+\end{itemize}
+
+\subsection{Voraussetzungen für das Verständnis}
+\label{subsec:VerstaendnisVoraussetzungen}
+\subsubsection{\acl{ECM}}
+Das Änderungsmanagement ist ein essenzieller Bestandteil von Windchill.
+Teile, wie z.\ B. CAD-Dateien oder Dokumente kommen in ihrem Lebenszyklus zumeist irgendwann an den Punkt, an dem sie für die Produktion freigegeben werden.
+Da bereits umfassende Ressourcen für die Produktion aufgewendet wurden, muss eine nachträgliche Änderung gut begründet werden.
+Schließlich wurden bereits Maschinen/Maschinenteile bestellt, eingerichtet oder modifiziert, um das Produkt herzustellen.
+Demzufolge müssen nachträgliche Änderungen nun in Absprache mit verschiedenen Unternehmensabteilungen koordiniert werden.
+
+Hier kommt das Änderungsmanagement ins Spiel.
+Es umfasst insgesamt drei Bestandteile: \acl{ECR}, \acl{ECN} und \acl{ECA}.
+Diese sollen in den nächsten Abschnitten genauer erläutert werden.
+
+\subsubsection{\acl{ECR}}
+
+
+\subsubsection{\acl{ECN}}
+
+
+\subsubsection{\acl{ECA}}
+
