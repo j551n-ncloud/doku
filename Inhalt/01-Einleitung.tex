@@ -9,24 +9,28 @@ Gegründet wurde die Arsandis im Jahr 2015 und beschäftigt zur Zeit 13 Mitarbei
 
 Das Hauptgeschäftsfeld der Arsandis GmbH liegt in der Beratung von Fertigungsunternehmen im Bereich des Product Lifecycle Managements (PLM).
 Darüber hinaus hat das Unternehmen ein starkes Interesse an zukunftsorientierten Technologien und verfolgt aktiv die Entwicklungen in Bereichen wie Augmented Reality, Virtual Reality und Internet of Things.
-Diese Technologien bieten innovative Lösungen für die Industrie der Zukunft.Weitere zukunftsorientierte Technologien werden ebenfalls verfolgt, darunter zum Beispiel AR-, VR- und IoT-basierte Lösungen für die Industrie der Zukunft.Die Arsandis GmbH hat ein breites Spektrum an Kunden aus verschiedenen Branchen.
+Diese Technologien bieten innovative Lösungen für die Industrie der Zukunft.
+Weitere zukunftsorientierte Technologien werden ebenfalls verfolgt, darunter zum Beispiel AR-, VR- und IoT-basierte Lösungen für die Industrie der Zukunft.
+Die Arsandis GmbH hat ein breites Spektrum an Kunden aus verschiedenen Branchen.
 Dazu gehören Unternehmen aus dem Maschinenbau, der Automobil- und Luftfahrtindustrie sowie der HighTech- und Telekommunikationsbranche.
 
-Als offizieller Partner von PTC liegt das Hauptaugenmerk hier meist auf dem PTC-Portfolio, das ein umfangreiches Ökosystem für die Fertigungsindustrie bereitstellt.
+Als offizieller Partner von \acs{PTC}  liegt das Hauptaugenmerk hier meist auf dem \acs{PTC}-Portfolio, das ein umfangreiches Ökosystem für die Fertigungsindustrie bereitstellt.
 
 \subsection{Projektbeschreibung}
 \label{subsec:Projektbeschreibung}
 
 \subsection{Projektumfeld}
 \label{sec:Projektumfeld}
-Das Projekt wurde im Auftrag der amerikanischen Firma \ac{AWS} durchgeführt, die in der Herstellung von Wasserpumpen tätig ist.
+Das Projekt wird im Auftrag der amerikanischen Firma \ac{AWS} durchgeführt, die in der Herstellung von Wasserpumpen tätig ist.
 \ac{AWS} ist ein Tochterunternehmen von Xylem, einem Unternehmen, das sich auf die Entwicklung und Bereitstellung von Wassertechnologien spezialisiert hat.
 \ac{AWS} nutzt den Windchill Server von Xylem, der als \ac{XGV} bekannt ist.
 Die meisten Tochterunternehmen von Xylem, einschließlich \ac{AWS}, sind auf diesem Server als Organisation eingerichtet.
 
-Durchgeführt wurde das Projekt von mir in den Räumen von der Arsandis GmbH.
+Durchgeführt wird das Projekt von mir in den Räumen der Arsandis GmbH.
 Im Rahmen des Projekts wurde eine Windchill Entwicklungsumgebung auf unserem Unternehmensserver eingerichtet.
+Auf dieser findet jegliche Entwicklungsarbeit statt.
 Nach Abschluss der Implementierungsphase sollen die Softwareanpassungen in das Testsystem von Xylem integriert werden.
+Die finalen Tests und das Deployment auf das Produktivsystem werden von Mitarbeitern von AWS durchgeführt.
 
 \subsection{Projektziel} 
 \label{sec:Projektziel}
@@ -47,46 +51,71 @@ Dabei sollen die folgenden Funktionen implementiert werden:
 
 \subsection{Projektbegründung} 
 \label{sec:Projektbegruendung}
-\begin{itemize}
+\begin{itemize} %todo: remove when done
 	\item Warum ist das Projekt sinnvoll (\zB Kosten- oder Zeitersparnis, weniger Fehler)?
 	\item Was ist die Motivation hinter dem Projekt?
 \end{itemize}
+\begin{itemize}
+	\item bessere Robustheit des Prozesses
+	\item Zeitersparnis
+	\item reduction in EC Cycle Time
+\end{itemize}
+Zum einen wird eine erhöhte Robustheit des aktuellen Prozesses angestrebt, indem das manuelle Erstellen von \acp{PR} automatisiert wird.
+Zum anderen soll der Prozess durch neue Funktionen erweitert werden.
 
-
-\subsection{Projektschnittstellen} 
+\subsection{Projektschnittstellen}
 \label{sec:Projektschnittstellen}
 \begin{itemize}
-	\item Mit welchen anderen Systemen interagiert die Anwendung (technische Schnittstellen)?
-	\item Wer genehmigt das Projekt \bzw stellt Mittel zur Verfügung? 
-	\item Wer sind die Benutzer der Anwendung?
-	\item Wem muss das Ergebnis präsentiert werden?
-\end{itemize}
-
-
-\subsection{Projektabgrenzung} 
-\label{sec:Projektabgrenzung}
-\begin{itemize}
-	\item Was ist explizit nicht Teil des Projekts (\insb bei Teilprojekten)?
+	\item System: \ac{XGV} Windchill-Server
+	\item aktuell bestehende \ac{ECM}-Workflows
+	\item keine Änderungen für andere Organisationen
 \end{itemize}
 
 \subsection{Voraussetzungen für das Verständnis}
 \label{subsec:VerstaendnisVoraussetzungen}
+
+\subsubsection{Workflows}
+Workflows sind Objekte in Windchill, die es einem erlauben, Unternehmensprozesse abzubilden.
+Dafür stellt \ac{PTC} einen Workflow-Editor bereit, mit dem man die Unternehmensprozesse definieren kann.
+Die folgenden Konzepte wurden und werden mit Hilfe von Workflows umgesetzt.
+
 \subsubsection{\acl{ECM}}
 Das Änderungsmanagement ist ein essenzieller Bestandteil von Windchill.
-Teile, wie z.\ B. CAD-Dateien oder Dokumente kommen in ihrem Lebenszyklus zumeist irgendwann an den Punkt, an dem sie für die Produktion freigegeben werden.
+Teile, wie \zB CAD-Dateien oder Dokumente kommen in ihrem Lebenszyklus zumeist irgendwann an den Punkt, an dem sie für die Produktion freigegeben werden.
 Da bereits umfassende Ressourcen für die Produktion aufgewendet wurden, muss eine nachträgliche Änderung gut begründet werden.
 Schließlich wurden bereits Maschinen/Maschinenteile bestellt, eingerichtet oder modifiziert, um das Produkt herzustellen.
 Demzufolge müssen nachträgliche Änderungen nun in Absprache mit verschiedenen Unternehmensabteilungen koordiniert werden.
 
 Hier kommt das Änderungsmanagement ins Spiel.
-Es umfasst insgesamt drei Bestandteile: \acl{ECR}, \acl{ECN} und \acl{ECA}.
-Diese sollen in den nächsten Abschnitten genauer erläutert werden.
+Es umfasst insgesamt drei Bestandteile, die alle in Windchill implementiert sind: \acl{ECR}, \acl{ECN} und \acl{ECA}.
+Diese werden in den nächsten Abschnitten genauer erläutert.
 
 \subsubsection{\acl{ECR}}
-
+Der Änderungsantrag ist der erste Schritt im Änderungsmanagement.
+Grob gesagt wird im \ac{ECR} geklärt, \underline{ob} die Änderung umgesetzt werden kann.
+Der Change Admin, der für die Koordination des Change Managements verantwortlich ist, wählt die Unternehmensabteilungen aus, die über die Durchführung der Änderung abstimmen sollen.
+Die Abteilungen stimmen dann entweder für oder gegen die geplante Änderung.
+Nur wenn alle befragten Abteilungen für die Änderung sind, wird der Prozess mit der \ac{ECN} fortgesetzt.
+Stimmt mindestens eine Abteilung dagegen, so wird der Änderungsantrag verworfen.
 
 \subsubsection{\acl{ECN}}
-
+Die Änderungsmitteilung ist der zweite Schritt im Änderungsmanagement.
+Hier geht es darum, dass festgelegt wird, \underline{wie} die Änderung umgesetzt wird.
+Dafür legt der Change-Admin zuerst fest, welche Abteilungen an der Umsetzung der Änderungen beteiligt sein sollen.
+Danach bestimmt er, welche Nutzer aus der Abteilung an der Umsetzung der Änderung arbeiten sollen.
 
 \subsubsection{\acl{ECA}}
+Die Änderungsaufgabe ist der dritte und letzte Schritt im Änderungsmanagement.
+Die geplanten Änderungen werden hier umgesetzt und anschließend vom Change-Admin überprüft.
+Ist der Change-Admin unzufrieden mit den umgesetzten Änderungen, so kann er eine Überarbeitung von den relevanten Abteilungen anfordern.
+Sobald der Change-Administrator seine Zustimmung zu den Änderungen erteilt hat, markiert dies den erfolgreichen Abschluss der Änderungsaufgabe und damit auch des gesamten Change-Prozesses.
 
+\subsubsection{\acl{PR}}
+Der Erhöhungsantrag ist nicht direkt Teil dieses Projekts.
+Allerdings werden neue Mechanismen im \ac{ECM}-Workflow eingeführt, die das manuelle Erstellen von Erhöhungsanträgen ersetzen soll.
+Demzufolge wird der Erhöhungsantrag kurz erläutert.
+
+Ein Windchill-Objekt durchläuft stets verschiedene Phasen seines Lebenszyklus.
+Im Moment der Erstellung befindet es sich möglicherweise im Status `In Arbeit`.
+Um das Objekt in einen anderen Zustand zu überführen, wie beispielsweise `Freigegeben`, wird ein Erhöhungsantrag verwendet.
+In diesem Prozess entscheidet der Genehmiger, ob eine Änderung des Status des Objekts angebracht ist.
