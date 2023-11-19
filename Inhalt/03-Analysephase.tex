@@ -10,6 +10,26 @@
 	\item Was gilt es zu erstellen/verbessern?
 \end{itemize}
 
+Der \ac{ECM} besteht aus den zwei Komponenten \ac{ECR} und \ac{ECN}.
+Aktuell werden Aufgaben im \ac{ECN} getrackt, dies ist so von Windchill eigentlich nicht vorgesehen.
+In Zukunft sollen Aufgaben deswegen in einem \ac{ECA} abgebildet werden.
+Dies führt dazu, dass die konkreten Implementierungsaufgaben logisch von der Planungsphase (ECN) abgegrenzt wird, was es dem Change Admin einfacher macht, einen Überblick über die aktuelle Situation zu bekommen.
+
+Zudem werden Abteilungen aktuell in einem eigens dafür angefertigten Pop-Up-Fenster ausgewählt.
+Hier kann der Change Admin über Checkboxen Abteilungen auswählen, die am Change Prozess beteiligt sein sollen.
+Dieses Pop-Up-Fenster wurde von einem anderen Softwareunternehmen in einem bereits abgeschlossenem Projekt entwickelt.
+Allerdings bringt diese Lösung einige Probleme mit sich.
+Zum einen verzögern Customizations oft größere Windchill Upgrades, da nicht garantiert ist, dass die Customization auch in zukünfigen Versionen funktioniert.
+Zum anderen können nur Administratoren mit Zugriff zur virtuellen Maschine Änderungen an der Struktur des Pop-Up-Fensters vornehmen (\zB hinzufügen oder entfernen von Abteilungen), da die Customization als JSP-Datei auf dem Server liegt.
+Um diese beiden Probleme zu beseitigen, soll hier auf eine Lösung zurückgegriffen werden, die bereits von Haus aus in Windchill implementiert ist, nämlich den 'Set Up Participants'-Tab.
+Da es sich um eine OOTB-Funktion von Windchill handelt, ist es unwahrscheinlich, dass es damit Probleme bei einem Upgrade gibt.
+Außerdem können Windchill-Administratoren über den Workflow Template Editor Änderungen an den Abteilungen vornehmen, ohne Zugriff auf die VM zu benötigen.
+
+\subsection{Wirtschaftlichkeitsanalyse}
+\label{sec:Wirtschaftlichkeitsanalyse}
+\subsubsection{Projektkosten}
+
+\subsubsection{Amortisation}
 
 \subsection{Anwendungsfälle}
 \label{sec:Anwendungsfaelle}
