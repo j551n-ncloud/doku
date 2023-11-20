@@ -5,26 +5,42 @@
 
 \subsection{Ist-Analyse} 
 \label{sec:IstAnalyse}
-\begin{itemize}
-	\item Wie ist die bisherige Situation (\zB bestehende Programme, Wünsche der Mitarbeiter)?
-	\item Was gilt es zu erstellen/verbessern?
-\end{itemize}
+Dieser Abschnitt erhält Auszüge aus dem Projektantrag, um eine Übersicht über die aktuelle Situation des Systems zu geben.
 
 Der \ac{ECM} besteht aus den zwei Komponenten \ac{ECR} und \ac{ECN}.
 Aktuell werden Aufgaben im \ac{ECN} getrackt, dies ist so von Windchill eigentlich nicht vorgesehen.
 In Zukunft sollen Aufgaben deswegen in einem \ac{ECA} abgebildet werden.
 Dies führt dazu, dass die konkreten Implementierungsaufgaben logisch von der Planungsphase (ECN) abgegrenzt wird, was es dem Change Admin einfacher macht, einen Überblick über die aktuelle Situation zu bekommen.
 
+Im \ac{ECM} von \ac{AWS} sollen neue Abteilungen berücksichtigt werden.
+Dafür müssen diese dem bestehenden \ac{ECR} und \ac{ECN} hinzugefügt werden.
+
+Bei der Erstellung der \acsp{ECR} werden zudem Startparameter abgefragt.
+Das sind Boolean-Attribute, die die automatische Auswahl von Abteilungen beeinflussen.
+Dies ist eine Erleichterung für den Change Admin, da dann nicht jedes Mal alle Abteilungen manuell ausgefüllt werden müssen.
+Der \ac{ECR} ist für alle Organisationen gleich.
+Allerdings benötigen nicht alle Organisationen alle Attribute, die auf dem \ac{ECR} definiert wurden.
+Dafür wurde von einem anderen Softwareunternehmen eine XML-Datei entwickelt, die nicht benötigte Attribute von einer Organisation vom UI versteckt.
+Es sollen neue Boolean-Attribute definiert werden, die nur für die \ac{AWS} Organisationen sichtbar sind.
+Dazu müssen diese dem \ac{ECR} hinzugefügt werden und die in der XML-Datei für die anderen Organisationen versteckt werden.
+
+Um den Change Admin bei der Auswahl der beteiligten Abteilungen zu unterstützen, wurde von einem anderen Softwareunternehmen eine benutzerdefinierte JSP Seite entwickelt, die die Abteilungen in einer Liste darstellt.
+Der Change Admin kann dann über Checkboxen Abteilungen für den Prozess entfernen oder hinzufügen.
+Dieses Pop-Up-Fenster wurde von einem anderen Softwareunternehmen in einem bereits abgeschlossenem Projekt entwickelt.
+
+
 Zudem werden Abteilungen aktuell in einem eigens dafür angefertigten Pop-Up-Fenster ausgewählt.
 Hier kann der Change Admin über Checkboxen Abteilungen auswählen, die am Change Prozess beteiligt sein sollen.
 Dieses Pop-Up-Fenster wurde von einem anderen Softwareunternehmen in einem bereits abgeschlossenem Projekt entwickelt.
 Allerdings bringt diese Lösung einige Probleme mit sich.
-Zum einen verzögern Customizations oft größere Windchill Upgrades, da nicht garantiert ist, dass die Customization auch in zukünfigen Versionen funktioniert.
+Zum einen verzögern Customizations, die von den OOTB-Windchill-Konfigurationen abweichen, oft größere Windchill Upgrades, da nicht garantiert ist, dass die Customization auch in zukünftigen Versionen funktioniert.
 Zum anderen können nur Administratoren mit Zugriff zur virtuellen Maschine Änderungen an der Struktur des Pop-Up-Fensters vornehmen (\zB hinzufügen oder entfernen von Abteilungen), da die Customization als JSP-Datei auf dem Server liegt.
 Um diese beiden Probleme zu beseitigen, soll hier auf eine Lösung zurückgegriffen werden, die bereits von Haus aus in Windchill implementiert ist, nämlich den 'Set Up Participants'-Tab.
 Da es sich um eine OOTB-Funktion von Windchill handelt, ist es unwahrscheinlich, dass es damit Probleme bei einem Upgrade gibt.
 Außerdem können Windchill-Administratoren über den Workflow Template Editor Änderungen an den Abteilungen vornehmen, ohne Zugriff auf die VM zu benötigen.
 
+Zudem sind die aktuellen Workflowprozesse sehr unstrukturiert dargestellt und sind kaum dokumentiert.
+Dies macht es schwieriger für Entwickler, die nicht mit den Prozessen vertraut sind, Erweiterungen oder Änderungen vorzunehmen.
 \subsection{Wirtschaftlichkeitsanalyse}
 \label{sec:Wirtschaftlichkeitsanalyse}
 \subsubsection{Projektkosten}
@@ -51,10 +67,6 @@ Ein Beispiel für ein Use Case-Diagramm findet sich im \Anhang{app:UseCase}.
 
 \subsection{Lastenheft/Fachkonzept}
 \label{sec:Lastenheft}
-\begin{itemize}
-	\item Auszüge aus dem Lastenheft/Fachkonzept, wenn es im Rahmen des Projekts erstellt wurde.
-	\item Mögliche Inhalte: Funktionen des Programms (Muss/Soll/Wunsch), User Stories, Benutzerrollen
-\end{itemize}
-
-\paragraph{Beispiel}
-Ein Beispiel für ein Lastenheft findet sich im \Anhang{app:Lastenheft}. 
+Zu Beginn des Projekts hat der Kunde bereits ein Lastenheft ausgearbeitet, was zusammen mit dem Autor und dem Projektleiter von Arsandis weiter angepasst wurde.
+Dort sind alle Anforderungen des Auftraggebers für die Anpassungen der aktuellen Anwendung enthalten.
+Im \Anhang{app:Lastenheft} befindet sich ein Auszug aus dem Lastenheft.

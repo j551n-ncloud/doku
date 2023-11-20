@@ -76,7 +76,7 @@ Zum anderen soll der Prozess durch neue Funktionen erweitert werden.
 
 \subsubsection{Workflows}
 Workflows sind Objekte in Windchill, die es einem erlauben, Unternehmensprozesse abzubilden.
-Dafür stellt einen Workflow-Editor bereit, mit dem man die Unternehmensprozesse definieren kann.
+Dafür stellt Windchill einen Workflow-Editor bereit, mit dem man die Unternehmensprozesse definieren kann.
 Die folgenden Konzepte wurden und werden mit Hilfe von Workflows umgesetzt.
 
 \subsubsection{\acl{ECM}}
@@ -85,6 +85,8 @@ Teile, wie \zB CAD-Dateien oder Dokumente kommen in ihrem Lebenszyklus zumeist i
 Da bereits umfassende Ressourcen für die Produktion aufgewendet wurden, muss eine nachträgliche Änderung gut begründet werden.
 Schließlich wurden bereits Maschinen/Maschinenteile bestellt, eingerichtet oder modifiziert, um das Produkt herzustellen.
 Demzufolge müssen nachträgliche Änderungen nun in Absprache mit verschiedenen Unternehmensabteilungen koordiniert werden.
+Der Change Admin ist für die Koordination des Change Managements verantwortlich.
+In Windchill gibt es eigentlich drei verschiedene Change Administrator Rollen, vereinfacht wird folgend aber lediglich vom Change Admin gesprochen.
 
 Hier kommt das Änderungsmanagement ins Spiel.
 Es umfasst insgesamt drei Bestandteile, die alle in Windchill implementiert sind: \acl{ECR}, \acl{ECN} und \acl{ECA}.
@@ -93,7 +95,7 @@ Diese werden in den nächsten Abschnitten genauer erläutert.
 \subsubsection{\acl{ECR}}
 Der Änderungsantrag ist der erste Schritt im Änderungsmanagement.
 Grob gesagt wird im \ac{ECR} geklärt, \underline{ob} die Änderung umgesetzt werden kann.
-Der Change Admin, der für die Koordination des Change Managements verantwortlich ist, wählt die Unternehmensabteilungen aus, die über die Durchführung der Änderung abstimmen sollen.
+Der Change Admin wählt die Unternehmensabteilungen aus, die über die Durchführung der Änderung abstimmen sollen.
 Die Abteilungen stimmen dann entweder für oder gegen die geplante Änderung.
 Nur wenn alle befragten Abteilungen für die Änderung sind, wird der Prozess mit der \ac{ECN} fortgesetzt.
 Stimmt mindestens eine Abteilung dagegen, so wird der Änderungsantrag verworfen.
