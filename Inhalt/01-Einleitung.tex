@@ -16,9 +16,6 @@ Dazu gehören Unternehmen aus dem Maschinenbau, der Automobil- und Luftfahrtindu
 
 Als offizieller Partner von PTC liegt das Hauptaugenmerk hier meist auf dem PTC-Portfolio, das ein umfangreiches Ökosystem für die Fertigungsindustrie bereitstellt.
 
-\subsection{Projektbeschreibung}
-\label{subsec:Projektbeschreibung}
-
 \subsection{Projektumfeld}
 \label{sec:Projektumfeld}
 Das Projekt wird im Auftrag der amerikanischen Firma \ac{AWS} durchgeführt, die in der Herstellung von Wasserpumpen tätig ist.
@@ -34,42 +31,48 @@ Die finalen Tests und das Deployment auf das Produktivsystem werden von Mitarbei
 
 \subsection{Projektziel} 
 \label{sec:Projektziel}
-Ziel des Projektes ist es, das bestehende \ac{ECM} von \ac{AWS} anzupassen und zu erweitern.
-Dabei sollen die folgenden Funktionen implementiert werden:
-\begin{itemize}
-	\item Übersichtlichere und besser nachvollziehbarere Darstellung der Workflowprozesse, die es einfacher macht, den Workflow in Zukunft zu erweitern.
-	\item Hinzufügen neuer Abteilungen zum Prozess
-	\item Die JSP-Seite zur Auswahl von Rollen soll durch eine \ac{OOTB} Lösung ersetzt werden.
-	Dies gewährleistet, dass zukünftige Upgrades des Windchillsystems zu keinen Kompatibilitätsproblemen führen.
-	\item Die Implementierungsaufgaben der Abteilungen aus der \ac{ECN} sollen in eine \ac{ECA} ausgelagert werden, um den Change Prozess nachvollziehbarer zu gestalten.
-	Dies erlaubt es uns auch zusätzliche \ac{ECA} spezifische Windchill Features zu nutzen.
-	\item Die Logik der Startparameter soll angepasst werden, dazu muss Code im Workflow angepasst werden.
-	\item Objekte, die gerade vom Change Admin überprüft werden, sollen für eine weitere Bearbeitung per Programmierung gesperrt werden, damit keine ungewünschten Änderungen erfolgen können.
-	\item Workflowprozesse so anpassen, dass auch Windchill Admins ohne Zugriff zur Virtuellen Maschine des Produktivsystems Änderungen am Prozess durchführen können.
-	\item Umbenennen von Rollen, die am Prozess beteiligt sind.
-\end{itemize}
+Das Projekt verfolgt zwei Ziele.
+Zum einen soll das bestehende \ac{ECM} von \ac{AWS} angepasst und erweitert werden.
+Dem \ac{ECM}-Prozess sollen neue Funktionen hinzugefügt werden, die die Robustheit des Prozesses erhöhen und die benötigte Durchlaufzeit verringern.
+
+Andererseits sollen neue Organisationen in das Windchill-\ac{ECM} eingebunden werden.
+Dafür soll der manuelle Prozess der Befüllung von Excel-Dateien durch Windchill ersetzt werden.
+User sollen den \ac{ECM}-Prozess in Windchill initiieren, wodurch alle Daten, die für das \ac{ECM} relevant sind, gebündelt an einem Ort abgelegt werden.
+Da sich die CAD-Dateien ohnehin schon auf dem Windchill-Server befinden, lassen sich CAD-Dateien und \ac{ECM} somit praktisch verknüpfen.
 
 \subsection{Projektbegründung} 
 \label{sec:Projektbegruendung}
-\begin{itemize} %todo: remove when done
-	\item Warum ist das Projekt sinnvoll (\zB Kosten- oder Zeitersparnis, weniger Fehler)?
-	\item Was ist die Motivation hinter dem Projekt?
-\end{itemize}
-\begin{itemize}
-	\item bessere Robustheit des Prozesses
-	\item Zeitersparnis
-	\item reduction in EC Cycle Time
-\end{itemize}
-Zum einen wird eine erhöhte Robustheit des aktuellen Prozesses angestrebt, indem das manuelle Erstellen von \acp{PR} automatisiert wird.
-Zum anderen soll der Prozess durch neue Funktionen erweitert werden.
+Es wird eine erhöhte Robustheit des aktuellen Prozesses angestrebt, indem das manuelle Erstellen von \acp{PR} automatisiert wird, was auch zu einer Zeitersparnis führt.
+Außerdem soll der \ac{ECM}-Prozess in Organisationen eingeführt werden, die bisher entweder auf Excel-Tabellen und selbst entwickelte Webanwendungen oder auf persönliche Besprechung mit dem Produktmanager zurückgegriffen haben, um diese Prozesse abzubilden.
+Dies führt zum einen zu einer erheblichen Zeitersparnis, da viele manuelle Vorgänge, wie das Befüllen von einer Excel-Tabelle, wegfallen.
+Dadurch wird wiederum auch die Robustheit deutlich erhöht, da repetitive Tätigkeiten nicht mehr vergessen werden können und häufige Fehler vermieden werden können.
+
+%TODO: noch genauer darauf eingehen, wie ECR/ECN von den 3 EMEA Orgs aktuell genutzt werden
 
 \subsection{Projektschnittstellen}
 \label{sec:Projektschnittstellen}
-\begin{itemize}
-	\item System: \ac{XGV} Windchill-Server
-	\item aktuell bestehende \ac{ECM}-Workflows
-	\item keine Änderungen für andere Organisationen
-\end{itemize}
+
+\subsubsection{Windchill}
+Windchill ist eine \ac{PLM} Webanwendung von PTC, die das Verwalten von Unternehmensobjekten für die Herstellungsindustrie vereinfacht.
+Besonders Wert wird dabei auf die Verwaltung von CAD-Modellen gelegt.
+CAD-Modelle sind am Computer gefertigte zwei- und dreidimensionale Zeichnungen von Konstruktionsobjekten.
+Mit dem Windchill Workgroup Manager existiert eine Schnittstelle zwischen Windchill und vielen CAD-Anwendungen, die auf dem Markt existieren (wie \zB Creo Parametric, CATIA oder Solidworks).
+
+\subsubsection{\acs{XGV}}
+Der \acl{XGV} ist der Windchill-Server von Xylem.
+Die meisten Tochterfirmen von Xylem sind auf diesem Server als eigenständige Organisation eingerichtet.
+Für die Durchführung des Projekts hat dieser Server allerdings keine Relevanz, da die endgültige Übernahme auf das Produktivsystem nicht von uns durchgeführt wird.
+Dennoch wurde er aus Gründen der Vollständigkeit aufgeführt.
+
+\subsubsection{\ac{XGV}-Trainingsserver}
+Dieses Testsystem ist ein Klon vom \ac{XGV}-Produktivserver.
+Hier nimmt der Kunde die betriebseigenen Tests vor, um unsere Anpassungen zu überprüfen.
+Zusammen mit meinem Projektleiter werde ich die Übernahme von unserem Entwicklungssystem auf den Trainingsserver durchführen.
+
+\subsubsection{\acs{AWS}}
+Auch \ac{AWS} hat eigene Tochterunternehmen, die in Windchill als Organisation eingerichtet sind.
+Darunter sind zum Beispiel FHD, Vogel oder Lowara.
+Wichtig ist, dass alle Änderungen, die von uns vorgenommen werden, ausschließlich die Organisationen von \ac{AWS} betreffen.
 
 \subsection{Voraussetzungen für das Verständnis}
 \label{subsec:VerstaendnisVoraussetzungen}

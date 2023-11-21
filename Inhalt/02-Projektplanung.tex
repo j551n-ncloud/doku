@@ -8,7 +8,7 @@
 
 Für die Umsetzung des Projekts wurden 76 Stunden angesetzt.
 Der Start des Projekts erfolgt am 07.11.2023 und bis zum 27.11.2023 wird es abgeschlossen sein.
-Der Tabelle \ref{tab:Zeitplanung} kann entnommen werden, in welche Hauptphasen ich das Projekt gegliedert habe.
+Der Tabelle \ref{tab:Zeitplanung} kann entnommen werden, in welche Hauptphasen das Projekt gegliedert wurde.
 \tabelle{Zeitplanung}{tab:Zeitplanung}{ZeitplanungKurz}\\
 Eine detailliertere Zeitplanung findet sich im \Anhang{app:Zeitplanung}.
 
@@ -16,29 +16,34 @@ Eine detailliertere Zeitplanung findet sich im \Anhang{app:Zeitplanung}.
 \subsection{Ressourcenplanung}
 \label{sec:Ressourcenplanung}
 
-\begin{itemize}
-	\item Detaillierte Planung der benötigten Ressourcen (Hard-/Software, Räumlichkeiten \usw).
-	\item \Ggfs sind auch personelle Ressourcen einzuplanen (\zB unterstützende Mitarbeiter).
-	\item Hinweis: Häufig werden hier Ressourcen vergessen, die als selbstverständlich angesehen werden (\zB PC, Büro). 
-\end{itemize}
+Für die Durchführung des Projekts werden folgende Ressourcen verwendet.
 
-Für die Durchführung des Projekts wurden folgende Soft- und Hardwareressourcen verwendet.
-Von meinem Büroarbeitsplatz aus wird mein Arbeitslaptop genutzt.
+\subsubsection{Hardware}
+Von meinem Büroarbeitsplatz aus wird mein Windows 10 Arbeitslaptop genutzt.
+
+\subsubsection{Entwicklungsumgebung}
 Im Vorfeld des Projekts wurde bereits eine virtuelle Maschine mit dem Betriebssystem Windows Server 2019 aufgesetzt.
 Diese ist mit 16 GB RAM ausgestattet.
 Auf dieser wurde Windchill in der Version 11.1 M020-CPS026 installiert.
 Windchill benötigt eine Oracle Datenbank der Version 19C.
 Windchill benötigt eine Java Runtime Environment der Version 1.8.0 Update 202.
-Für die Erstellung des Codes verwendet ich die Java IDE Eclipse auf der \acs{VM}.
+Für die Erstellung des Codes wird die IDE Eclipse auf der \acs{VM} verwendet.
 Die User des Windchillsystems werden im Open Source LDAP Programm OpenDJ 3.0.0 verwaltet.
-Zur Erstellung der Projektdokumentation verwende ich IntelliJ mit dem TeXiFy Plugin, dieses nutzt die MiKTeX Distribution für LaTeX.
 
+\subsubsection{Testsystem}
+Das Testsystem läuft auf einem Linux-Server ohne GUI.
+Für die Verbindung zur Weboberfläche und zum Linux-Server wird das VPN Programm GlobalProtect genutzt.
+
+\subsubsection{Weitere Software}
+Zur Erstellung der Projektdokumentation verwende ich IntelliJ mit dem TeXiFy Plugin und die MiKTeX Distribution für LaTeX.
+
+\subsubsection{Personal}
 Außerdem haben mich folgende Personen bei meinem Projekt unterstützt.
 Der Product Owner von \acs{AWS} legt die Anforderungen fest und nimmt das Projekt ab.
-Ein Experte für das Windchillsystem von \acs{AWS} hilft mir dabei, mich in die Customizations von \acs{AWS} einzuarbeiten.
+Ein Experte für das Windchill-System von \acs{AWS} hilft mir dabei, mich in die Customizations von \acs{AWS} einzuarbeiten.
 Als Entwickler führt der Autor die Umsetzung des Projektes durch.
 Der Projektleiter von Arsandis überprüft die Umsetzung und den Code.
-Eine PLM Beraterin von Arsandis unterstützt den Autor beim Implementieren.
+Eine Anwendungsspezialistin von Arsandis unterstützt den Autor beim Implementieren und Testen.
 
 \subsection{Entwicklungsprozess}
 \label{sec:Entwicklungsprozess}
