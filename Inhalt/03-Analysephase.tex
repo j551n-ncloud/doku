@@ -41,12 +41,12 @@ Außerdem können Windchill-Administratoren über den Workflow Template Editor �
 
 Zudem sind die aktuellen Workflowprozesse sehr unstrukturiert dargestellt und sind kaum dokumentiert.
 Dies macht es schwieriger für Entwickler, die nicht mit den Prozessen vertraut sind, Erweiterungen oder Änderungen vorzunehmen.
-\subsection{Wirtschaftlichkeitsanalyse}
+\subsection{Wirtschaftlichkeitsanalyse} %todo: finish section
 \label{sec:Wirtschaftlichkeitsanalyse}
 
 Da die exakten Gesamtkosten des Projekts nicht offenbart wurden, gehen wir von einem empfohlenen Festpreis von 50.000 € aus, wie mir mitgeteilt wurde. %TODO: Silvia fragen, wegen Projektkosten
-Der Anteil dieser spezifischen Projektarbeit am Gesamtprojekt wird auf etwa 30 \% geschätzt.
-Daher kalkulieren wir einen Umsatz von 15.000 € für die Umsetzung gemäß der hier beschriebenen Aufgabenstellung.
+Der Anteil dieser spezifischen Projektarbeit am Gesamtprojekt wird auf 80 \% geschätzt.
+Daher kalkulieren wir einen Umsatz von 40.000 € für die Umsetzung gemäß der hier beschriebenen Aufgabenstellung.
 
 \subsubsection{Projektkosten}
 \subsubsection*{Ausbildungsvergütung}
@@ -54,12 +54,14 @@ Hier haben wir ein Bruttoentgelt von 1080 €.
 
 \subsubsection*{Arbeitgeberanteil Sozialversicherung}
 Die Arbeitgeber-Sozialabgaben betragen 199,92 € ohne die Unfallversicherung.
-%todo: Silvia fragen
+Für die Unfallversicherung liegen mir keine Zahlen vor, auch eine Internetrecherche half nicht weiter.
+Deswegen wurde mir von der Personalabteilung geraten mit 20 € pro Monat zu rechnen.
 
 \subsubsection*{Abstimmungskosten}
-Der Projektleiter von Arsandis führte mehrere interne Abstimmungsgespräche zum Fortschritt des Projekts durch.
+Der Projektleiter von Arsandis führte mehrere interne Abstimmungsgespräche mit mir zum Fortschritt des Projekts durch.
 Diese Gespräche hatten das Ziel sicherzustellen, dass die Qualitätsanforderungen erfüllt werden und die Umsetzung auf bewährten Methoden basiert, während die Lösung sich gut in den Gesamtentwurf des Kundensystems einfügt.
-Zusätzlich nahm der Projektleiter, wie in anderen Teilen des Projekts auch, an Meetings mit dem Kunden teil. Konkrete Zahlen sind für mich nicht einsehbar.
+Zusätzlich nahm der Projektleiter, wie in anderen Teilen des Projekts auch, an Meetings mit dem Kunden teil.
+Konkrete Zahlen dafür sind für mich nicht einsehbar.
 Es wurde mir geraten, mit einem festen Stundensatz von 100 € zu kalkulieren.
 
 \subsubsection*{Gemeinkosten}
@@ -67,43 +69,35 @@ Intern verwenden wir keinen Gemeinkostenfaktor.
 Ungeachtet dessen müssen wir jedoch sicherstellen, dass unsere Gemeinkosten gedeckt werden.
 Aus diesem Grund werde ich eine weitere Annahme treffen, um eine standardmäßige Wirtschaftlichkeitsanalyse durchzuführen, da mir die genauen Zahlen nicht zugänglich sind.
 \begin{itemize}
-	\item Marketingkosten: Abgedeckt durch eine Mitarbeiterin = 15 \%
 	\item Energiekosten: Heizung, Strom = 15 \%
 	\item Mietkosten: Büroräume = 15 \%
-	\item Ausrüstungskosten: Clients, Monitore, Server, Peripherie, Lizenzen = 15 \%
+	\item Ausrüstungskosten: Clients, Monitore, Server, Peripherie, Lizenzen = 10 \%
+	\item Gehälter für Marketingabteilung: 10 \%
+	\item Gehälter für Personalabteilung: 10 \%
 \end{itemize}
 
 Das führt uns zu einem Gemeinkostenzuschlag von 60 \%
 
 \subsubsection*{Gesamtkosten}
 Hier werden die Kosten eines Arbeitstages durch das Herunterbrechen des Jahresverdiensts auf einen Tag ermittelt.
-\Zitat{ArbeitstageImJahr}{b}Für das Jahr 2023 wurden 251 Arbeitstage angenommen.
+\citet{ArbeitstageImJahr}{Für das Jahr 2023 wurden 251 Arbeitstage angenommen}.
 
-Kosten pro Arbeitstag = 12960 € / (251 Arbeitstage - 24 Urlaubstage) = 57,09 €
+Kosten für Arbeitstage des Prüflings = 12960 € / (251 Arbeitstage - 24 Urlaubstage) * 10 = 570 €
 
+Kosten für Abstimmungsgespräche = Stundensatz * Anzahl Stunden = 100 € * 6 = 600 €
 
+Gesamtkosten = (Kosten für Abstimmungsgespräche + Kosten für Arbeitstage des Prüflings) * Gemeinkostenzuschlag = (570 € + 600 €) * 1,60 = 1872 €
 
-\subsubsection{Amortisation}
+\subsubsection{Amortisation} %todo: finish section
 
-\subsection{Anwendungsfälle}
-\label{sec:Anwendungsfaelle}
-\begin{itemize}
-	\item Welche Anwendungsfälle soll das Projekt abdecken?
-	\item Einer oder mehrere interessante (!) Anwendungsfälle könnten exemplarisch durch ein Aktivitätsdiagramm oder eine EPK detailliert beschrieben werden.
-\end{itemize}
+\subsection{Anwendungsfälle} %todo: add use case diagramm
 
-\paragraph{Beispiel}
-Ein Beispiel für ein Use Case-Diagramm findet sich im \Anhang{app:UseCase}.
+Im Laufe des Projekts wurde ein Anwendungsfalldiagramm angefertigt.
+Damit wird eine grobe Übersicht über die geforderten Funktionen geliefert.
+Dieses Diagramm befindet sich im \Anhang{app:UseCase}.
 
 
-\subsection{Qualitätsanforderungen}
-\label{sec:Qualitaetsanforderungen}
-\begin{itemize}
-	\item Welche Qualitätsanforderungen werden an die Anwendung gestellt (\zB hinsichtlich Performance, Usability, Effizienz \etc )?
-\end{itemize}
-
-
-\subsection{Lastenheft/Fachkonzept}
+\subsection{Lastenheft/Fachkonzept} %todo: add lastenheft auszug
 \label{sec:Lastenheft}
 Zu Beginn des Projekts hat der Kunde bereits einen Entwurf des Lastenhefts ausgearbeitet, welcher zusammen mit dem Autor und dem Projektleiter von Arsandis weiter angepasst wurde.
 Dort sind alle Anforderungen des Auftraggebers für die Anpassungen der aktuellen Anwendung enthalten.

@@ -15,7 +15,7 @@
       <output-format>PDF</output-format>
       <latex-distribution>MIKTEX</latex-distribution>
       <has-been-run>true</has-been-run>
-      <bib-run-config>[BibTeX.Demo Bibtex]</bib-run-config>
+      <bib-run-config>[BibTeX.Doku Bibtex]</bib-run-config>
       <makeindex-run-config>[]</makeindex-run-config>
     </texify>
     <method v="2" />
