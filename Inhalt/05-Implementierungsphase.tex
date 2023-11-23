@@ -1,31 +1,73 @@
 % !TEX root = ../Projektdokumentation.tex
-\section{Implementierungsphase}  %todo: finish section
+\section{Implementierungsphase}
 \label{sec:Implementierungsphase}
 
 \subsubsection{Anpassen der Workflow-Templates}
 \subsubsection*{Umstrukturierung der Nodes zur besseren Übersichtlichkeit}
+Dieser Schritt wird im Workflow-Template-Editor von Windchill durchgeführt.
 Exemplarisch wird hier nur die neue Struktur des ECRs gezeigt, da sich hier die größten Änderungen ergeben haben.
 Der ECN Workflow hat allerdings auch eine Umstrukturierung erfahren.
 Es wurde besonders Wert darauf gelegt, dass die Elemente in einer klaren Struktur angeordnet werden und sich Linien möglichst nicht kreuzen.
-Man kann deutlich erkennen, dass der Workflow nun deutlich aufgeräumter und strukturierter wirkt.
-Dadurch wird vor allem das Leseverständnis erhöht.
 Zudem wurde der große Block im unteren Teil von \autoref{WorkflowVergleich1} mit einem seperaten Block (Department Approval Process) ersetzt.
+Man kann deutlich erkennen, dass der Workflow nun aufgeräumter und strukturierter ist.
 
 Ein vorher-nachher Vergleich findet sich im \Anhang{WorkflowVergleich}.
 
+\subsubsection{ECA}
+Die Erstellung der beiden ECA Workflows erfolgt ebenfalls im Workflow-Template-Editor.
+Hier soll vor allem der Code hervorgehoben werden, der uns die folgenden Funktionen ermöglicht:
 
+\subsubsection*{Objekte sperren, die gerade überprüft werden}
+Hiermit wird die Review Transition auf den aktuellen Resulting Objects getriggert:
+\begin{lstlisting}
+    wt.maturity.TransitionHandlerFactory.getInstance().transitionTargets(primaryBusinessObject,wt.lifecycle.Transition.toTransition("REVIEW"),false);
+\end{lstlisting}
 
-\subsubsection{Ergänzung von Lebenszyklusstatus im ECA}
-\label{LebenszyklusstatusECA}
+Rework Transition triggern:
+\begin{lstlisting}
+    wt.maturity.TransitionHandlerFactory.getInstance().transitionTargets(primaryBusinessObject,wt.lifecycle.Transition.toTransition("REWORK"),false);
+\end{lstlisting}
 
-\subsubsection{Erstellen neuer Types}
-Damit der Workflow für ECA-E und ECA-NE auch im System getriggert wird, müssen 
+Transitionen sind in Life Cycle Templates festgelegt und steuern, welchen Life Cycle State das Objekt annimmt.
+In diesem Fall wird bei der Review Transition der \glqq Under Review\grqq{} Status und bei der Rework Transition der \glqq In Design\grqq{} Status aktiviert (der In Design Status erlaubt die Bearbeitung des Objekts, der Under Review Status Verhindert eine Änderung).
 
-\begin{itemize}
-	\item Anlegen neuer Types
-	\subitem OIR
-	\subitem Lifecycle Template
-	\item Anpassen der Lifecycle Templates
-	\item Erstellung der Java-Klassen
-\end{itemize}
+\subsubsection*{Automatisches Entfernen von Usern}
+Das ist ein Auszug aus dem Code-Fragment, das User aus dem Prozess entfernt, wenn sie durch die initiale Attributswahl nicht für den Prozess berücksichtigt werden sollen.
+\begin{lstlisting}
+    if (!SafeApp) ext.xylem.change.TeamHelper.emptyRole(ca, "SAFETY APPROVALS ENGINEER");
+\end{lstlisting}
 
+Ein Auszug der emptyRole Methode befindet sich im \Anhang{EmptyRoleMethode}.
+
+Die Variable \glqq ca\grqq{} stellt hier den aktuellen ECA-E, \glqq SafeApp\grqq{} stellt das Boolean-Attribut für die Abteilung \glqq Safety Agency\grqq{} dar.
+Wenn dieses Attribut also auf \textit{false} gesetzt wird, so wird die Abteilung (und somit auch die Rolle) nicht benötigt.
+Deswegen werden daraufhin alle User aus der \glqq Safety Approvals Engineer\grqq{} Rolle entfernt.
+
+Dieses Code-Fragment wird jeweils für alle 8 Abteilungen im Engineering ECA wiederholt.
+
+\subsubsection{Aktivieren des Workflows}
+Damit die beiden ECA Workflows auch wirklich aktiv sind, müssen erst noch ein paar Konfigurationen getätigt werden.
+
+\subsubsection*{Anlegen neuer Types}
+Für die beiden ECAs müssen neue Types angelegt werden.
+Diese werden als Subtypes des bereits bestehenden Types ECA definiert.
+Damit werden automatisch Vorkonfigurationen an die beiden Subtypes vererbt.
+
+\subsubsection*{Life Cycle Template}
+Mit einem Life Cycle Template kann man nicht nur die Lebenszyklusstatus eines Objekts definieren, sondern man kann damit auch Workflows starten.
+In dem neuen Life Cycle Template wird deswegen definiert, dass der ECA-E \bzw ECA-NE Workflow gestartet wird.
+
+\subsubsection*{OIR}
+Die Object Initialization Rules legen fest was passiert, wenn ein ECA-E oder ECA-NE erstellt wird.
+In der OIR legen wir fest, dass das zuvor erstellte Life Cycle Template dem ECA-E \bzw ECA-NE Objekt bei der Initialisierung zugewiesen wird.
+
+\subsubsection*{Referenz im ECN}
+Mit diesem Code wird ein ECA-E im ECN Prozess erstellt.
+Dafür benötigen wir den internen Namen des ECA-Engineering Types: com.fluidtechnology.globalvault.WS.ECA\_Engineering.
+Nachdem der ECA-E abgeschlossen ist, wird das gleiche mit dem ECA-NE wiederholt.
+\begin{lstlisting}
+    ext.xylem.change.ChangeUtility.createECASubtype(cn, cn.getName(), "com.fluidtechnology.globalvault.WS.ECA_Engineering");
+\end{lstlisting}
+
+%todo:xml
+%todo:rollen hinzufügen in RoleRB, Workflow, Abteilungstask

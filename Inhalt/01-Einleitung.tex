@@ -18,7 +18,7 @@ Als offizieller Partner von PTC liegt das Hauptaugenmerk hier meist auf dem PTC-
 
 \subsection{Projektumfeld}
 \label{sec:Projektumfeld}
-Durchgeführt wird das Projekt von mir in den Räumen der Arsandis GmbH, bei dir ich meine Ausbildung absolviere.
+Durchgeführt wird das Projekt von mir in den Räumen der Arsandis GmbH, bei der ich meine Ausbildung absolviere.
 Das Projekt wird im Auftrag der amerikanischen Firma \ac{AWS} durchgeführt, die in der Herstellung von Wasserpumpen tätig ist.
 \ac{AWS} ist ein Tochterunternehmen von Xylem, einem Unternehmen, das sich auf die Entwicklung und Bereitstellung von Wassertechnologien spezialisiert hat.
 
@@ -33,38 +33,37 @@ Wichtig ist, dass alle Änderungen, die von uns vorgenommen werden, ausschließl
 
 \subsubsection*{Testsystem}
 Dieses Testsystem ist ein Klon vom \ac{XGV}-Produktivserver und wird von Xylem gehostet.
-Der Login auf dieses System erfolgt für die User über Single-Sign-On.
+Der Login auf dieses System erfolgt für die User ebenfalls über Single-Sign-On.
 Hier nimmt der Kunde die betriebseigenen Tests vor, um unsere Anpassungen zu überprüfen.
 Zusammen mit meinem Projektleiter werde ich die Übernahme von unserem Entwicklungssystem auf den Trainingsserver durchführen.
 
 \subsubsection*{Entwicklungssystem}
 Das Entwicklungssystem wird von Arsandis gehostet und verwaltet (Hyper-V VM) und wurde im Vorfeld als Klon des Testsystems für dieses Projekts eingerichtet, damit sämtliche Entwicklungsarbeiten darin vorgenommen werden können.
-Statt Single-Sign-On wurden hier lokale Testuser eingerichtet.
+Statt Single-Sign-On wurden hier lokale Testuser auf einem lokalen LDAP eingerichtet.
 Auch das Arsandis-Interne Testing wird hier stattfinden.
-Die Abschlussprojektarbeit wird vollständig auf diesem Entwicklungssystem stattfinden.
+Die Abschlussprojektarbeit wird - bis auf des Deployment auf den Trainingsserver - vollständig auf diesem Entwicklungssystem stattfinden.
 
 \subsection{Projektziel} 
 \label{sec:Projektziel}
-Das Projekt verfolgt zwei Ziele.
-Zum einen soll das bestehende \ac{ECM} von \ac{AWS} angepasst und erweitert werden.
+Das bestehende \ac{ECM} von \ac{AWS} soll angepasst und erweitert werden.
 Dem \ac{ECM}-Prozess sollen neue Funktionen hinzugefügt werden, die die Robustheit des Prozesses erhöhen und die benötigte Durchlaufzeit verringern.
 
-Andererseits sollen neue Organisationen in das Windchill-\ac{ECM} eingebunden werden.
-Dafür soll der manuelle Prozess der Befüllung von Excel-Dateien durch Windchill ersetzt werden.
-User sollen den \ac{ECM}-Prozess in Windchill initiieren, wodurch alle Daten, die für das \ac{ECM} relevant sind, gebündelt an einem Ort abgelegt werden.
-Da sich die CAD-Dateien ohnehin schon auf dem Windchill-Server befinden, lassen sich CAD-Dateien und \ac{ECM} somit praktisch verknüpfen.
+%Andererseits sollen neue Organisationen in das Windchill-\ac{ECM} eingebunden werden.
+%Dafür soll der manuelle Prozess der Befüllung von Excel-Dateien durch Windchill ersetzt werden.
+%User sollen den \ac{ECM}-Prozess in Windchill initiieren, wodurch alle Daten, die für das \ac{ECM} relevant sind, gebündelt an einem Ort abgelegt werden.
+%Da sich die CAD-Dateien ohnehin schon auf dem Windchill-Server befinden, lassen sich CAD-Dateien und \ac{ECM} somit praktisch verknüpfen.
 
 \subsection{Projektbegründung} 
 \label{sec:Projektbegruendung}
 Es wird eine erhöhte Robustheit des aktuellen Prozesses angestrebt, indem das manuelle Erstellen von \acp{PR} automatisiert wird, was auch zu einer Zeitersparnis führt.
-Außerdem soll der \ac{ECM}-Prozess in Organisationen eingeführt werden, die bisher entweder auf Excel-Tabellen und selbst entwickelte Webanwendungen oder auf persönliche Besprechung mit dem Produktmanager zurückgegriffen haben, um diese Prozesse abzubilden.
-Dies führt zum einen zu einer erheblichen Zeitersparnis, da viele manuelle Vorgänge, wie das Befüllen von einer Excel-Tabelle, wegfallen.
-Dadurch wird wiederum auch die Robustheit deutlich erhöht, da repetitive Tätigkeiten nicht mehr vergessen werden können und häufige Fehler vermieden werden können.
+%Außerdem soll der \ac{ECM}-Prozess in Organisationen eingeführt werden, die bisher entweder auf Excel-Tabellen und selbst entwickelte Webanwendungen oder auf persönliche Besprechung mit dem Produktmanager zurückgegriffen haben, um diese Prozesse abzubilden.
+%Dies führt zum einen zu einer erheblichen Zeitersparnis, da viele manuelle Vorgänge, wie das Befüllen von einer Excel-Tabelle, wegfallen.
+%Dadurch wird wiederum auch die Robustheit deutlich erhöht, da repetitive Tätigkeiten nicht mehr vergessen werden können und häufige Fehler vermieden werden können.
 
 \subsection{Projektabgrenzung}
 Das Abschlussprojekt nimmt ungefähr 80 \% des kompletten Projekts ein.
-Die restlichen 20 \% werden nach Abschluss des Abschlussprojekts angegangen.
-Dann ist geplant, noch einige weitere Quality-Of-Life Verbesserungen zu implementieren.
+Die restlichen 20 \% werden nach Fertigstellung des Abschlussprojekts angegangen.
+Es ist geplant, noch einige weitere Quality-Of-Life Verbesserungen zu implementieren.
 
 \subsection{Projektschnittstellen}
 \label{sec:Projektschnittstellen}
@@ -80,6 +79,7 @@ Diese sind allerdings für das Projekt nicht weiter von Belang und wurden hier d
 Bei den Nutzern, die mit dem System interagieren, handelt es sich vor allem um Ingenieure und Manager.
 Ingenieure nutzen das System hauptsächlich dafür, CAD-Modelle zu erstellen, zu ändern und zu verwalten.
 Manager hingegen genehmigen und koordinieren Unternehmensprozesse, wie \zB das Änderungsmanagement, auf das im Kapitel \ref{sec:ECM} noch näher eingegangen wird.
+Da der Windchill-Server schon lange im Einsatz ist, sind alle Mitarbeiter mit dem System bestens vertraut.
 
 \subsection{Vorraussetzungen für das Verständnis}
 
@@ -87,39 +87,36 @@ Windchill bietet umfassende Funktionen zur Verwaltung von Unternehmensdaten.
 Im Folgenden sollen einige dieser Funktionen vorgestellt werden, damit die Inhalte des Abschlussprojekts nachvollziehbar sind.
 
 \subsubsection{Workflows}
-Workflows sind Objekte in Windchill, mit denen man Unternehmensprozesse abbilden kann.
+Workflows sind Objekte, mit denen man Unternehmensprozesse abbildet.
 Dafür stellt Windchill einen Workflow-Editor bereit, mit dem man die Unternehmensprozesse in einer praktischen Benutzeroberfläche definieren kann.
-Innerhalb von Workflows lässt sich auch direkt Code definieren, der dann mit dem Workflow ausgeführt wird.
-Hier kann man auch auf Klassen und Methoden innerhalb der Windchill-Codebase verweisen.
+In Workflows lässt sich auch direkt Code definieren, der dann zusammen mit dem Workflow ausgeführt wird.
+Hier kann man auch auf Klassen und Methoden innerhalb der Windchill-Codebasis verweisen.
 Die folgenden Konzepte wurden und werden mit Hilfe von Workflows umgesetzt.
 
 \subsubsection{\acl{ECM}}
 \label{sec:ECM}
 Das Änderungsmanagement ist ein essenzieller Bestandteil von Windchill.
-Teile, wie \zB CAD-Dateien oder Dokumente kommen in ihrem Lebenszyklus zumeist irgendwann an den Punkt, an dem sie für die Produktion freigegeben werden.
-Da bereits umfassende Ressourcen für die Produktion aufgewendet wurden, muss eine nachträgliche Änderung gut begründet werden.
-Schließlich wurden bereits Maschinen/Maschinenteile bestellt, eingerichtet oder modifiziert, um das Produkt herzustellen.
-Demzufolge müssen nachträgliche Änderungen nun in Absprache mit verschiedenen Unternehmensabteilungen koordiniert werden.
+Damit werden \glqq Änderungen eines Produkts vollständig definiert und kontrolliert.
+Dies sorgt dafür, dass Aufgaben an die Verantwortlichen in einem wiederholbaren und automatisiertem Workflow gesendet werden \grqq{} \cite{WindchillChangeManagement2}.
 Der Change Admin ist für die Koordination des Change Managements verantwortlich.
-In Windchill gibt es eigentlich drei verschiedene Change Administrator Rollen, vereinfacht wird folgend aber lediglich vom Change Admin gesprochen.
+In Windchill gibt es eigentlich drei verschiedene Change Administrator Rollen, vereinfacht wird in diesem Projekt aber lediglich vom Change Admin gesprochen.
 
-Hier kommt das Änderungsmanagement ins Spiel.
-Es umfasst insgesamt drei Bestandteile, die alle in Windchill implementiert sind: \acl{ECR}, \acl{ECN} und \acl{ECA}.
+In Windchill sind drei Facetten des Änderungsmanagements implementiert: \acl{ECR}, \acl{ECN} und \acl{ECA}.
 Diese werden in den nächsten Abschnitten genauer erläutert.
 
 \subsubsection{\acl{ECR}}
 Der Änderungsantrag ist der erste Schritt im Änderungsmanagement.
 Grob gesagt wird im \ac{ECR} geklärt, \underline{ob} die Änderung umgesetzt werden kann.
-Der Change Admin wählt die Unternehmensabteilungen aus, die über die Durchführung der Änderung abstimmen sollen.
-Die Abteilungen stimmen dann entweder für oder gegen die geplante Änderung.
+Der Change Admin wählt Unternehmensabteilungen aus.
+Diese stimmen dann darüber ab, ob die Änderung vollzogen werden soll.
 Nur wenn alle befragten Abteilungen für die Änderung sind, wird der Prozess mit der \ac{ECN} fortgesetzt.
 Stimmt mindestens eine Abteilung dagegen, so wird der Änderungsantrag verworfen.
 
 \subsubsection{\acl{ECN}}
 Die Änderungsmitteilung ist der zweite Schritt im Änderungsmanagement.
 Hier geht es darum, dass festgelegt wird, \underline{wie} die Änderung umgesetzt wird.
-Dafür legt der Change-Admin zuerst fest, welche Abteilungen an der Umsetzung der Änderungen beteiligt sein sollen.
-Danach bestimmt er, welche Nutzer aus der Abteilung an der Umsetzung der Änderung arbeiten sollen.
+Dafür legt der Change Admin die Abteilungen fest, die die Änderungen durchführen sollen.
+Außerdem werden in diesem Schritt die Aufgaben definiert, die umgesetzt werden müssen, um die Änderung zu vollziehen.
 
 \subsubsection{\acl{ECA}}
 Die Änderungsaufgabe ist der dritte und letzte Schritt im Änderungsmanagement.
@@ -134,5 +131,4 @@ Demzufolge wird der Erhöhungsantrag kurz erläutert.
 
 Ein Windchill-Objekt durchläuft stets verschiedene Phasen seines Lebenszyklus.
 Im Moment der Erstellung befindet es sich üblicherweise im Status `In Arbeit`.
-Um das Objekt in einen anderen Zustand zu überführen, wie beispielsweise `Freigegeben`, wird ein Erhöhungsantrag durchlaufen.
-In diesem Prozess entscheidet der Genehmiger, ob eine Änderung des Status des Objekts angebracht ist.
+Um das Objekt in einen anderen Zustand zu überführen, wie beispielsweise `Freigegeben`, wird ein Erhöhungsantrag durchlaufen, wo ein Genehmiger entscheided, ob eine Änderung des Status des Objekts angebracht ist.

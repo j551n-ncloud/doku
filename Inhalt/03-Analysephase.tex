@@ -11,13 +11,14 @@ Der \ac{ECM} besteht aus den zwei Komponenten \ac{ECR} und \ac{ECN}.
 Aktuell werden Aufgaben im \ac{ECN} getrackt, dies ist so von Windchill eigentlich nicht vorgesehen.
 In Zukunft sollen Aufgaben deswegen in einem \ac{ECA} abgebildet werden.
 Dies führt dazu, dass die konkreten Implementierungsaufgaben logisch von der Planungsphase (ECN) abgegrenzt wird, was es dem Change Admin einfacher macht, einen Überblick über die aktuelle Situation zu bekommen.
+Die ECA soll auch das manuelle Erstellen des Erhöhungsantrags automatisieren.
 
 Im \ac{ECM} von \ac{AWS} sollen neue Abteilungen berücksichtigt werden.
 Dafür müssen diese dem bestehenden \ac{ECR} und \ac{ECN} hinzugefügt werden.
 
 Bei der Erstellung der \acsp{ECR} werden zudem Startparameter abgefragt.
 Das sind Boolean-Attribute, die die automatische Auswahl von Abteilungen beeinflussen.
-Dies ist eine Erleichterung für den Change Admin, da dann nicht jedes Mal alle Abteilungen manuell ausgefüllt werden müssen.
+Dies ist eine Erleichterung für den Change Admin, da somit nicht jedes Mal alle Abteilungen manuell ausgefüllt werden müssen.
 Der \ac{ECR} ist für alle Organisationen gleich.
 Allerdings benötigen nicht alle Organisationen alle Attribute, die auf dem \ac{ECR} definiert wurden.
 Dafür wurde von einem anderen Softwareunternehmen eine XML-Datei entwickelt, die nicht benötigte Attribute von einer Organisation vom UI versteckt.
@@ -27,11 +28,6 @@ Dazu müssen diese dem \ac{ECR} hinzugefügt werden und die in der XML-Datei fü
 Um den Change Admin bei der Auswahl der beteiligten Abteilungen zu unterstützen, wurde von einem anderen Softwareunternehmen eine benutzerdefinierte JSP Seite entwickelt, die die Abteilungen in einer Liste darstellt.
 Der Change Admin kann dann über Checkboxen Abteilungen für den Prozess entfernen oder hinzufügen.
 Dieses Pop-Up-Fenster wurde von einem anderen Softwareunternehmen in einem bereits abgeschlossenem Projekt entwickelt.
-
-
-Zudem werden Abteilungen aktuell in einem eigens dafür angefertigten Pop-Up-Fenster ausgewählt.
-Hier kann der Change Admin über Checkboxen Abteilungen auswählen, die am Change Prozess beteiligt sein sollen.
-Dieses Pop-Up-Fenster wurde von einem anderen Softwareunternehmen in einem bereits abgeschlossenem Projekt entwickelt.
 Allerdings bringt diese Lösung einige Probleme mit sich.
 Zum einen verzögern Customizations, die von den OOTB-Windchill-Konfigurationen abweichen, oft größere Windchill Upgrades, da nicht garantiert ist, dass die Customization auch in zukünftigen Versionen funktioniert.
 Zum anderen können nur Administratoren mit Zugriff zur virtuellen Maschine Änderungen an der Struktur des Pop-Up-Fensters vornehmen (\zB hinzufügen oder entfernen von Abteilungen), da die Customization als JSP-Datei auf dem Server liegt.
@@ -39,14 +35,14 @@ Um diese beiden Probleme zu beseitigen, soll hier auf eine Lösung zurückgegrif
 Da es sich um eine OOTB-Funktion von Windchill handelt, ist es unwahrscheinlich, dass es damit Probleme bei einem Upgrade gibt.
 Außerdem können Windchill-Administratoren über den Workflow Template Editor Änderungen an den Abteilungen vornehmen, ohne Zugriff auf die VM zu benötigen.
 
-Zudem sind die aktuellen Workflowprozesse sehr unstrukturiert dargestellt und sind kaum dokumentiert.
+Zudem sind die aktuellen Workflowprozesse sehr unstrukturiert dargestellt und kaum dokumentiert.
 Dies macht es schwieriger für Entwickler, die nicht mit den Prozessen vertraut sind, Erweiterungen oder Änderungen vorzunehmen.
 \subsection{Wirtschaftlichkeitsanalyse}
 \label{sec:Wirtschaftlichkeitsanalyse}
 
-Da die exakten Gesamtkosten des Projekts nicht offenbart wurden, gehen wir von einem empfohlenen Festpreis von 3.000 € aus.
+Da die exakten Gesamtkosten des Projekts nicht offenbart wurden, gehen wir von einem empfohlenen Festpreis von 8.000 € aus.
 Der Anteil dieser spezifischen Projektarbeit am Gesamtprojekt wird auf 80 \% geschätzt.
-Daher kalkulieren wir einen Umsatz von 2.400 € für die Umsetzung gemäß der hier beschriebenen Aufgabenstellung.
+Daher kalkulieren wir einen Umsatz von 6.400 € für die Umsetzung gemäß der hier beschriebenen Aufgabenstellung.
 
 \subsubsection{Projektkosten}
 \subsubsection*{Ausbildungsvergütung}
@@ -82,22 +78,22 @@ Das führt uns zu einem Gemeinkostenzuschlag von 60 \%
 Hier werden die Kosten eines Arbeitstages durch das Herunterbrechen des Jahresverdiensts auf einen Tag ermittelt.
 \citet{ArbeitstageImJahr}{Für das Jahr 2023 wurden 251 Arbeitstage angenommen}.
 
-Kosten für Arbeitstage des Prüflings = 12960 € / (251 Arbeitstage - 24 Urlaubstage) * 10 = 570 €
+Kosten für Arbeitstage des Prüflings = 12960 € / (251 Arbeitstage - 24 Urlaubstage) * 10 €/Stunde * 1,60 (Gemeinkostenzuschlag) = 914 €
 
-Kosten für Abstimmungsgespräche = Stundensatz * Anzahl Stunden = 100 € * 6 = 600 €
+Kosten für Abstimmungsgespräche = Stundensatz * Anzahl Stunden * Gemeinkostenzuschlag = 100 € * 6 * 1,60 = 960 €
 
-Gesamtkosten = (Kosten für Abstimmungsgespräche + Kosten für Arbeitstage des Prüflings) * Gemeinkostenzuschlag = (570 € + 600 €) * 1,60 = 1872 €
+Gesamtkosten = Kosten für Abstimmungsgespräche + Kosten für Arbeitstage des Prüflings = 914 € + 960 € = 1874 €
 
 \subsubsection{Amortisation}
 Der Gewinn wird errechnet indem die Gesamtkosten vom Umsatz abgezogen werden.
 
-Gewinn = Umsatz - Gesamtkosten = 2.400 € - 1.872 € = 528 €
+Gewinn = Umsatz - Gesamtkosten = 6.400 € - 1.874 € = 4526 €
 
 \subsection{Lastenheft/Pflichtenheft}
 \label{sec:Lastenheft}
 Zu Beginn des Projekts hat der Kunde bereits einen Entwurf des Lastenhefts ausgearbeitet, welcher zusammen mit mir und dem Projektleiter von Arsandis weiter angepasst wurde.
 Dort sind alle Anforderungen des Auftraggebers für die Anpassungen der aktuellen Anwendung enthalten.
 Da sich die Kunden gut mit Windchill und seinen Funktionalitäten auskennen, haben sie bereits Lösungsvorschläge eingearbeitet.
-Darum kann man sagen, dass es sich bei diesem Lastenheft um einen Hybriden aus Lastenheft und Pflichtenheft handelt.
+Darum kann man sagen, dass es sich bei diesem Dokument um einen Hybriden aus Lastenheft und Pflichtenheft handelt.
 Aus diesem Grund wurde vom Entwickler kein seperates Pflichtenheft mehr angefertigt.
 Im \Anhang{app:Lastenheft} befindet sich ein Auszug aus dem Lastenheft.
