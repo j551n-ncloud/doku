@@ -18,16 +18,30 @@ Als offizieller Partner von PTC liegt das Hauptaugenmerk hier meist auf dem PTC-
 
 \subsection{Projektumfeld}
 \label{sec:Projektumfeld}
+Durchgeführt wird das Projekt von mir in den Räumen der Arsandis GmbH, bei dir ich meine Ausbildung absolviere.
 Das Projekt wird im Auftrag der amerikanischen Firma \ac{AWS} durchgeführt, die in der Herstellung von Wasserpumpen tätig ist.
 \ac{AWS} ist ein Tochterunternehmen von Xylem, einem Unternehmen, das sich auf die Entwicklung und Bereitstellung von Wassertechnologien spezialisiert hat.
-\ac{AWS} nutzt den Windchill Server von Xylem, der als \ac{XGV} bekannt ist.
-Die meisten Tochterunternehmen von Xylem, einschließlich \ac{AWS}, sind auf diesem Server als Organisation eingerichtet.
 
-Durchgeführt wird das Projekt von mir in den Räumen der Arsandis GmbH.
-Im Vornherein wurde für dieses Projekt eine Windchill Entwicklungsumgebung auf unserem Unternehmensserver eingerichtet.
-Auf dieser findet jegliche Entwicklungsarbeit statt.
-Nach Abschluss der Implementierungsphase sollen die Softwareanpassungen in das Testsystem von Xylem integriert werden.
-Die finalen Tests und das Deployment auf das Produktivsystem werden von Mitarbeitern von AWS durchgeführt.
+\subsubsection{Systeme}
+
+\subsubsection*{Produktivsystem}
+Der \acl{XGV} ist der Windchill-Server von Xylem und wird von PTC in einer Cloud gehostet.
+Der Login auf dieses System erfolgt für die User über Single-Sign-On.
+Die meisten Tochterfirmen von Xylem sind auf diesem Server als eigenständige Organisation eingerichtet.
+Für die Durchführung des Projekts hat dieser Server allerdings keine Relevanz, da die endgültige Übernahme auf das Produktivsystem nicht von uns durchgeführt wird.
+Wichtig ist, dass alle Änderungen, die von uns vorgenommen werden, ausschließlich die Organisationen von \ac{AWS} betreffen.
+
+\subsubsection*{Testsystem}
+Dieses Testsystem ist ein Klon vom \ac{XGV}-Produktivserver und wird von Xylem gehostet.
+Der Login auf dieses System erfolgt für die User über Single-Sign-On.
+Hier nimmt der Kunde die betriebseigenen Tests vor, um unsere Anpassungen zu überprüfen.
+Zusammen mit meinem Projektleiter werde ich die Übernahme von unserem Entwicklungssystem auf den Trainingsserver durchführen.
+
+\subsubsection*{Entwicklungssystem}
+Das Entwicklungssystem wird von Arsandis gehostet und verwaltet (Hyper-V VM) und wurde im Vorfeld als Klon des Testsystems für dieses Projekts eingerichtet, damit sämtliche Entwicklungsarbeiten darin vorgenommen werden können.
+Statt Single-Sign-On wurden hier lokale Testuser eingerichtet.
+Auch das Arsandis-Interne Testing wird hier stattfinden.
+Die Abschlussprojektarbeit wird vollständig auf diesem Entwicklungssystem stattfinden.
 
 \subsection{Projektziel} 
 \label{sec:Projektziel}
@@ -55,27 +69,22 @@ Dann ist geplant, noch einige weitere Quality-Of-Life Verbesserungen zu implemen
 \subsection{Projektschnittstellen}
 \label{sec:Projektschnittstellen}
 
-\subsubsection{Windchill}
-Windchill ist eine \ac{PLM} Webanwendung von PTC, die das Verwalten von Unternehmensobjekten für die Herstellungsindustrie vereinfacht.
-Besonders Wert wird dabei auf die Verwaltung von CAD-Modellen gelegt.
-CAD-Modelle sind am Computer gefertigte zwei- und dreidimensionale Zeichnungen von Konstruktionsobjekten.
-Mit dem Windchill Workgroup Manager existiert eine Schnittstelle zwischen Windchill und vielen CAD-Anwendungen, die auf dem Markt existieren (wie \zB Creo Parametric, CATIA oder Solidworks).
+Das System, an dem das Projekt durchgeführt wird, interagiert mit einigen anderen System, wie zum Beispiel
+\begin{itemize}
+    \item CAD-Anwendungen über den Windchill Workgroup Manager
+    \item Microsoft Sharepoint zur Datenübertragung
+\end{itemize}
 
-\subsubsection{\acs{XGV}}
-Der \acl{XGV} ist der Windchill-Server von Xylem.
-Die meisten Tochterfirmen von Xylem sind auf diesem Server als eigenständige Organisation eingerichtet.
-Für die Durchführung des Projekts hat dieser Server allerdings keine Relevanz, da die endgültige Übernahme auf das Produktivsystem nicht von uns durchgeführt wird.
-Dennoch wurde er aus Gründen der Vollständigkeit aufgeführt.
+Diese sind allerdings für das Projekt nicht weiter von Belang und wurden hier deshalb nur zur Vollständigkeit aufgeführt.
 
-\subsubsection{\ac{XGV}-Trainingsserver}
-Dieses Testsystem ist ein Klon vom \ac{XGV}-Produktivserver.
-Hier nimmt der Kunde die betriebseigenen Tests vor, um unsere Anpassungen zu überprüfen.
-Zusammen mit meinem Projektleiter werde ich die Übernahme von unserem Entwicklungssystem auf den Trainingsserver durchführen.
+Bei den Nutzern, die mit dem System interagieren, handelt es sich vor allem um Ingenieure und Manager.
+Ingenieure nutzen das System hauptsächlich dafür, CAD-Modelle zu erstellen, zu ändern und zu verwalten.
+Manager hingegen genehmigen und koordinieren Unternehmensprozesse, wie \zB das Änderungsmanagement, auf das im Kapitel \ref{sec:ECM} noch näher eingegangen wird.
 
-\subsubsection{\acs{AWS}}
-Auch \ac{AWS} hat eigene Tochterunternehmen, die in Windchill als Organisation eingerichtet sind.
-Darunter sind zum Beispiel FHD, Vogel oder Lowara.
-Wichtig ist, dass alle Änderungen, die von uns vorgenommen werden, ausschließlich die Organisationen von \ac{AWS} betreffen.
+\subsection{Vorraussetzungen für das Verständnis}
+
+Windchill bietet umfassende Funktionen zur Verwaltung von Unternehmensdaten.
+Im Folgenden sollen einige dieser Funktionen vorgestellt werden, damit die Inhalte des Abschlussprojekts nachvollziehbar sind.
 
 \subsubsection{Workflows}
 Workflows sind Objekte in Windchill, mit denen man Unternehmensprozesse abbilden kann.
@@ -85,6 +94,7 @@ Hier kann man auch auf Klassen und Methoden innerhalb der Windchill-Codebase ver
 Die folgenden Konzepte wurden und werden mit Hilfe von Workflows umgesetzt.
 
 \subsubsection{\acl{ECM}}
+\label{sec:ECM}
 Das Änderungsmanagement ist ein essenzieller Bestandteil von Windchill.
 Teile, wie \zB CAD-Dateien oder Dokumente kommen in ihrem Lebenszyklus zumeist irgendwann an den Punkt, an dem sie für die Produktion freigegeben werden.
 Da bereits umfassende Ressourcen für die Produktion aufgewendet wurden, muss eine nachträgliche Änderung gut begründet werden.

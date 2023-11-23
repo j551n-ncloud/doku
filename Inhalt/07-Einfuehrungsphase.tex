@@ -1,24 +1,19 @@
 % !TEX root = ../Projektdokumentation.tex
-\section{Einführungsphase} %todo: finish section
+\section{Einführungsphase}
 \label{sec:Einfuehrungsphase}
 
-\begin{itemize}
-	\item Welche Schritte waren zum Deployment der Anwendung nötig und wie wurden sie durchgeführt (automatisiert/manuell)?
-	\item Wurden \ggfs Altdaten migriert und wenn ja, wie?
-	\item Wurden Benutzerschulungen durchgeführt und wenn ja, Wie wurden sie vorbereitet?
-\end{itemize}
+Das Deployment findet zusammen mit meinem Projektleiter auf einem Terminal-Only Linux-Server statt.
+Die Übertragung der Änderungen auf den Testserver läuft komplett manuell ab.
+Mithilfe des Command-Line (CLI) LoadFile Tools von PTC lassen sich viele Windchill Daten importieren.
+Auf diese Weise konnte ich die Types auf dem Server importieren.
+Der kompilierte Java Code und die Datei für die Rollendefinition wurde in der Windchill Codebase abgelegt.
 
+Der Import der Workflows, Life Cycle Templates und OIRs funktioniert über das UI -- ebenfalls manuell -- direkt im Windchill Server.
 
-Zuerst wird das Deployment-Package zusammengestellt
-Das Deployment findet auf einem Terminal-Only Linux-Server statt.
+Die Rollen wurden für zwei Team Templates händisch ausgetauscht.
+Ursprünglich war für das Abschlussprojekt vorgesehen, dass dies mit einem Java Programm automatisiert für alle Team Templates der Organisation funktioniert.
+Durch den Zeitdruck wurde dieses Vorhaben allerdings nach hinten verschoben und zudem auch an einen anderen Mitarbeiter übergeben.
 
-Anpassungen wurden abgeschlossen
-Deployment auf Trainingsserver (Linux)
-	Überschreiben der alten XML und JSP Dateien
-	Ablegen der kompilierten Java Klassen in die Windchill Codebase
-	Import der Types über Import-Tool von PTC via Commandline
-	Import der Workflows, Life Cycle Templates und OIRs über Windchill UI
-
-
-Testing durch AWS
+Die Übertragung auf den Produktivserver, die nicht von uns durchgeführt wird, wird automatisiert ablaufen.
+Dafür bereitet ein Experte von AWS ein ANT Buildscript vor.
 

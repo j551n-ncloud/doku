@@ -2,12 +2,29 @@
 \section{Entwurfsphase} 
 \label{sec:Entwurfsphase}
 
-\subsection{Zielplattform} %todo: finish section
+\subsection{Zielplattform}
 \label{sec:Zielplattform}
 
-\begin{itemize}
-	\item Beschreibung der Kriterien zur Auswahl der Zielplattform (\ua Programmiersprache, Datenbank, Client/Server, Hardware).
-\end{itemize}
+Bei der Zielplattform handelt es sich um PTC Windchill PDMLink, eine web-basierte Anwendung zur Verwaltung von Unternehmensdaten.
+Windchill ist mit jedem modernen Browser kompatibel.
+Windchill besteht aus den folgenden Grundbestandteilen:
+
+\subsubsection{Windchill PDMLink}
+Windchill und Windchill PDMLink werden oft synonym verwendet, da PDMLink das Basispaket von Windchill darstellt.
+Windchill ist eine \ac{PLM} Webanwendung von PTC, die das Verwalten von Unternehmensobjekten für die Herstellungsindustrie vereinfacht.
+Besonders Wert wird dabei auf die Verwaltung von CAD-Modellen gelegt.
+CAD-Modelle sind am Computer gefertigte zwei- und dreidimensionale Zeichnungen von Konstruktionsobjekten.
+Mit dem Windchill Workgroup Manager existiert eine Schnittstelle zwischen Windchill und vielen CAD-Anwendungen, die auf dem Markt existieren (wie \zB Creo Parametric, CATIA oder Solidworks).
+Das Hauptgeschäftsfeld von PTC ist das Engineering, darunter vor allem die Automobilindustrie oder die Luft- und Raumfahrtindustrie.
+Allerdings bietet PTC noch eine große Zahl an Erweiterungen an, um \zB auch die Textilindustrie optimal in Windchill integrieren zu können.
+
+\subsubsection{Programmiersprache}
+Da Windchill eine Java-Applikation ist, werden tiefer gehende Anpassungen durch Java-Code erfolgen.
+Auch der Code in den Workflow-Templates wird in Java definiert.
+Um die Benutzeroberfläche um neue Elemente oder Fenster zu erweitern wird auch das JSP Framework genutzt.
+
+\subsubsection{Datenbank}
+Unser Entwicklungsserver läuft auf einer Oracle 19C Datenbank, Windchill ist allerdings auch mit den Datenbanken von Microsoft kompatibel.
 
 \subsection{Geschäftslogik} %todo: finish section
 \label{sec:Geschaeftslogik}
@@ -19,21 +36,12 @@
 
 
 \subsection{Maßnahmen zur Qualitätssicherung} %todo: finish section
-\label{sec:Qualitaetssicherung}
-\begin{itemize}
-	\item Welche Maßnahmen werden ergriffen, um die Qualität des Projektergebnisses (siehe Kapitel~\ref{sec:Qualitaetsanforderungen}: \nameref{sec:Qualitaetsanforderungen}) zu sichern (\zB automatische Tests, Anwendertests)?
-	\item \Ggfs Definition von Testfällen und deren Durchführung (durch Programme/Benutzer).
-\end{itemize}
-
 Das Testing erfolgt manuell durch \glqq durchklicken\grqq{} der Workflowprozesse.
 Dabei erfolgen mehrere Arsandis-Interne Tests auf unserer Entwicklungsumgebung, bei dem eine Kollegin den Prüfling unterstützt.
+Hier wird überprüft, ob die korrekte Funktionsweise der Anpassungen gegeben ist.
+Dafür wurde ein einfacher Testplan erstellt. %todo: add testplan to anhang
 
-
-Sobald wir unseren Testprozess erfolgreich abgeschlossen haben, werden die Anpassungen auf das Testsystem des Kunden übertragen.
-Daran anschließend startet die zweite Testphase, die von einigen Mitarbeitern von \ac{AWS} durchgeführt werden.
-Nach ihren Tests erhalten wir ein Testprotokoll, in dem alle Fehler beziehungsweise Auffälligkeiten dokumentiert werden.
-
-\subsection{Pflichtenheft/Datenverarbeitungskonzept} %todo: finish section
+\subsection{Pflichtenheft/Datenverarbeitungskonzept} %todo: finish section, haben wir ein Pflichtenheft? GGF entfernen
 \label{sec:Pflichtenheft}
 \begin{itemize}
 	\item Auszüge aus dem Pflichtenheft/Datenverarbeitungskonzept, wenn es im Rahmen des Projekts erstellt wurde.
