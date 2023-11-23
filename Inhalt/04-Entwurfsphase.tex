@@ -29,23 +29,41 @@ Unser Entwicklungsserver läuft auf einer Oracle 19C Datenbank, Windchill ist al
 \subsection{Geschäftslogik} %todo: finish section
 \label{sec:Geschaeftslogik}
 
-\begin{itemize}
-	\item Modellierung und Beschreibung der wichtigsten (!) Bereiche der Geschäftslogik (\zB mit Kom\-po\-nen\-ten-, Klassen-, Sequenz-, Datenflussdiagramm, Programmablaufplan, Struktogramm, EPK).
-	\item Wie wird die erstellte Anwendung in den Arbeitsfluss des Unternehmens integriert?
-\end{itemize}
+\subsubsection{ECA}
+Im \Anhang{Aktivitaetsdiagramm} befindet sich das Aktivitätsdiagramm für den ECA-E Prozess.
+Das ist eine spezielle Form des ECA-Prozesses, der alle Aufgaben der Ingenieure enthält.
+Der Gegenpart dazu ist der ECA-NE, in dem sich alle Aufgaben für die Nicht-Ingenieure sammeln.
+Dieser ist ähnlich aufgebaut wie der ECA-E, deswegen soll hier nur auf einen Prozess näher eingegangen werden.
 
+Zuerst werden die \glqq Affected Objects\grqq{}, also die Objekte, die im Änderungsprozess geändert werden sollen, vom ECR zum ECA-E kopiert.
+Dadurch kann vom ECA-E auf die Objekte zugegriffen werden und es können \glqq Resulting Objects\grqq{} erzeugt werden.
+Mit dieser speziellen ECA Funktion kann der Ingenieur festlegen, welchen Lebenszyklusstatus das Objekt nach der Fertigstellung des Change-Prozesses erhält.
+Dieser Prozess wird im Kapitel \ref{LebenszyklusstatusECA} genauer erläutert.
 
-\subsection{Maßnahmen zur Qualitätssicherung} %todo: finish section
+Als nächstes wird das \glqq Product Line Attribute\grqq{} eingelesen.
+Damit wird bestimmt welches Team Template im nächsten Schritt geladen wird.
+In den Team Templates sind User bereits zu Rollen gemappt.
+Dies erlaubt es uns eine Default-Vorauswahl in den Workflow zu laden.
+Damit müssen die Change Administratoren nicht alle User zuweisen.
+
+Danach werden die Startparameter des ECR in den ECA-E eingelesen.
+Wie beim ECR beeinflussen diese auch hier die automatische Rollenauswahl.
+Wurde also \zB beim Erstellen des ECR das Attribut \glqq Drawings\grqq{} auf Nein gesetzt, so wird der User dieser Rolle automatisch im nächsten Schritt aus dem ECA-E Prozess entfernt.
+
+Möchte der Change Admin trotzdem von der Vorauswahl abweichen, so kann er dies in der anschließenden Aufgabe \glqq Select users\grqq{} machen.
+
+Im Anschluss daran werden die ausgewählten Ingenieure dazu aufgefordert ihre Aufgabe abzuschließen.
+In dieser können sie Änderungen an den Affected Objects vornehmen.
+
+Haben alle Ingenieure ihre Aufgaben abgeschlossen, werden die Affected Objects automatisch vom System gesperrt.
+Dadurch können während der Review-Phase keine Änderungen mehr am Objekt vorgenommen werden.
+
+Abschließend kann der Change Admin nun entscheiden, ob die Aufgaben zufriedenstellend abgeschlossen wurden.
+Ist er mit der Arbeit einer Abteilung nicht zufrieden, so kann er diesen eine \glqq Rework\grqq{}-Task zukommen lassen.
+
+Wenn der Change Admin zufrieden ist, so ist der ECA-E abgeschlossen und es wird mit dem ECA-NE fortgefahren, in dem der gleiche Prozess, nur mit Nicht-Ingenieuren durchlaufen wird.
+
+\subsection{Maßnahmen zur Qualitätssicherung}
 Das Testing erfolgt manuell durch \glqq durchklicken\grqq{} der Workflowprozesse.
 Dabei erfolgen mehrere Arsandis-Interne Tests auf unserer Entwicklungsumgebung, bei dem eine Kollegin den Prüfling unterstützt.
 Hier wird überprüft, ob die korrekte Funktionsweise der Anpassungen gegeben ist.
-Dafür wurde ein einfacher Testplan erstellt. %todo: add testplan to anhang
-
-\subsection{Pflichtenheft/Datenverarbeitungskonzept} %todo: finish section, haben wir ein Pflichtenheft? GGF entfernen
-\label{sec:Pflichtenheft}
-\begin{itemize}
-	\item Auszüge aus dem Pflichtenheft/Datenverarbeitungskonzept, wenn es im Rahmen des Projekts erstellt wurde.
-\end{itemize}
-
-\paragraph{Beispiel}
-Ein Beispiel für das auf dem Lastenheft (siehe Kapitel~\ref{sec:Lastenheft}: \nameref{sec:Lastenheft}) aufbauende Pflichtenheft ist im \Anhang{app:Pflichtenheft} zu finden.

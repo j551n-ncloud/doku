@@ -2,9 +2,26 @@
 \section{Implementierungsphase}  %todo: finish section
 \label{sec:Implementierungsphase}
 
+\subsubsection{Anpassen der Workflow-Templates}
+\subsubsection*{Umstrukturierung der Nodes zur besseren Übersichtlichkeit}
+Exemplarisch wird hier nur die neue Struktur des ECRs gezeigt, da sich hier die größten Änderungen ergeben haben.
+Der ECN Workflow hat allerdings auch eine Umstrukturierung erfahren.
+Es wurde besonders Wert darauf gelegt, dass die Elemente in einer klaren Struktur angeordnet werden und sich Linien möglichst nicht kreuzen.
+Man kann deutlich erkennen, dass der Workflow nun deutlich aufgeräumter und strukturierter wirkt.
+Dadurch wird vor allem das Leseverständnis erhöht.
+Zudem wurde der große Block im unteren Teil von \autoref{WorkflowVergleich1} mit einem seperaten Block (Department Approval Process) ersetzt.
+
+Ein vorher-nachher Vergleich findet sich im \Anhang{WorkflowVergleich}.
+
+
+
+\subsubsection{Ergänzung von Lebenszyklusstatus im ECA}
+\label{LebenszyklusstatusECA}
+
+\subsubsection{Erstellen neuer Types}
+Damit der Workflow für ECA-E und ECA-NE auch im System getriggert wird, müssen 
 
 \begin{itemize}
-	\item Anpassung der Workflow-Templates
 	\item Anlegen neuer Types
 	\subitem OIR
 	\subitem Lifecycle Template
@@ -12,5 +29,3 @@
 	\item Erstellung der Java-Klassen
 \end{itemize}
 
-\paragraph{Beispiel}
-Die Klasse \texttt{Com\-par\-ed\-Na\-tu\-ral\-Mo\-dule\-In\-for\-ma\-tion} findet sich im \Anhang{app:CNMI}.  
