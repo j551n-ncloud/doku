@@ -1,69 +1,45 @@
 % !TEX root = ../Projektdokumentation.tex
-\section{Entwurfsphase} 
+\section{Entwurfsphase}
 \label{sec:Entwurfsphase}
 
 \subsection{Zielplattform}
 \label{sec:Zielplattform}
+% TODO: kurz beschreiben:
+%   - PBS als Zielsystem (Debian-basiert, eigene Web-UI, CLI)
+%   - bestehende PVE-Cluster-Umgebung als anzubindendes System
 
-Bei der Zielplattform handelt es sich um PTC Windchill PDMLink, eine web-basierte Anwendung zur Verwaltung von Unternehmensdaten.
-Windchill ist mit jedem modernen Browser kompatibel.
 
-\subsubsection{Windchill PDMLink}
-Windchill PDMLink ist das Basispaket von Windchill.
-Windchill ist eine \ac{PLM} Webanwendung von PTC, die das Verwalten von Unternehmensobjekten für die Herstellungsindustrie vereinfacht.
-Im PDMLink Paket wird besonders Wert auf die Verwaltung von CAD-Modellen gelegt.
-CAD-Modelle sind am Computer gefertigte zwei- und dreidimensionale Zeichnungen von Konstruktionsobjekten.
-Mit dem Windchill Workgroup Manager existiert eine Schnittstelle zwischen Windchill und vielen CAD-Anwendungen, die auf dem Markt existieren (wie \zB Creo Parametric, CATIA oder Solidworks).
-Das Hauptgeschäftsfeld von PTC ist das Engineering, darunter \zB die Automobilindustrie oder die Luft- und Raumfahrtindustrie.
-Allerdings bietet PTC noch eine große Zahl an Erweiterungen an, um \zB auch die Textilindustrie optimal in Windchill integrieren zu können.
+\subsection{Backup-Konzept}
+\label{sec:Backupkonzept}
+% TODO: hier das ausgearbeitete Backup-Konzept dokumentieren:
+%   - Klassifizierung der VMs/CTs (z.\,B. kritisch, normal, Test)
+%   - Backup-Frequenzen pro Klasse
+%   - Retention Policies pro Klasse
+%   - Verschlüsselung / Integritätsprüfung
+%   - Restore-Strategie
 
-\subsubsection{Programmiersprache}
-Da Windchill eine Java-Applikation ist, werden tiefer gehende Anpassungen durch Java-Code erfolgen.
-Auch der Code in den Workflow-Templates wird in Java definiert.
-Um die Benutzeroberfläche um neue Elemente oder Fenster zu erweitern wird das JSP Framework genutzt.
 
-\subsubsection{Datenbank}
-Der Entwicklungsserver läuft auf einer Oracle 19C Datenbank.
+\subsection{Netzwerk- und Storage-Architektur}
+\label{sec:NetzwerkStorage}
+% TODO: Architektur beschreiben:
+%   - Backup-VLAN und Firewall-Regeln
+%   - ZFS-Pool-Layout (RAID-Level, Disks, ARC, Special Devices)
+%   - Datastore-Struktur auf dem PBS
+% ggfs. ein Architektur-Diagramm im Anhang einfügen.
 
-\subsection{Geschäftslogik}
-\label{sec:Geschaeftslogik}
 
-\subsubsection{ECA}
-Im \Anhang{Aktivitaetsdiagramm} befindet sich das Aktivitätsdiagramm für den ECA-E Prozess.
-Das ist eine spezielle Form des ECA-Prozesses, der alle Aufgaben der Ingenieure enthält.
-Der Gegenpart dazu ist der ECA-NE, in dem sich alle Aufgaben für die Nicht-Ingenieure sammeln.
-Dieser ist ähnlich aufgebaut wie der ECA-E, deswegen wird hier nur auf einen Prozess näher eingegangen.
-
-Zuerst werden die \glqq Affected Objects\grqq{}, also die Objekte, die im Änderungsprozess geändert werden sollen, vom ECR zum ECA-E kopiert.
-Dadurch kann vom ECA-E auf die Objekte zugegriffen werden und es können \glqq Resulting Objects\grqq{} erzeugt werden.
-Mit dieser speziellen ECA Funktion kann der Ingenieur festlegen, welchen Lebenszyklusstatus das Objekt nach der Fertigstellung des Change-Prozesses erhält.
-
-Als nächstes wird das \glqq Product Line Attribute\grqq{} eingelesen.
-Damit wird bestimmt welches Team Template im nächsten Schritt geladen wird.
-Es gibt für jede Produktlinie jeweils zwei Team Templates.
-Team Templates stellen ein von den Administratoren vordefiniertes Mapping zwischen Usern und Rollen dar.
-Dies erlaubt es uns eine Standardkonfiguration in den Workflow zu laden.
-Damit müssen Change Administratoren nicht alle User händisch zuweisen.
-
-Danach werden die Startparameter des ECR in den ECA-E geladen.
-Wie beim ECR beeinflussen diese auch hier die automatische Rollenauswahl.
-Wurde also \zB beim Erstellen des ECR das Attribut \glqq Drawings\grqq{} auf Nein gesetzt, so wird der User dieser Rolle automatisch im nächsten Schritt aus dem ECA-E Prozess entfernt.
-
-Möchte der Change Admin von der automatischen Vorauswahl abweichen, so kann er dies in der anschließenden Aufgabe \glqq Select users\grqq{} machen.
-
-Im Anschluss daran werden die ausgewählten Ingenieure dazu aufgefordert ihre Aufgabe abzuschließen.
-In dieser können sie Änderungen an den Affected Objects vornehmen.
-
-Haben alle Ingenieure ihre Aufgaben abgeschlossen, werden die Affected Objects automatisch vom System gesperrt.
-Dadurch können während der Review-Phase des Change Admin keine Änderungen mehr an den Change-Objekten vorgenommen werden.
-
-Abschließend kann der Change Admin nun entscheiden, ob die Aufgaben zufriedenstellend abgeschlossen wurden.
-Ist er mit der Arbeit einer Abteilung nicht zufrieden, so kann er diesen eine \glqq Rework\grqq{}-Task zukommen lassen.
-
-Wenn der Change Admin zufrieden ist, so ist der ECA-E abgeschlossen und es wird mit dem ECA-NE fortgefahren, in dem der gleiche Prozess, nur mit Nicht-Ingenieuren, durchlaufen wird.
+\subsection{Authentifizierung und Berechtigungen}
+\label{sec:AuthZ}
+% TODO: Konzept für Authentifizierung beschreiben:
+%   - PBS API-Token für PVE
+%   - lokale PBS-User vs. LDAP/AD
+%   - Berechtigungsmodell (wer darf was)
 
 
 \subsection{Maßnahmen zur Qualitätssicherung}
-Das Testing erfolgt manuell durch \glqq durchklicken\grqq{} der Workflowprozesse.
-Dabei erfolgen mehrere Arsandis-Interne Tests auf unserer Entwicklungsumgebung, bei dem eine Kollegin den Prüfling unterstützt.
-Hier wird überprüft, ob die korrekte Funktionsweise der Anpassungen gegeben ist.
+\label{sec:QS}
+% TODO: Test- und Validierungsstrategie:
+%   - Backup-Jobs manuell auslösen
+%   - Restore-Tests einzelner VMs/CTs auf Test-Hypervisor
+%   - Verifikation der PBS-Datastore-Integrität (verify-jobs)
+%   - Monitoring/Benachrichtigung testen
