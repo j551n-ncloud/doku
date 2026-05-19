@@ -5,45 +5,143 @@
 
 \subsection{Ist-Analyse}
 \label{sec:IstAnalyse}
-% TODO: aktuellen Zustand der Backup-Infrastruktur der ODCF detailliert
-% beschreiben:
-%   - bestehender PVE-Cluster (Anzahl Knoten, Storage, Netzwerk)
-%   - bestehende Tape-Sicherung (Frequenz, Aufbewahrung, Restore-Prozess)
-%   - Anzahl und ungefähre Größe der zu sichernden VMs und Container
-%   - bekannte Schwachstellen (z.\,B. keine zentralen Backup-Jobs, kein
-%     Monitoring, langsamer Restore)
+Der \ac{PVE}-Cluster der \ac{ODCF} besteht aus insgesamt sechs
+Hypervisor-Knoten -- drei älteren IBM- bzw.\ Lenovo-Servern und drei
+neueren Dell-VxRail-Knoten -- und betreibt derzeit etwa 60 \acp{VM}
+sowie eine Reihe von \acp{LXC} mit Forschungs- und
+Infrastrukturdiensten.
+Als primäres Storage-Backend wird ein \ac{Ceph}-Cluster mit einer
+Brutto-Kapazität von rund 44\,TB eingesetzt, von denen aktuell ca.\
+6\,TB belegt sind.
+
+Die bestehende Sicherung ist heterogen aufgebaut:
+\begin{itemize}
+    \item Sicherungen der \acp{VM} und Container liegen auf einem
+          \ac{Ceph}-\ac{RBD}-Pool, also auf derselben Storage-
+          Infrastruktur wie die Primärdaten.
+    \item Ausgewählte \acp{VM} werden zusätzlich per \texttt{rsync} auf
+          einen separaten Backup-Server kopiert.
+    \item Vom Backup-Server werden die Daten über \ac{TSM} auf Tape
+          ausgelagert.
+\end{itemize}
+% TODO: konkrete Schmerzpunkte und Dauer typischer Restores ergänzen
+% (Frank fragen / Erfahrungswerte vom ODCF-Team).
+Daraus ergeben sich mehrere strukturelle Schwachstellen: Es gibt keine
+zentrale Verwaltung der Backup-Jobs, keine einheitliche Retention,
+keine automatisierte Integritätsprüfung und vor allem keine echte
+Trennung zwischen Primär- und Sicherungsdaten -- ein Ausfall des
+\ac{Ceph}-Clusters würde auch die dort abgelegten Sicherungen
+betreffen.
 
 
 \subsection{Anforderungsanalyse}
 \label{sec:Anforderungsanalyse}
-% TODO: funktionale und nicht-funktionale Anforderungen aus Antrag
-% ableiten und strukturieren (siehe Punkt 2.2 / 2.3 des Antrags).
+Aus dem Projektantrag und der Ist-Analyse ergeben sich die folgenden
+funktionalen und nicht-funktionalen Anforderungen an die neue
+Backup-Lösung:
+
+\subsubsection*{Funktionale Anforderungen}
+\begin{itemize}
+    \item Dedizierter \acl{PBS} auf eigener Hardware, unabhängig vom
+          produktiven \ac{Ceph}-Cluster.
+    \item Sicherung aller relevanten \acp{VM} und Container des
+          \ac{PVE}-Clusters über die native \ac{PVE}-/\ac{PBS}-
+          Integration.
+    \item Definierte Backup-Jobs mit Zeitplänen und
+          Aufbewahrungs\-richtlinien je \ac{VM}-Klasse.
+    \item Automatisierte E-Mail-Benachrichtigung bei Fehlern und
+          Anbindung an das vorhandene \ac{CheckMK}-Monitoring.
+    \item Möglichkeit zur Wiederherstellung einzelner Dateien sowie
+          ganzer \acp{VM} / Container.
+\end{itemize}
+
+\subsubsection*{Nicht-funktionale Anforderungen}
+\begin{itemize}
+    \item Trennung von Primär- und Sicherungs-Storage.
+    \item Authentifizierung über das bestehende \ac{DKFZ}-\ac{LDAP},
+          ergänzt um einen lokalen \texttt{root}-Account für die
+          Initialkonfiguration und Notfallzugriff.
+    \item Betrieb in der bestehenden Netzwerkstruktur der \ac{ODCF}
+          (\emph{server}-, \emph{cluster}-, \emph{external}- und
+          \emph{ceph}-\ac{VLAN}).
+    \item Open-Source-Lösung, keine Lizenzkosten.
+\end{itemize}
 
 
 \subsection{Im Projekt zu treffende Entscheidungen}
 \label{sec:Entscheidungen}
-% TODO: hier die Entscheidungen aus Punkt 2.3 des Antrags behandeln:
-%   - Hardware-Auswahl (CPU, RAM, Storage-Kapazität)
-%   - Backup-Strategie (Vollbackup, inkrementell, differenziell)
-%   - Retention Policies (täglich, wöchentlich, monatlich)
-%   - Netzwerkanbindung (dediziertes Backup-VLAN vs. bestehende Struktur)
-%   - Authentifizierungskonzept (lokale PBS-User vs. LDAP/AD)
-% Bewertung der Alternativen ggfs. mit Nutzwertanalyse.
+Folgende Entscheidungen sind im Rahmen des Projekts zu treffen und
+werden in der Entwurfsphase (Abschnitt~\ref{sec:Entwurfsphase})
+detaillierter behandelt:
+\begin{itemize}
+    \item \textbf{Hardware:} Auswahl eines passenden Servers für den
+          \ac{PBS}; angedacht ist die Nachnutzung vorhandener Hardware,
+          um Beschaffungskosten zu vermeiden.
+    \item \textbf{Backup-Strategie:} Festlegung von Frequenz und
+          Aufbewahrung je \ac{VM}-Klasse (kritisch mit
+          \ac{SOP}-Pflicht vs.\ Test-\acp{VM}).
+    \item \textbf{Netzwerkanbindung:} Einbindung des \ac{PBS} in die
+          vorhandenen \acp{VLAN} (server / cluster / external / ceph).
+    \item \textbf{Authentifizierung:} Kombination aus lokalem
+          \texttt{root}-Zugang und Anbindung an das \ac{DKFZ}-\ac{LDAP}.
+    \item \textbf{Storage-Layout:} Auswahl zwischen Hardware-\ac{RAID}
+          und \ac{ZFS}; Festlegung des Disk-Layouts für den Datastore.
+\end{itemize}
 
 
 \subsection{Wirtschaftlichkeitsanalyse}
 \label{sec:Wirtschaftlichkeitsanalyse}
-% TODO: Wirtschaftlichkeit darstellen. Mögliche Argumente:
-%   - keine Lizenzkosten (PBS Open Source)
-%   - Hardware-Kosten einmalig
-%   - Zeitersparnis bei Restores
-%   - Risikoreduktion durch zusätzliche Backup-Ebene
-% Kostenaufstellung ggfs. in Tabellen/Kostenaufstellung.tex ergänzen.
+Die Wirtschaftlichkeit des Projekts ergibt sich vor allem aus zwei
+Faktoren: Die Reduktion des Risikos eines Datenverlusts durch eine von
+der Primär-Storage getrennte Sicherung sowie die deutlich vereinfachte
+und schnellere Wiederherstellung einzelner \acp{VM} und Container.
+
+\subsubsection*{Annahmen}
+Da konkrete interne Stundensätze und Hardware-Listenpreise zum
+Zeitpunkt der Erstellung nicht abschließend vorliegen, werden für die
+folgende Kalkulation plausible Platzhalterwerte angesetzt
+(\emph{Platzhalter -- in der finalen Fassung durch reale Zahlen aus
+der Personal- bzw.\ Beschaffungsabteilung ersetzen}).
+
+\subsubsection*{Projektkosten}
+\begin{itemize}
+    \item \textbf{Personalkosten Prüfling:} 40\,h $\times$
+          ca.\ 25\,\texteuro/h (Vollkostensatz Azubi inkl.\ Gemeinkosten,
+          Platzhalter) $=$ ca.\ 1\,000\,\texteuro.
+    \item \textbf{Betreuung / Abstimmung:} ca.\ 5\,h $\times$
+          80\,\texteuro/h (Platzhalter Senior-Admin) $=$ 400\,\texteuro.
+    \item \textbf{Hardware:} keine Beschaffungskosten, da ein
+          vorhandener IBM System x3755 (32~Kerne AMD Opteron~6220,
+          32\,GB \ac{RAM}, 6\,$\times$\,4\,TB HDD) nachgenutzt wird.
+          Anzusetzen sind lediglich Strom- und Standkosten (Platzhalter
+          ca.\ 200\,\texteuro\ über die Projektlaufzeit).
+    \item \textbf{Software:} keine Lizenzkosten, da \ac{PBS} unter der
+          AGPLv3 verfügbar ist (no-subscription-Repository).
+\end{itemize}
+
+\subsubsection*{Nutzen}
+\begin{itemize}
+    \item Deutlich kürzere Restore-Zeiten gegenüber dem heutigen
+          Vorgehen über \ac{TSM}/Tape -- bereits ein einziger
+          vermiedener mehrstündiger Restore-Vorgang pro Jahr
+          amortisiert die kalkulierten Projektkosten.
+    \item Reduzierung des Risikos eines Totalverlusts bei einem
+          Ausfall des \ac{Ceph}-Clusters.
+    \item Zentrale Verwaltung, Monitoring und Integritätsprüfung der
+          Sicherungen senken den laufenden administrativen Aufwand.
+\end{itemize}
+
+% TODO: nach Rücksprache mit Frank / Personalabteilung echte Zahlen
+% einsetzen und ggfs. eine Tabelle in Tabellen/Kostenaufstellung.tex
+% pflegen.
 
 
 \subsection{Lasten-/Pflichtenheft}
 \label{sec:Lastenheft}
-% TODO: Auszug aus Lastenheft im Anhang ergänzen
-% (siehe Anhang/AnhangLastenheft.tex).
-% Falls kein separates Lastenheft existiert: kurze Begründung und
-% Verweis auf die Anforderungen aus dem Projektantrag.
+Als Lastenheft dient der von der \ac{ODCF} freigegebene Projektantrag,
+der Ziel, Umfang und zu treffende Entscheidungen festlegt.
+Ein gesondertes Pflichtenheft wird nicht erstellt; die konkreten
+Umsetzungsentscheidungen werden stattdessen in der Entwurfsphase
+(Abschnitt~\ref{sec:Entwurfsphase}) dokumentiert.
+Ein Auszug aus den zentralen Anforderungen befindet sich im
+\Anhang{app:Lastenheft}.

@@ -4,42 +4,131 @@
 
 \subsection{Zielplattform}
 \label{sec:Zielplattform}
-% TODO: kurz beschreiben:
-%   - PBS als Zielsystem (Debian-basiert, eigene Web-UI, CLI)
-%   - bestehende PVE-Cluster-Umgebung als anzubindendes System
+Zielsystem ist der \acl{PBS} in der Major-Version~4.
+Der \ac{PBS} ist eine Debian-basierte, von Proxmox bereitgestellte
+Backup-Lösung mit eigener Web-Oberfläche und Kommandozeilen-Werkzeugen
+(\texttt{proxmox-backup-manager}, \texttt{proxmox-backup-client}).
+Er ist nativ in \ac{PVE} integriert und kann dort direkt als Storage
+eingebunden werden.
+
+Anzubindendes System ist der bestehende \ac{PVE}-Cluster mit sechs
+Knoten (3$\times$ IBM/Lenovo, 3$\times$ Dell VxRail), auf dem ca.~60
+\acp{VM} sowie mehrere \acp{LXC} laufen.
+
+
+\subsection{Hardware und Storage-Architektur}
+\label{sec:HardwareStorage}
+Für den \ac{PBS} wird vorhandene Hardware nachgenutzt: ein
+\textbf{IBM System x3755} mit 32 Kernen (AMD Opteron~6220, 4 Sockel),
+32\,GB \ac{RAM} und 6$\times$4\,TB HDDs.
+Die Disks werden über einen Hardware-\ac{RAID}-Controller wie folgt
+organisiert:
+\begin{itemize}
+    \item \textbf{System:} \ac{RAID}\,1 für das Debian-/\ac{PBS}-
+          Betriebssystem (separate Disks).
+    \item \textbf{Datastore:} \ac{RAID}\,5 über 6$\times$4\,TB HDDs,
+          ergibt rund 20\,TB nutzbare Kapazität für den
+          \ac{PBS}-Datastore.
+\end{itemize}
+Diese Kapazität ist angesichts der aktuell ca.\ 6\,TB belegten
+Primärdaten und der durch \ac{PBS} eingesetzten Deduplizierung
+ausreichend dimensioniert.
+
+\subsubsection*{Bewusste Entscheidung gegen \acs{ZFS}}
+Ursprünglich war \ac{ZFS} als Dateisystem für den Datastore vorgesehen,
+da es Prüfsummen und Snapshots auf Dateisystem-Ebene mitbringt.
+Aufgrund des vorhandenen Hardware-\ac{RAID}-Controllers und der
+begrenzten \ac{RAM}-Ausstattung des Altsystems wird stattdessen ein
+klassisches Hardware-\ac{RAID} mit \texttt{ext4} als Dateisystem
+verwendet. Die Datenintegrität wird stattdessen durch die in \ac{PBS}
+integrierten Verify-Jobs sichergestellt.
+
+
+\subsection{Netzwerkarchitektur}
+\label{sec:Netzwerk}
+Die \ac{ODCF} verwendet vier separate \acp{VLAN}:
+\begin{itemize}
+    \item \emph{server}-\ac{VLAN} für regulären Management- und
+          Anwendungs-Traffic,
+    \item \emph{cluster}-\ac{VLAN} für die interne PVE-Cluster-
+          Kommunikation (Corosync etc.),
+    \item \emph{external}-\ac{VLAN} für nach außen exponierte Dienste,
+    \item dediziertes \emph{ceph}-\ac{VLAN} für den Storage-Traffic.
+\end{itemize}
+Der \ac{PBS} wird an das \emph{server}-\ac{VLAN} angebunden, um vom
+\ac{PVE}-Cluster aus erreichbar zu sein.
+Da die Backups über die regulären Hypervisor-Schnittstellen erfolgen,
+ist keine direkte Anbindung an das \emph{ceph}-\ac{VLAN} erforderlich;
+dadurch bleibt der Storage-Traffic von Primärdaten und Backups
+sauber getrennt.
+
+% TODO: ggfs. ein einfaches Netzwerkdiagramm (PlantUML) im Anhang
+% ergänzen.
 
 
 \subsection{Backup-Konzept}
 \label{sec:Backupkonzept}
-% TODO: hier das ausgearbeitete Backup-Konzept dokumentieren:
-%   - Klassifizierung der VMs/CTs (z.\,B. kritisch, normal, Test)
-%   - Backup-Frequenzen pro Klasse
-%   - Retention Policies pro Klasse
-%   - Verschlüsselung / Integritätsprüfung
-%   - Restore-Strategie
 
+\subsubsection*{Klassifizierung der virtuellen Maschinen}
+Die \acp{VM} und Container werden in zwei Klassen eingeteilt:
+\begin{itemize}
+    \item \textbf{Kritisch (\ac{SOP}-pflichtig):} produktive
+          Forschungs- und Infrastrukturdienste, deren Wiederherstellung
+          gemäß \acl{SOP} dokumentiert sein muss.
+    \item \textbf{Test:} temporäre \acp{VM} ohne produktive Bedeutung;
+          Sicherung mit deutlich geringerer Frequenz und Aufbewahrung.
+\end{itemize}
 
-\subsection{Netzwerk- und Storage-Architektur}
-\label{sec:NetzwerkStorage}
-% TODO: Architektur beschreiben:
-%   - Backup-VLAN und Firewall-Regeln
-%   - ZFS-Pool-Layout (RAID-Level, Disks, ARC, Special Devices)
-%   - Datastore-Struktur auf dem PBS
-% ggfs. ein Architektur-Diagramm im Anhang einfügen.
+\subsubsection*{Frequenz und Retention}
+Für die kritischen Systeme werden \textbf{zwei Backups pro Tag}
+durchgeführt; aufgehoben werden jeweils nur die letzten drei
+Sicherungen. Daraus ergibt sich in \ac{PBS}-Notation eine Prune-Regel
+mit \texttt{keep-last=3}.
+% TODO: nach Rücksprache mit Frank ggfs. ergänzende keep-daily /
+% keep-weekly / keep-monthly Werte definieren.
+
+Für Test-\acp{VM} werden geringere Frequenzen und kürzere Aufbewahrung
+angesetzt; konkrete Werte werden in der Implementierungsphase je
+\ac{VM}-Gruppe festgelegt.
+
+\subsubsection*{Restore-Strategie}
+Die Wiederherstellung erfolgt primär über die Web-Oberfläche des
+\ac{PVE}: einzelne Dateien können per \emph{File-Restore} extrahiert,
+ganze \acp{VM} oder Container direkt aus dem \ac{PBS}-Datastore
+zurückgespielt werden. Zusätzlich bleibt die bestehende
+\ac{TSM}-/Tape-Sicherung als zweite, langfristige Sicherungsebene
+erhalten.
 
 
 \subsection{Authentifizierung und Berechtigungen}
 \label{sec:AuthZ}
-% TODO: Konzept für Authentifizierung beschreiben:
-%   - PBS API-Token für PVE
-%   - lokale PBS-User vs. LDAP/AD
-%   - Berechtigungsmodell (wer darf was)
+Für den \ac{PBS} wird ein zweistufiges Authentifizierungskonzept
+verwendet:
+\begin{itemize}
+    \item Ein lokaler \texttt{root}-Account für die Initial-
+          konfiguration, Notfallzugriff und automatisierte interne
+          Aufgaben.
+    \item Anbindung an das \ac{DKFZ}-\ac{LDAP} für reguläre Admin-
+          User, die ihre persönlichen Konten verwenden.
+\end{itemize}
+Die Anbindung des \ac{PVE}-Clusters an den \ac{PBS} erfolgt nicht über
+einen interaktiven Benutzer, sondern über einen technischen
+\ac{API}-Token mit eng gefasstem Berechtigungs\-umfang
+(nur Backup-/Verify-Operationen auf dem dafür angelegten Datastore).
 
 
 \subsection{Maßnahmen zur Qualitätssicherung}
 \label{sec:QS}
-% TODO: Test- und Validierungsstrategie:
-%   - Backup-Jobs manuell auslösen
-%   - Restore-Tests einzelner VMs/CTs auf Test-Hypervisor
-%   - Verifikation der PBS-Datastore-Integrität (verify-jobs)
-%   - Monitoring/Benachrichtigung testen
+Die korrekte Funktion der Lösung wird durch folgende Maßnahmen
+abgesichert:
+\begin{itemize}
+    \item Manuelles Auslösen jedes neu angelegten Backup-Jobs nach
+          Einrichtung.
+    \item Restore-Tests auf einem Test-Hypervisor: sowohl einzelner
+          Dateien (File-Restore) als auch ganzer \acp{VM} bzw.\
+          Container.
+    \item Regelmäßige Verify-Jobs im \ac{PBS} zur Prüfung der
+          Datastore-Integrität.
+    \item Funktionsprüfung der E-Mail-Benachrichtigungen sowie der
+          Anbindung an \ac{CheckMK}.
+\end{itemize}
