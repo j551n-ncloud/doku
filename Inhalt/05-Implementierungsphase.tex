@@ -4,49 +4,97 @@
 
 \subsection{Beschaffung und Vorbereitung}
 \label{sec:Beschaffung}
-% TODO: dokumentieren:
-%   - Hardware-Bereitstellung
-%   - PBS-ISO und Installationsmedium vorbereiten
-%   - VLAN- und Firewall-Konfiguration mit dem Netzwerkteam
+Da als Hardware ein vorhandener IBM System x3755 nachgenutzt wird,
+entfällt eine externe Beschaffung. Die Vorbereitung umfasst:
+\begin{itemize}
+    \item Bereitstellung des Servers im Rechenzentrum der \ac{ODCF}.
+    \item Konfiguration des Hardware-\ac{RAID}-Controllers:
+          \ac{RAID}\,1 für das System, \ac{RAID}\,5 über 6$\times$4\,TB
+          HDDs für den Datastore.
+    \item Herunterladen des aktuellen \ac{PBS}-4-ISOs von Proxmox und
+          Vorbereitung eines bootfähigen Installationsmediums.
+    \item Abstimmung der Netzwerkkonfiguration (Anschluss an das
+          \emph{server}-\ac{VLAN}, Firewall-Freischaltungen zwischen
+          \ac{PVE}-Cluster und \ac{PBS}) mit dem Netzwerkteam des
+          \ac{DKFZ}.
+\end{itemize}
 
 
 \subsection{Installation des Proxmox Backup Servers}
 \label{sec:InstallationPBS}
-% TODO:
-%   - Installation von PBS auf der dedizierten Hardware
-%   - Grundkonfiguration (Hostname, Netzwerk, NTP, Updates)
-%   - Subscription/Repo-Konfiguration (no-subscription vs. enterprise)
+Die Installation erfolgt direkt vom \ac{PBS}-4-ISO. Nach Abschluss des
+geführten Installers wird das System wie folgt grundkonfiguriert:
+\begin{itemize}
+    \item Vergabe eines sprechenden Hostnamens und Eintrag im internen
+          \ac{DKFZ}-DNS.
+    \item Netzwerkkonfiguration entsprechend dem \emph{server}-
+          \ac{VLAN}.
+    \item Konfiguration des \texttt{pbs-no-subscription}-
+          Repositories, da keine Enterprise-Subscription beschafft
+          wird; anschließend vollständiges \texttt{apt}-Upgrade.
+    \item NTP-Synchronisation gegen die internen Zeitserver.
+\end{itemize}
+
+% TODO: konkrete Hostnamen / IPs / DNS-Einträge ergänzen, sobald
+% vergeben.
 
 
 \subsection{Konfiguration des Datastores}
 \label{sec:Datastore}
-% TODO:
-%   - ZFS-Pool anlegen (Layout, Kompression, atime)
-%   - Datastore in PBS einrichten
-%   - Quotas / Aufbewahrung konfigurieren
-%   - ggfs. Verify-Jobs anlegen
+Auf dem \ac{RAID}\,5-Volume wird ein \texttt{ext4}-Dateisystem
+angelegt und unter \texttt{/mnt/datastore/pbs} eingehängt.
+Anschließend wird im \ac{PBS} ein Datastore angelegt, der auf dieses
+Verzeichnis verweist.
+
+Pro Datastore werden zudem regelmäßige Verify-Jobs angelegt, die in
+einem festen Intervall (z.\,B.\ wöchentlich) die Prüfsummen aller
+gespeicherten Chunks gegen die Metadaten verifizieren.
+
+% TODO: konkrete CLI-Befehle (z.\,B. proxmox-backup-manager
+% datastore create ...) als Listing einfügen, sobald die finalen
+% Werte feststehen.
 
 
 \subsection{Integration in den PVE-Cluster}
 \label{sec:PVEIntegration}
-% TODO:
-%   - PBS als Storage in PVE eintragen
-%   - API-Token erstellen und Fingerprint hinterlegen
-%   - Test-Backup einer Test-VM
+Für die Anbindung des \ac{PBS} an den \ac{PVE}-Cluster wird ein
+dedizierter \ac{API}-Token im \ac{PBS} erstellt. Dieser Token erhält
+ausschließlich die für Backups und Verifizierung notwendigen
+Berechtigungen auf dem entsprechenden Datastore.
+
+Im \ac{PVE} wird der \ac{PBS} anschließend als Storage vom Typ
+\emph{Proxmox Backup Server} hinzugefügt; dabei werden
+Datastore-Name, \ac{API}-Token sowie der TLS-Fingerprint des
+\ac{PBS}-Zertifikats hinterlegt.
+Ein Test-Backup einer unkritischen \ac{VM} verifiziert die korrekte
+Anbindung, bevor produktive Jobs aufgesetzt werden.
 
 
 \subsection{Einrichtung der Backup-Jobs}
 \label{sec:BackupJobs}
-% TODO:
-%   - Backup-Jobs pro VM-/CT-Gruppe anlegen
-%   - Zeitpläne (Cron-artige Schedules)
-%   - Retention Policies / Prune-Regeln
-%   - ggfs. Drosselung der Bandbreite (Bandwidth Limits)
+Die produktiven Backup-Jobs werden im \ac{PVE} pro \ac{VM}-Klasse
+angelegt:
+\begin{itemize}
+    \item \textbf{Kritisch (\ac{SOP}-pflichtig):} zwei Sicherungen pro
+          Tag, Prune-Regel \texttt{keep-last=3}.
+    \item \textbf{Test:} reduzierte Frequenz und Aufbewahrung; genaue
+          Werte werden je \ac{VM} festgelegt.
+\end{itemize}
+Die Jobs werden zunächst manuell ausgelöst, um Laufzeiten und
+Bandbreitenbedarf zu beobachten; anschließend werden sie auf den
+geplanten Zeitplan umgestellt.
 
 
 \subsection{Monitoring und Benachrichtigungen}
 \label{sec:Monitoring}
-% TODO:
-%   - E-Mail-Benachrichtigungen für Backup-/Verify-Jobs konfigurieren
-%   - Integration in vorhandenes Monitoring (z.\,B. Icinga/Prometheus),
-%     falls vorhanden
+Für Fehlerbenachrichtigungen wird der eingebaute E-Mail-Mechanismus
+des \ac{PBS} konfiguriert (SMTP-Relay des \ac{DKFZ}).
+Zusätzlich wird der Server in das bestehende \ac{CheckMK}-Monitoring
+der \ac{ODCF} aufgenommen.
+Überwacht werden insbesondere:
+\begin{itemize}
+    \item Erreichbarkeit und Auslastung des \ac{PBS}.
+    \item Belegung des Datastores (Vermeidung eines vollen Pools).
+    \item Status der Backup- und Verify-Jobs.
+    \item \ac{RAID}-Status des Hardware-Controllers.
+\end{itemize}
