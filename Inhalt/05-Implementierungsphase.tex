@@ -25,18 +25,19 @@ entfällt eine externe Beschaffung. Die Vorbereitung umfasst:
 Die Installation erfolgt direkt vom \ac{PBS}-4-ISO. Nach Abschluss des
 geführten Installers wird das System wie folgt grundkonfiguriert:
 \begin{itemize}
-    \item Vergabe eines sprechenden Hostnamens und Eintrag im internen
-          \ac{DKFZ}-DNS.
-    \item Netzwerkkonfiguration entsprechend dem \emph{server}-
-          \ac{VLAN}.
+    \item Hostname \texttt{odcf-fs04} mit der IP \texttt{10.131.196.78}
+          im \emph{server}-\ac{VLAN}; die Web-Oberfläche ist unter
+          \url{https://10.131.196.78:8007} erreichbar.
+    \item Eintrag im internen \ac{DKFZ}-DNS unter dem o.\,g.\
+          Hostnamen.
     \item Konfiguration des \texttt{pbs-no-subscription}-
           Repositories, da keine Enterprise-Subscription beschafft
           wird; anschließend vollständiges \texttt{apt}-Upgrade.
-    \item NTP-Synchronisation gegen die internen Zeitserver.
+    \item NTP-Synchronisation gegen die internen Zeitserver des
+          \ac{DKFZ}.
 \end{itemize}
-
-% TODO: konkrete Hostnamen / IPs / DNS-Einträge ergänzen, sobald
-% vergeben.
+Tatsächlicher Zeitaufwand für Installation und Grundkonfiguration:
+ca.~5\,h.
 
 
 \subsection{Konfiguration des Datastores}
@@ -55,6 +56,19 @@ gespeicherten Chunks gegen die Metadaten verifizieren.
 % Werte feststehen.
 
 
+\subsection{Anbindung an das DKFZ-LDAP}
+\label{sec:LDAPAnbindung}
+Für die Anmeldung regulärer Administratorinnen und Administratoren
+wird der \ac{PBS} an das \ac{DKFZ}-\ac{LDAP} angebunden.
+Dazu wird im \ac{PBS} ein \ac{LDAP}-Realm angelegt; bestehende
+\ac{LDAP}-Benutzer können sich anschließend mit ihren persönlichen
+Konten an der Web-Oberfläche anmelden. Der lokale \texttt{root}-
+Account bleibt für die Initialkonfiguration und Notfallzugriffe
+erhalten.
+
+Tatsächlicher Zeitaufwand für die LDAP-Einrichtung: ca.~0{,}5\,h.
+
+
 \subsection{Integration in den PVE-Cluster}
 \label{sec:PVEIntegration}
 Für die Anbindung des \ac{PBS} an den \ac{PVE}-Cluster wird ein
@@ -63,11 +77,14 @@ ausschließlich die für Backups und Verifizierung notwendigen
 Berechtigungen auf dem entsprechenden Datastore.
 
 Im \ac{PVE} wird der \ac{PBS} anschließend als Storage vom Typ
-\emph{Proxmox Backup Server} hinzugefügt; dabei werden
-Datastore-Name, \ac{API}-Token sowie der TLS-Fingerprint des
-\ac{PBS}-Zertifikats hinterlegt.
+\emph{Proxmox Backup Server} hinzugefügt; dabei werden Server-Adresse
+(\texttt{odcf-fs04} / \texttt{10.131.196.78}), Datastore-Name,
+\ac{API}-Token sowie der TLS-Fingerprint des \ac{PBS}-Zertifikats
+hinterlegt.
 Ein Test-Backup einer unkritischen \ac{VM} verifiziert die korrekte
 Anbindung, bevor produktive Jobs aufgesetzt werden.
+
+Tatsächlicher Zeitaufwand für die PVE-Anbindung: ca.~0{,}5\,h.
 
 
 \subsection{Einrichtung der Backup-Jobs}
