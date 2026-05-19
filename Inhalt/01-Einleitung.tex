@@ -10,8 +10,11 @@ Spitzenforschung im Bereich der Krebsentstehung und -bekämpfung.
 Innerhalb des DKFZ stellt die \ac{ODCF} (Omics IT and Data Management Core
 Facility) den Forschungsgruppen eine komplexe IT-Infrastruktur zur
 Verarbeitung großer Mengen genomischer Daten bereit.
-Dazu zählen unter anderem Hochleistungsrechner, Storage-Systeme sowie eine
-Virtualisierungsinfrastruktur auf Basis von \ac{PVE}.
+Dazu zählen unter anderem ein Hochleistungs-Compute-Cluster mit dem
+Scheduling-System \ac{LSF} für die Verarbeitung rechenintensiver
+Analyse-Workloads, Storage-Systeme sowie ein separater
+Virtualisierungs-Cluster auf Basis von \ac{PVE}, auf dem kritische
+Infrastruktur- und Forschungsdienste betrieben werden.
 
 \subsection{Projektumfeld}
 \label{sec:Projektumfeld}
@@ -29,18 +32,26 @@ relevant:
 \end{itemize}
 
 \subsubsection{Ist-Situation}
-Die \ac{ODCF} betreibt eine \ac{PVE}-Cluster-Umgebung, die eine Vielzahl
-\acp{VM} und \acp{LXC} für Forschungs- und Infrastrukturaufgaben
-bereitstellt.
-Eine grundlegende Backup-Infrastruktur ist vorhanden: Sicherungen der
-virtuellen Maschinen werden aktuell auf Hypervisor-Ebene als Snapshots
-erstellt und anschließend auf Tape (Bandlaufwerk) gesichert.
+Die \ac{ODCF} betreibt einen \ac{PVE}-Cluster, der eine Vielzahl
+\acp{VM} und \acp{LXC} mit kritischen Diensten für Forschungs- und
+Infrastrukturaufgaben bereitstellt.
+Eine grundlegende Backup-Infrastruktur ist vorhanden, jedoch
+heterogen aufgebaut: Die virtuellen Maschinen und Container werden
+lokal auf einem \ac{Ceph}-\ac{RBD}-Pool gesichert, zusätzlich werden
+Daten einzelner \acp{VM} per \texttt{rsync} auf einen separaten
+Backup-Server übertragen und von dort auf Tape (Bandlaufwerk) ausgelagert.
 Ein zentralisierter, dedizierter \acl{PBS} für die Verwaltung, Überwachung
 und effiziente inkrementelle Datensicherung aller \acp{VM} und Container
 existiert jedoch nicht.
-Dies führt zu eingeschränkter Wiederherstellbarkeit, fehlender zentraler
-Verwaltung der Backup-Jobs sowie begrenzten Möglichkeiten zur Überprüfung
-der Backup-Integrität.
+Die Speicherung der Sicherungen auf dem produktiven \ac{Ceph}-Cluster
+ist zudem nicht ideal, da Primär- und Sicherungsdaten dadurch auf
+derselben Storage-Infrastruktur liegen.
+Ziel ist daher der Wechsel auf eine dedizierte Backup-Lösung, die
+unabhängig vom \ac{Ceph}-Cluster betrieben wird und eine einheitliche,
+zentral verwaltete Sicherung aller virtualisierten Dienste ermöglicht.
+Die bisherige Lösung führt zu eingeschränkter Wiederherstellbarkeit,
+fehlender zentraler Verwaltung der Backup-Jobs sowie begrenzten
+Möglichkeiten zur Überprüfung der Backup-Integrität.
 
 \subsection{Projektziel}
 \label{sec:Projektziel}
