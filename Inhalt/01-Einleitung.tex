@@ -39,7 +39,8 @@ Eine grundlegende Backup-Infrastruktur ist vorhanden, jedoch
 heterogen aufgebaut: Die virtuellen Maschinen und Container werden
 lokal auf einem \ac{Ceph}-\ac{RBD}-Pool gesichert, zusätzlich werden
 Daten einzelner \acp{VM} per \texttt{rsync} auf einen separaten
-Backup-Server übertragen und von dort auf Tape (Bandlaufwerk) ausgelagert.
+Backup-Server übertragen und von dort über \ac{TSM} auf Tape
+(Bandlaufwerk) ausgelagert.
 Ein zentralisierter, dedizierter \acl{PBS} für die Verwaltung, Überwachung
 und effiziente inkrementelle Datensicherung aller \acp{VM} und Container
 existiert jedoch nicht.
