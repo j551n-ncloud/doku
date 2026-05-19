@@ -1,99 +1,49 @@
 % !TEX root = ../Projektdokumentation.tex
-\section{Analysephase} 
+\section{Analysephase}
 \label{sec:Analysephase}
 
 
-\subsection{Ist-Analyse} 
+\subsection{Ist-Analyse}
 \label{sec:IstAnalyse}
-Dieser Abschnitt erhält Auszüge aus dem Projektantrag, um eine Übersicht über die aktuelle Situation des Systems zu geben.
+% TODO: aktuellen Zustand der Backup-Infrastruktur der ODCF detailliert
+% beschreiben:
+%   - bestehender PVE-Cluster (Anzahl Knoten, Storage, Netzwerk)
+%   - bestehende Tape-Sicherung (Frequenz, Aufbewahrung, Restore-Prozess)
+%   - Anzahl und ungefähre Größe der zu sichernden VMs und Container
+%   - bekannte Schwachstellen (z.\,B. keine zentralen Backup-Jobs, kein
+%     Monitoring, langsamer Restore)
 
-Der \ac{ECM} besteht aus den zwei Komponenten \ac{ECR} und \ac{ECN}.
-Aktuell werden Aufgaben im \ac{ECN} getrackt, dies ist so von Windchill eigentlich nicht vorgesehen.
-In Zukunft sollen Aufgaben deswegen in einem \ac{ECA} abgebildet werden.
-Dies führt dazu, dass die konkreten Implementierungsaufgaben logisch von der Planungsphase (ECN) abgegrenzt wird, was es dem Change Admin einfacher macht, einen Überblick über die aktuelle Situation zu bekommen.
-Die ECA soll auch das manuelle Erstellen des Erhöhungsantrags automatisieren.
 
-Im \ac{ECM} von \ac{AWS} sollen neue Abteilungen berücksichtigt werden.
-Dafür müssen diese dem bestehenden \ac{ECR} und \ac{ECN} hinzugefügt werden.
+\subsection{Anforderungsanalyse}
+\label{sec:Anforderungsanalyse}
+% TODO: funktionale und nicht-funktionale Anforderungen aus Antrag
+% ableiten und strukturieren (siehe Punkt 2.2 / 2.3 des Antrags).
 
-Bei der Erstellung der \acsp{ECR} werden zudem Startparameter abgefragt.
-Das sind Boolean-Attribute, die die automatische Auswahl von Abteilungen beeinflussen.
-Dies ist eine Erleichterung für den Change Admin, da somit nicht jedes Mal alle Abteilungen manuell ausgefüllt werden müssen.
-Der \ac{ECR} ist für alle Organisationen gleich.
-Allerdings benötigen nicht alle Organisationen alle Attribute, die auf dem \ac{ECR} definiert wurden.
-Dafür wurde von einem anderen Softwareunternehmen eine XML-Datei entwickelt, die nicht benötigte Attribute von einer Organisation vom UI versteckt.
-Es sollen neue Boolean-Attribute definiert werden, die nur für die \ac{AWS} Organisationen sichtbar sind.
-Dazu müssen diese dem \ac{ECR} hinzugefügt werden und die in der XML-Datei für die anderen Organisationen versteckt werden.
 
-Um den Change Admin bei der Auswahl der beteiligten Abteilungen zu unterstützen, wurde von einem anderen Softwareunternehmen eine benutzerdefinierte JSP Seite entwickelt, die die Abteilungen in einer Liste darstellt.
-Der Change Admin kann dann über Checkboxen Abteilungen für den Prozess entfernen oder hinzufügen.
-Dieses Pop-Up-Fenster wurde von einem anderen Softwareunternehmen in einem bereits abgeschlossenem Projekt entwickelt.
-Allerdings bringt diese Lösung einige Probleme mit sich.
-Zum einen verzögern Customizations, die von den OOTB-Windchill-Konfigurationen abweichen, oft größere Windchill Upgrades, da nicht garantiert ist, dass die Customization auch in zukünftigen Versionen funktioniert.
-Zum anderen können nur Administratoren mit Zugriff zur virtuellen Maschine Änderungen an der Struktur des Pop-Up-Fensters vornehmen (\zB hinzufügen oder entfernen von Abteilungen), da die Customization als JSP-Datei auf dem Server liegt.
-Um diese beiden Probleme zu beseitigen, soll hier auf eine Lösung zurückgegriffen werden, die bereits von Haus aus in Windchill implementiert ist, nämlich den 'Set Up Participants'-Tab.
-Da es sich um eine OOTB-Funktion von Windchill handelt, ist es unwahrscheinlich, dass es damit Probleme bei einem Upgrade gibt.
-Außerdem können Windchill-Administratoren über den Workflow Template Editor Änderungen an den Abteilungen vornehmen, ohne Zugriff auf die VM zu benötigen.
+\subsection{Im Projekt zu treffende Entscheidungen}
+\label{sec:Entscheidungen}
+% TODO: hier die Entscheidungen aus Punkt 2.3 des Antrags behandeln:
+%   - Hardware-Auswahl (CPU, RAM, Storage-Kapazität)
+%   - Backup-Strategie (Vollbackup, inkrementell, differenziell)
+%   - Retention Policies (täglich, wöchentlich, monatlich)
+%   - Netzwerkanbindung (dediziertes Backup-VLAN vs. bestehende Struktur)
+%   - Authentifizierungskonzept (lokale PBS-User vs. LDAP/AD)
+% Bewertung der Alternativen ggfs. mit Nutzwertanalyse.
 
-Zudem sind die aktuellen Workflowprozesse sehr unstrukturiert dargestellt und kaum dokumentiert.
-Dies macht es schwieriger für Entwickler, die nicht mit den Prozessen vertraut sind, Erweiterungen oder Änderungen vorzunehmen.
+
 \subsection{Wirtschaftlichkeitsanalyse}
 \label{sec:Wirtschaftlichkeitsanalyse}
+% TODO: Wirtschaftlichkeit darstellen. Mögliche Argumente:
+%   - keine Lizenzkosten (PBS Open Source)
+%   - Hardware-Kosten einmalig
+%   - Zeitersparnis bei Restores
+%   - Risikoreduktion durch zusätzliche Backup-Ebene
+% Kostenaufstellung ggfs. in Tabellen/Kostenaufstellung.tex ergänzen.
 
-Da die exakten Gesamtkosten des Projekts nicht offenbart wurden, gehen wir von einem empfohlenen Festpreis von 8.000 € aus.
-Der Anteil dieser spezifischen Projektarbeit am Gesamtprojekt wird auf 80 \% geschätzt.
-Daher kalkulieren wir einen Umsatz von 6.400 € für die Umsetzung gemäß der hier beschriebenen Aufgabenstellung.
 
-\subsubsection{Projektkosten}
-\subsubsection*{Ausbildungsvergütung}
-Hier haben wir ein Bruttoentgelt von 1080 €.
-
-\subsubsection*{Arbeitgeberanteil Sozialversicherung}
-Die Arbeitgeber-Sozialabgaben betragen 199,92 € ohne die Unfallversicherung.
-Für die Unfallversicherung liegen mir keine Zahlen vor, auch eine Internetrecherche half nicht weiter.
-Deswegen wurde mir von der Personalabteilung geraten mit 20 € pro Monat zu rechnen.
-
-\subsubsection*{Abstimmungskosten}
-Der Projektleiter von Arsandis führte mehrere interne Abstimmungsgespräche mit mir zum Fortschritt des Projekts durch.
-Diese Gespräche hatten das Ziel sicherzustellen, dass die Qualitätsanforderungen erfüllt werden und die Umsetzung auf bewährten Methoden basiert, während die Lösung sich gut in den Gesamtentwurf des Kundensystems einfügt.
-Zusätzlich nahm der Projektleiter, wie in anderen Teilen des Projekts auch, an Meetings mit dem Kunden teil.
-Konkrete Zahlen dafür sind für mich nicht einsehbar.
-Es wurde mir geraten, mit einem festen Stundensatz von 100 € zu kalkulieren.
-
-\subsubsection*{Gemeinkosten}
-Intern verwenden wir keinen Gemeinkostenfaktor.
-Ungeachtet dessen müssen wir jedoch sicherstellen, dass unsere Gemeinkosten gedeckt werden.
-Aus diesem Grund werde ich eine weitere Annahme treffen, um eine standardmäßige Wirtschaftlichkeitsanalyse durchzuführen, da mir die genauen Zahlen nicht zugänglich sind.
-\begin{itemize}
-	\item Energiekosten: Heizung, Strom = 15 \%
-	\item Mietkosten: Büroräume = 15 \%
-	\item Ausrüstungskosten: Clients, Monitore, Server, Peripherie, Lizenzen = 10 \%
-	\item Gehälter für Marketingabteilung: 10 \%
-	\item Gehälter für Personalabteilung: 10 \%
-\end{itemize}
-
-Das führt uns zu einem Gemeinkostenzuschlag von 60 \%
-
-\subsubsection*{Gesamtkosten}
-Hier werden die Kosten eines Arbeitstages durch das Herunterbrechen des Jahresverdiensts auf einen Tag ermittelt.
-\citet{ArbeitstageImJahr}{Für das Jahr 2023 wurden 251 Arbeitstage angenommen}.
-
-Kosten für Arbeitstage des Prüflings = 12960 € / (251 Arbeitstage - 24 Urlaubstage) * 10 €/Stunde * 1,60 (Gemeinkostenzuschlag) = 914 €
-
-Kosten für Abstimmungsgespräche = Stundensatz * Anzahl Stunden * Gemeinkostenzuschlag = 100 € * 6 * 1,60 = 960 €
-
-Gesamtkosten = Kosten für Abstimmungsgespräche + Kosten für Arbeitstage des Prüflings = 914 € + 960 € = 1874 €
-
-\subsubsection{Amortisation}
-Der Gewinn wird errechnet indem die Gesamtkosten vom Umsatz abgezogen werden.
-
-Gewinn = Umsatz - Gesamtkosten = 6.400 € - 1.874 € = 4526 €
-
-\subsection{Lastenheft/Pflichtenheft}
+\subsection{Lasten-/Pflichtenheft}
 \label{sec:Lastenheft}
-Zu Beginn des Projekts hat der Kunde bereits einen Entwurf des Lastenhefts ausgearbeitet, welcher zusammen mit mir und dem Projektleiter von Arsandis weiter angepasst wurde.
-Dort sind alle Anforderungen des Auftraggebers für die Anpassungen der aktuellen Anwendung enthalten.
-Da sich die Kunden gut mit Windchill und seinen Funktionalitäten auskennen, haben sie bereits Lösungsvorschläge eingearbeitet.
-Darum kann man sagen, dass es sich bei diesem Dokument um einen Hybriden aus Lastenheft und Pflichtenheft handelt.
-Aus diesem Grund wurde vom Entwickler kein seperates Pflichtenheft mehr angefertigt.
-Im \Anhang{app:Lastenheft} befindet sich ein Auszug aus dem Lastenheft.
+% TODO: Auszug aus Lastenheft im Anhang ergänzen
+% (siehe Anhang/AnhangLastenheft.tex).
+% Falls kein separates Lastenheft existiert: kurze Begründung und
+% Verweis auf die Anforderungen aus dem Projektantrag.
