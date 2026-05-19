@@ -11,6 +11,9 @@ entfällt eine externe Beschaffung. Die Vorbereitung umfasst:
     \item Konfiguration des Hardware-\ac{RAID}-Controllers:
           \ac{RAID}\,1 für das System, \ac{RAID}\,5 über 6$\times$4\,TB
           HDDs für den Datastore.
+    \item Einbau einer Netzwerk-\ac{SFP}-Karte mit 2$\times$10\,GbE
+          und Bündelung der beiden Ports per \ac{LACP} zu einem
+          logischen Interface (Aufwand: ca.~10\,min).
     \item Herunterladen des aktuellen \ac{PBS}-4-ISOs von Proxmox und
           Vorbereitung eines bootfähigen Installationsmediums.
     \item Abstimmung der Netzwerkkonfiguration (Anschluss an das
