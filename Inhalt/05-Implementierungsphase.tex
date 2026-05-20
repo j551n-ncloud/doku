@@ -164,8 +164,10 @@ geplanten Zeitplan umgestellt.
 \label{sec:Monitoring}
 Für Fehlerbenachrichtigungen wird der eingebaute E-Mail-Mechanismus
 des \ac{PBS} konfiguriert (SMTP-Relay des \ac{DKFZ}).
-Zusätzlich wird der Server in das bestehende \ac{CheckMK}-Monitoring
-der \ac{ODCF} aufgenommen.
+Zusätzlich wird der Server in das bestehende \ac{Prometheus}-
+Monitoring der \ac{ODCF} aufgenommen; der \ac{PBS} stellt dafür
+einen nativen Metrik-Endpunkt bereit, der per \texttt{node\_exporter}
+bzw.\ \texttt{proxmox-backup-exporter} angebunden wird.
 Überwacht werden insbesondere:
 \begin{itemize}
     \item Erreichbarkeit und Auslastung des \ac{PBS}.
