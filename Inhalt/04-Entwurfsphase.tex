@@ -134,16 +134,9 @@ einen interaktiven Benutzer, sondern über einen technischen
 
 \subsection{Maßnahmen zur Qualitätssicherung}
 \label{sec:QS}
-Die korrekte Funktion der Lösung wird durch folgende Maßnahmen
-abgesichert:
-\begin{itemize}
-    \item Manuelles Auslösen jedes neu angelegten Backup-Jobs nach
-          Einrichtung.
-    \item Restore-Tests auf einem Test-Hypervisor: sowohl einzelner
-          Dateien (File-Restore) als auch ganzer \acp{VM} bzw.\
-          Container.
-    \item Regelmäßige Verify-Jobs im \ac{PBS} zur Prüfung der
-          Datastore-Integrität.
-    \item Funktionsprüfung der E-Mail-Benachrichtigungen sowie der
-          Anbindung an \ac{Prometheus}.
-\end{itemize}
+Zur Absicherung der Lösung werden nach der Einrichtung jeder neue
+Backup-Job manuell ausgelöst, Restore-Tests auf einem Test-Hypervisor
+sowohl für einzelne Dateien als auch für ganze \acp{VM} bzw.\
+Container durchgeführt, regelmäßige Verify-Jobs im \ac{PBS} angelegt
+und die Anbindung an \ac{Prometheus} sowie der E-Mail-Versand auf
+Funktion geprüft.
