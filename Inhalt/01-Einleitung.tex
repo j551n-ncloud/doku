@@ -36,20 +36,25 @@ Die \ac{ODCF} betreibt einen \ac{PVE}-Cluster, der eine Vielzahl
 \acp{VM} und \acp{LXC} mit kritischen Diensten für Forschungs- und
 Infrastrukturaufgaben bereitstellt.
 Eine grundlegende Backup-Infrastruktur ist vorhanden, jedoch
-heterogen aufgebaut: Die virtuellen Maschinen und Container werden
-lokal auf einem \ac{Ceph}-\ac{RBD}-Pool gesichert, zusätzlich werden
-Daten einzelner \acp{VM} per \texttt{rsync} auf einen separaten
-Backup-Server übertragen und von dort über \ac{TSM} auf Tape
-(Bandlaufwerk) ausgelagert.
+heterogen aufgebaut: Sicherungen der \acp{VM} und Container werden
+auf den \emph{lokalen} Storages der älteren Hypervisor-Knoten
+abgelegt; zusätzlich werden Daten einzelner \acp{VM} per
+\texttt{rsync} auf einen separaten Backup-Server übertragen und von
+dort über \ac{TSM} auf Tape (Bandlaufwerk) ausgelagert.
+Die neueren Dell-VxRail-Knoten besitzen jedoch keinen lokalen
+Storage, sodass für diese Hypervisor keine lokalen Sicherungen
+möglich sind.
 Ein zentralisierter, dedizierter \acl{PBS} für die Verwaltung, Überwachung
 und effiziente inkrementelle Datensicherung aller \acp{VM} und Container
 existiert jedoch nicht.
-Die Speicherung der Sicherungen auf dem produktiven \ac{Ceph}-Cluster
+Die Speicherung der Sicherungen auf den produktiven Hypervisor-Knoten
 ist zudem nicht ideal, da Primär- und Sicherungsdaten dadurch auf
-derselben Storage-Infrastruktur liegen.
+derselben Infrastruktur liegen und die VxRail-Knoten gänzlich
+ausgeschlossen sind.
 Ziel ist daher der Wechsel auf eine dedizierte Backup-Lösung, die
-unabhängig vom \ac{Ceph}-Cluster betrieben wird und eine einheitliche,
-zentral verwaltete Sicherung aller virtualisierten Dienste ermöglicht.
+unabhängig vom \ac{Ceph}-Cluster sowie vom lokalen Storage der
+Hypervisor betrieben wird und eine einheitliche, zentral verwaltete
+Sicherung aller virtualisierten Dienste ermöglicht.
 Die bisherige Lösung führt zu eingeschränkter Wiederherstellbarkeit,
 fehlender zentraler Verwaltung der Backup-Jobs sowie begrenzten
 Möglichkeiten zur Überprüfung der Backup-Integrität.
@@ -88,14 +93,17 @@ Integritätsprüfung und Benachrichtigung über fehlgeschlagene Jobs.
 
 \subsection{Projektabgrenzung}
 \label{sec:Projektabgrenzung}
-Im Rahmen des Abschlussprojekts werden ausschließlich der \acl{PBS} und
-seine Anbindung an die bestehende \ac{PVE}-Umgebung der \ac{ODCF}
-betrachtet.
-Die bestehende Tape-basierte Sicherung bleibt parallel in Betrieb und
-wird durch das Projekt nicht abgelöst.
-Themen wie Off-Site-Replikation des \ac{PBS}-Datastores, Desaster-Recovery-
-Konzepte über das Rechenzentrum hinaus oder die produktive Migration aller
-Forschungsdienste sind nicht Teil dieses Projekts.
+Im Rahmen des Abschlussprojekts wird ausschließlich eine
+\textbf{Blueprint-Testinstanz} des \acl{PBS} samt Anbindung an die
+bestehende \ac{PVE}-Umgebung der \ac{ODCF} aufgebaut.
+Diese Blueprint-Instanz dient dem \ac{ODCF}-Team als Vorlage für
+einen späteren produktiven \ac{PBS}, ersetzt die bisherigen
+Sicherungen aber nicht. Sowohl die lokalen Hypervisor-Backups als
+auch die \ac{TSM}-/Tape-Sicherung bleiben unverändert in Betrieb.
+Themen wie der produktive Rollout des \ac{PBS}, Off-Site-Replikation
+des Datastores, Disaster-Recovery-Konzepte über das Rechenzentrum
+hinaus oder die produktive Migration aller Forschungsdienste sind
+nicht Teil dieses Projekts.
 Ebenfalls außerhalb des Umfangs liegt die Anpassung der einzelnen
 Anwendungen innerhalb der \acp{VM}.
 
