@@ -74,45 +74,24 @@ sauber getrennt.
 
 \subsection{Backup-Konzept}
 \label{sec:Backupkonzept}
-
-\subsubsection*{Klassifizierung der virtuellen Maschinen}
 Die \acp{VM} und Container werden in zwei Klassen eingeteilt:
-\begin{itemize}
-    \item \textbf{Kritisch (\ac{SOP}-pflichtig):} produktive
-          Forschungs- und Infrastrukturdienste, deren Wiederherstellung
-          gemäß \acl{SOP} dokumentiert sein muss.
-    \item \textbf{Test:} temporäre \acp{VM} ohne produktive Bedeutung;
-          Sicherung mit deutlich geringerer Frequenz und Aufbewahrung.
-\end{itemize}
+\textbf{kritische} (\ac{SOP}-pflichtige Forschungs- und Infrastruktur-
+dienste) und \textbf{Test}-Systeme. Beide Klassen werden zweimal
+täglich gesichert; aufgehoben werden jeweils nur die drei letzten
+Sicherungen, in \ac{PBS}-Notation \texttt{keep-last=3}.
 
-\subsubsection*{Frequenz und Retention}
-Sowohl für die kritischen Systeme als auch für die Test-\acp{VM}
-werden \textbf{zwei Backups pro Tag} durchgeführt; aufgehoben
-werden jeweils nur die letzten drei Sicherungen.
-Daraus ergibt sich in \ac{PBS}-Notation eine Prune-Regel mit
-\texttt{keep-last=3}.
+Restores erfolgen primär über die \ac{PVE}-Weboberfläche -- per
+\emph{File-Restore} für einzelne Dateien oder direkt aus dem
+\ac{PBS}-Datastore für ganze \acp{VM} bzw.\ Container. Die bestehende
+\ac{TSM}-/Tape-Sicherung bleibt als zweite Sicherungsebene für den
+\ac{PBS}-Host selbst erhalten.
 
-\subsubsection*{Restore-Strategie}
-Die Wiederherstellung erfolgt primär über die Web-Oberfläche des
-\ac{PVE}: einzelne Dateien können per \emph{File-Restore} extrahiert,
-ganze \acp{VM} oder Container direkt aus dem \ac{PBS}-Datastore
-zurückgespielt werden. Zusätzlich bleibt die bestehende
-\ac{TSM}-/Tape-Sicherung als zweite, langfristige Sicherungsebene
-für den \ac{PBS}-Host selbst erhalten.
-
-\subsubsection*{Bandbreite und Verifikation}
-Die Übertragung zwischen \ac{PVE}-Cluster und \ac{PBS} erfolgt über
-das mit \ac{LACP} gebündelte 2$\times$10\,GbE-Interface des \ac{PBS}.
-Ein zusätzliches Bandbreitenlimit auf Applikationsebene ist nicht
-vorgesehen.
-
-Die Integrität des Datastores wird durch wöchentliche Verify-Jobs
-sichergestellt, die alle gespeicherten Chunks gegen die hinterlegten
-Prüfsummen vergleichen.
-
-Eine clientseitige Verschlüsselung der Backups ist nicht Teil dieses
-Projekts, da der \ac{PBS} innerhalb des \ac{DKFZ}-Netzes betrieben
-wird und der Datastore nur intern erreichbar ist.
+Die Übertragung läuft über das mit \ac{LACP} gebündelte
+2$\times$10\,GbE-Interface; ein zusätzliches Bandbreitenlimit ist
+nicht vorgesehen. Die Datastore-Integrität wird durch wöchentliche
+Verify-Jobs sichergestellt. Eine clientseitige Verschlüsselung ist
+nicht Teil dieses Projekts, da der \ac{PBS} ausschließlich
+innerhalb des \ac{DKFZ}-Netzes erreichbar ist.
 
 
 \subsection{Authentifizierung und Berechtigungen}
