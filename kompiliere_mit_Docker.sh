@@ -107,6 +107,22 @@ else
   echo "Mermaid werden nicht kompiliert"
 fi
 
+# SVG-Bilder in Bilder/ vor dem LaTeX-Lauf zu PDFs konvertieren
+# (z.B. cabling*.svg aus NetBox). Benötigt Inkscape im PATH.
+if command -v inkscape >/dev/null 2>&1; then
+  shopt -s nullglob
+  for s in "${ROOT_DIR}/Bilder"/*.svg; do
+    pdf="${s%.svg}.pdf"
+    if [ ! -f "$pdf" ] || [ "$s" -nt "$pdf" ]; then
+      echo "Konvertiere $s -> $pdf"
+      inkscape --export-filename="$pdf" "$s" || { echo "inkscape fehlgeschlagen für $s"; exit 1; }
+    fi
+  done
+  shopt -u nullglob
+else
+  echo "Hinweis: inkscape nicht im PATH; SVGs in Bilder/ werden nicht konvertiert."
+fi
+
 # LaTeX mit Docker (zweimal wie im Original)
 mkdir -p "${OUTDIR}"
 

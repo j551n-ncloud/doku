@@ -16,22 +16,42 @@ Brutto-Kapazität von rund 44\,TB eingesetzt, von denen aktuell ca.\
 
 Die bestehende Sicherung ist heterogen aufgebaut:
 \begin{itemize}
-    \item Sicherungen der \acp{VM} und Container liegen auf einem
-          \ac{Ceph}-\ac{RBD}-Pool, also auf derselben Storage-
-          Infrastruktur wie die Primärdaten.
+    \item Sicherungen der \acp{VM} und Container werden auf den
+          \emph{lokalen} Storages der älteren Hypervisor-Knoten
+          abgelegt. Die neueren Dell-VxRail-Knoten besitzen
+          \textbf{keinen} lokalen Storage; für die dort laufenden
+          \acp{VM} gibt es daher keine lokale Sicherungsmöglichkeit.
     \item Ausgewählte \acp{VM} werden zusätzlich per \texttt{rsync} auf
           einen separaten Backup-Server kopiert.
     \item Vom Backup-Server werden die Daten über \ac{TSM} auf Tape
           ausgelagert.
 \end{itemize}
-% TODO: konkrete Schmerzpunkte und Dauer typischer Restores ergänzen
-% (Frank fragen / Erfahrungswerte vom ODCF-Team).
-Daraus ergeben sich mehrere strukturelle Schwachstellen: Es gibt keine
-zentrale Verwaltung der Backup-Jobs, keine einheitliche Retention,
-keine automatisierte Integritätsprüfung und vor allem keine echte
-Trennung zwischen Primär- und Sicherungsdaten -- ein Ausfall des
-\ac{Ceph}-Clusters würde auch die dort abgelegten Sicherungen
-betreffen.
+
+\subsubsection*{Schmerzpunkte der heutigen Lösung}
+\begin{itemize}
+    \item \textbf{Restore-Reichweite:} Restores aus dem lokalen
+          Storage einzelner Hypervisor sind zwar schnell (typisch
+          2--6\,min), funktionieren aber nur auf den älteren IBM-/
+          Lenovo-Knoten. Für die VxRail-Hypervisor existiert keine
+          äquivalente schnelle Restore-Quelle.
+    \item \textbf{Fehlschläge bei Migrationen:} Bei der Migration
+          großer \acp{VM} zwischen Knoten -- insbesondere von und zu
+          VxRails -- kommt es vor, dass keine konsistente Sicherung
+          mehr zur Verfügung steht.
+    \item \textbf{Vollgelaufener Backup-Storage:} Da pro Hypervisor
+          lokal gesichert wird, läuft der lokale Storage einzelner
+          Knoten gelegentlich voll und führt zu fehlgeschlagenen
+          Backup-Läufen.
+    \item \textbf{Keine zentrale Verwaltung:} Backup-Jobs, Retention
+          und Status sind über alle Hypervisor verstreut und werden
+          nicht zentral überwacht.
+    \item \textbf{Keine Integritätsprüfung:} Eine automatische
+          Verifikation der gespeicherten Sicherungen findet nicht
+          statt.
+    \item \textbf{Keine Trennung Primär-/Sicherungsdaten:} Ein
+          Ausfall eines Hypervisors zieht den lokalen Backup-Bestand
+          desselben Hypervisors mit in Mitleidenschaft.
+\end{itemize}
 
 
 \subsection{Anforderungsanalyse}
@@ -75,8 +95,8 @@ werden in der Entwurfsphase (Abschnitt~\ref{sec:Entwurfsphase})
 detaillierter behandelt:
 \begin{itemize}
     \item \textbf{Hardware:} Auswahl eines passenden Servers für den
-          \ac{PBS}; angedacht ist die Nachnutzung vorhandener Hardware,
-          um Beschaffungskosten zu vermeiden.
+          \ac{PBS}; angedacht ist die Nachnutzung eines vorhandenen
+          IBM System x3755, um Beschaffungskosten zu vermeiden.
     \item \textbf{Backup-Strategie:} Festlegung von Frequenz und
           Aufbewahrung je \ac{VM}-Klasse (kritisch mit
           \ac{SOP}-Pflicht vs.\ Test-\acp{VM}).

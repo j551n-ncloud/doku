@@ -1,6 +1,44 @@
 \subsection{Lastenheft (Auszug)}
 \label{app:Lastenheft}
 
-% TODO: Auszug aus dem Lastenheft / den Anforderungen ergänzen,
-% z.\,B. die Punkte aus dem Projektantrag (2.2 Soll-Konzept,
-% 2.3 zu treffende Entscheidungen, 2.5 Einschränkungen).
+Ein gesondertes, formales Lastenheft wurde mit dem Auftraggeber
+nicht erstellt. Als Lastenheft dient der mit der \ac{IHK}
+eingereichte und freigegebene Projektantrag. Der folgende Auszug
+fasst die zentralen Anforderungen daraus zusammen.
+
+\subsubsection*{Funktionale Anforderungen}
+\begin{itemize}
+    \item Installation und Konfiguration eines dedizierten
+          \acl{PBS} auf eigener Hardware.
+    \item Anbindung des \ac{PBS} an den bestehenden \ac{PVE}-Cluster
+          der \ac{ODCF}.
+    \item Einrichtung von Backup-Jobs mit definierten Zeitplänen
+          und Retention Policies (Vorgabe: kritische und
+          Test-\acp{VM} jeweils 2$\times$ täglich, \texttt{keep-last=3}).
+    \item Konfiguration von E-Mail-Benachrichtigungen und
+          Monitoring-Anbindung an \ac{CheckMK}.
+    \item Erstellung einer Betriebsdokumentation und Übergabe an
+          das \ac{ODCF}-Team.
+\end{itemize}
+
+\subsubsection*{Im Projekt zu treffende Entscheidungen}
+\begin{itemize}
+    \item Auswahl geeigneter Hardware für den \ac{PBS}
+          (CPU, \ac{RAM}, Storage-Kapazität).
+    \item Festlegung der Backup-Strategie pro \ac{VM}-/\ac{CT}-Gruppe.
+    \item Definition der Retention Policies.
+    \item Netzwerkanbindung des \ac{PBS}.
+    \item Authentifizierungskonzept: lokale Konten vs.\
+          \ac{LDAP}-/\ac{AD}-Integration.
+\end{itemize}
+
+\subsubsection*{Nicht-funktionale Anforderungen und Einschränkungen}
+\begin{itemize}
+    \item Open-Source-Lösung ohne Lizenzkosten.
+    \item Trennung von Primär- und Sicherungs-Storage.
+    \item Betrieb in einer Forschungsinfrastruktur: Wartungs-
+          fenster sind mit den betroffenen Arbeitsgruppen
+          abzustimmen.
+    \item Backup-Storage muss ausreichend für die bestehende
+          \ac{VM}-Landschaft dimensioniert sein.
+\end{itemize}

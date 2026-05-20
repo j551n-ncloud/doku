@@ -4,16 +4,22 @@
 
 \subsection{Beschaffung und Vorbereitung}
 \label{sec:Beschaffung}
-Da als Hardware ein vorhandener IBM System x3755 nachgenutzt wird,
+Da als Hardware ein vorhandener IBM System x3755 M3 nachgenutzt wird,
 entfällt eine externe Beschaffung. Die Vorbereitung umfasst:
 \begin{itemize}
-    \item Bereitstellung des Servers im Rechenzentrum der \ac{ODCF}.
+    \item Bereitstellung des Servers im Rechenzentrum der \ac{ODCF}
+          in DCODCF-Rack14.
     \item Konfiguration des Hardware-\ac{RAID}-Controllers:
           \ac{RAID}\,1 für das System, \ac{RAID}\,5 über 6$\times$4\,TB
           HDDs für den Datastore.
     \item Einbau einer Netzwerk-\ac{SFP}-Karte mit 2$\times$10\,GbE
           und Bündelung der beiden Ports per \ac{LACP} zu einem
           logischen Interface (Aufwand: ca.~10\,min).
+    \item Verkabelung beider Ports über die Patchpanels in Rack14
+          und Rack16 zum Cisco-Switch
+          \texttt{aci-dc03-og2-r16-aly-2153}; das vollständige
+          Cabling-Diagramm aus dem \ac{DKFZ}-NetBox-Inventar
+          befindet sich im Anhang \ref{app:Cabling}.
     \item Herunterladen des aktuellen \ac{PBS}-4-ISOs von Proxmox und
           Vorbereitung eines bootfähigen Installationsmediums.
     \item Abstimmung der Netzwerkkonfiguration (Anschluss an das
@@ -21,6 +27,36 @@ entfällt eine externe Beschaffung. Die Vorbereitung umfasst:
           \ac{PVE}-Cluster und \ac{PBS}) mit dem Netzwerkteam des
           \ac{DKFZ}.
 \end{itemize}
+
+Die endgültige LACP-Konfiguration auf dem \ac{PBS} ist im
+folgenden Listing dargestellt:
+\begin{lstlisting}[caption={\texttt{/etc/network/interfaces} auf odcf-fs04}]
+auto lo
+iface lo inet loopback
+
+iface nic0 inet manual
+iface nic1 inet manual
+iface nic2 inet manual
+iface nic3 inet manual
+
+auto nic4
+iface nic4 inet manual
+
+auto nic5
+iface nic5 inet manual
+
+auto bond0
+iface bond0 inet static
+        address 10.131.196.78/22
+        gateway 10.131.196.97
+        bond-slaves nic4 nic5
+        bond-miimon 100
+        bond-mode 802.3ad
+        bond-xmit-hash-policy layer3+4
+        bond-lacp-rate fast
+
+source /etc/network/interfaces.d/*
+\end{lstlisting}
 
 
 \subsection{Installation des Proxmox Backup Servers}
@@ -46,28 +82,52 @@ ca.~5\,h.
 \subsection{Konfiguration des Datastores}
 \label{sec:Datastore}
 Auf dem \ac{RAID}\,5-Volume wird ein \texttt{ext4}-Dateisystem
-angelegt und unter \texttt{/mnt/datastore/pbs} eingehängt.
-Anschließend wird im \ac{PBS} ein Datastore angelegt, der auf dieses
-Verzeichnis verweist.
+angelegt und unter \texttt{/mnt/datastore/backup} eingehängt.
+Anschließend wird im \ac{PBS} ein Datastore mit dem Namen
+\texttt{backup} angelegt, der auf dieses Verzeichnis verweist.
+Die Konfiguration findet sich in \texttt{datastore.cfg}:
+\begin{lstlisting}[caption={\texttt{/etc/proxmox-backup/datastore.cfg}}]
+datastore: backup
+        path /mnt/datastore/backup
+\end{lstlisting}
 
-Pro Datastore werden zudem regelmäßige Verify-Jobs angelegt, die in
-einem festen Intervall (z.\,B.\ wöchentlich) die Prüfsummen aller
-gespeicherten Chunks gegen die Metadaten verifizieren.
-
-% TODO: konkrete CLI-Befehle (z.\,B. proxmox-backup-manager
-% datastore create ...) als Listing einfügen, sobald die finalen
-% Werte feststehen.
+Auf dem Datastore wird zusätzlich ein wöchentlicher Verify-Job
+angelegt, der die Prüfsummen aller gespeicherten Chunks gegen die
+Metadaten verifiziert.
 
 
 \subsection{Anbindung an das DKFZ-LDAP}
 \label{sec:LDAPAnbindung}
 Für die Anmeldung regulärer Administratorinnen und Administratoren
 wird der \ac{PBS} an das \ac{DKFZ}-\ac{LDAP} angebunden.
-Dazu wird im \ac{PBS} ein \ac{LDAP}-Realm angelegt; bestehende
-\ac{LDAP}-Benutzer können sich anschließend mit ihren persönlichen
-Konten an der Web-Oberfläche anmelden. Der lokale \texttt{root}-
-Account bleibt für die Initialkonfiguration und Notfallzugriffe
-erhalten.
+Dazu wird im \ac{PBS} ein \ac{LDAP}-Realm angelegt; berechtigt sind
+Benutzer der \ac{AD}-Gruppe \texttt{ODCF-SysAdmins}.
+Bestehende Benutzer können sich anschließend mit ihren persönlichen
+Konten an der Web-Oberfläche anmelden.
+Der lokale \texttt{root}-Account bleibt für die Initialkonfiguration
+und Notfallzugriffe erhalten.
+
+Die resultierende Realm-Konfiguration zeigt das folgende Listing:
+\begin{lstlisting}[caption={\texttt{/etc/proxmox-backup/domains.cfg}}]
+pam: pam
+        comment Linux PAM standard authentication
+        type pam
+
+pbs: pbs
+        comment Proxmox Backup authentication server
+        type pbs
+
+ad: dkfz-heidelberg.de
+        base-dn DC=ad,DC=dkfz-heidelberg,DC=de
+        bind-dn ldap@ad.dkfz-heidelberg.de
+        default true
+        filter (&(objectClass=user)(memberOf=CN=ODCF-SysAdmins,OU=Kst-W610,OU=Fsp-W,OU=DKFZ,DC=ad,DC=dkfz-heidelberg,DC=de))
+        mode ldaps
+        port 636
+        server1 ldap1.dkfz-heidelberg.de
+        sync-attributes email=mail,firstname=givenName,lastname=sn
+        user-classes user
+\end{lstlisting}
 
 Tatsächlicher Zeitaufwand für die LDAP-Einrichtung: ca.~0{,}5\,h.
 
@@ -93,13 +153,8 @@ Tatsächlicher Zeitaufwand für die PVE-Anbindung: ca.~0{,}5\,h.
 \subsection{Einrichtung der Backup-Jobs}
 \label{sec:BackupJobs}
 Die produktiven Backup-Jobs werden im \ac{PVE} pro \ac{VM}-Klasse
-angelegt:
-\begin{itemize}
-    \item \textbf{Kritisch (\ac{SOP}-pflichtig):} zwei Sicherungen pro
-          Tag, Prune-Regel \texttt{keep-last=3}.
-    \item \textbf{Test:} reduzierte Frequenz und Aufbewahrung; genaue
-          Werte werden je \ac{VM} festgelegt.
-\end{itemize}
+angelegt; sowohl für kritische als auch für Test-\acp{VM} gilt:
+zwei Sicherungen pro Tag, Prune-Regel \texttt{keep-last=3}.
 Die Jobs werden zunächst manuell ausgelöst, um Laufzeiten und
 Bandbreitenbedarf zu beobachten; anschließend werden sie auf den
 geplanten Zeitplan umgestellt.
