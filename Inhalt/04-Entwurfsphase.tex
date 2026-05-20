@@ -19,8 +19,9 @@ Knoten (3$\times$ IBM/Lenovo, 3$\times$ Dell VxRail), auf dem ca.~60
 \subsection{Hardware und Storage-Architektur}
 \label{sec:HardwareStorage}
 Für den \ac{PBS} wird vorhandene Hardware nachgenutzt: ein
-\textbf{IBM System x3755} mit 32 Kernen (AMD Opteron~6220, 4 Sockel),
-32\,GB \ac{RAM} und 6$\times$4\,TB HDDs.
+\textbf{IBM System x3755 M3} mit 32 Kernen (AMD Opteron~6220,
+4 Sockel), 32\,GB \ac{RAM} und 6$\times$4\,TB HDDs
+(Modell \texttt{ST4000NM033}).
 Die Disks werden über einen Hardware-\ac{RAID}-Controller wie folgt
 organisiert:
 \begin{itemize}
@@ -85,16 +86,11 @@ Die \acp{VM} und Container werden in zwei Klassen eingeteilt:
 \end{itemize}
 
 \subsubsection*{Frequenz und Retention}
-Für die kritischen Systeme werden \textbf{zwei Backups pro Tag}
-durchgeführt; aufgehoben werden jeweils nur die letzten drei
-Sicherungen. Daraus ergibt sich in \ac{PBS}-Notation eine Prune-Regel
-mit \texttt{keep-last=3}.
-% TODO: nach Rücksprache mit Frank ggfs. ergänzende keep-daily /
-% keep-weekly / keep-monthly Werte definieren.
-
-Für Test-\acp{VM} werden geringere Frequenzen und kürzere Aufbewahrung
-angesetzt; konkrete Werte werden in der Implementierungsphase je
-\ac{VM}-Gruppe festgelegt.
+Sowohl für die kritischen Systeme als auch für die Test-\acp{VM}
+werden \textbf{zwei Backups pro Tag} durchgeführt; aufgehoben
+werden jeweils nur die letzten drei Sicherungen.
+Daraus ergibt sich in \ac{PBS}-Notation eine Prune-Regel mit
+\texttt{keep-last=3}.
 
 \subsubsection*{Restore-Strategie}
 Die Wiederherstellung erfolgt primär über die Web-Oberfläche des
@@ -102,7 +98,21 @@ Die Wiederherstellung erfolgt primär über die Web-Oberfläche des
 ganze \acp{VM} oder Container direkt aus dem \ac{PBS}-Datastore
 zurückgespielt werden. Zusätzlich bleibt die bestehende
 \ac{TSM}-/Tape-Sicherung als zweite, langfristige Sicherungsebene
-erhalten.
+für den \ac{PBS}-Host selbst erhalten.
+
+\subsubsection*{Bandbreite und Verifikation}
+Die Übertragung zwischen \ac{PVE}-Cluster und \ac{PBS} erfolgt über
+das mit \ac{LACP} gebündelte 2$\times$10\,GbE-Interface des \ac{PBS}.
+Ein zusätzliches Bandbreitenlimit auf Applikationsebene ist nicht
+vorgesehen.
+
+Die Integrität des Datastores wird durch wöchentliche Verify-Jobs
+sichergestellt, die alle gespeicherten Chunks gegen die hinterlegten
+Prüfsummen vergleichen.
+
+Eine clientseitige Verschlüsselung der Backups ist nicht Teil dieses
+Projekts, da der \ac{PBS} innerhalb des \ac{DKFZ}-Netzes betrieben
+wird und der Datastore nur intern erreichbar ist.
 
 
 \subsection{Authentifizierung und Berechtigungen}

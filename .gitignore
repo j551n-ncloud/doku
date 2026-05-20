@@ -128,3 +128,6 @@ sympy-plots-for-*.tex/
 
 # Docker
 .miktex/
+
+# macOS
+.DS_Store
