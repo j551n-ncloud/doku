@@ -122,32 +122,14 @@ die nach der Übergabe für den laufenden Betrieb und die regelmäßige
 
 \subsection{Voraussetzungen für das Verständnis}
 \label{sec:Voraussetzungen}
-Für das Verständnis der folgenden Kapitel werden einige Technologien kurz
-vorgestellt.
-
-\subsubsection{\acl{PVE}}
-\acl{PVE} ist eine quelloffene Virtualisierungsplattform auf Basis von
-Debian Linux, die sowohl \acp{VM} (KVM) als auch \acp{LXC} verwalten kann.
-\ac{PVE} wird in der \ac{ODCF} als Cluster betrieben, sodass mehrere
-Hypervisor-Knoten zentral verwaltet werden.
-
-\subsubsection{\acl{PBS}}
-Der \ac{PBS} ist die hauseigene Backup-Lösung von Proxmox.
-Er ist eng mit \ac{PVE} integriert und unterstützt inkrementelle
-Sicherungen, clientseitige Deduplizierung sowie Integritätsprüfungen
-über Prüfsummen.
-Der \ac{PBS} kann mehrere Datastores verwalten, auf denen die Sicherungen
-abgelegt werden.
-
-\subsubsection{\acl{ZFS}}
-\acl{ZFS} ist ein modernes Dateisystem mit integrierter
-Volume-Verwaltung. Es bietet Prüfsummen für alle Daten, Snapshots,
-Kompression und einfache Erweiterbarkeit. Für den Datastore des \ac{PBS}
-ist \ac{ZFS} aufgrund seiner Datenintegritätsmerkmale gut geeignet.
-
-\subsubsection{Retention Policies}
-Retention Policies legen fest, wie viele und welche Sicherungen über
-welchen Zeitraum vorgehalten werden. Üblich sind gestaffelte
-Aufbewahrungen (z.\,B. tägliche Backups der letzten Woche, wöchentliche
-des letzten Monats, monatliche des letzten Jahres). Der \ac{PBS} setzt
-diese Vorgaben über sogenannte \emph{Prune}-Regeln automatisch um.
+\ac{PVE} ist eine quelloffene, Debian-basierte Virtualisierungs-
+plattform, die in der \ac{ODCF} als Cluster sowohl \acp{VM} (KVM)
+als auch \acp{LXC} verwaltet.
+Der \ac{PBS} ist die hauseigene Backup-Lösung von Proxmox: eng in
+\ac{PVE} integriert, inkrementell und mit clientseitiger
+Deduplizierung sowie Prüfsummen.
+Als Dateisystem für den Datastore wird in dieser Doku ein klassisches
+Hardware-\ac{RAID} mit \texttt{ext4} eingesetzt; der \ac{PBS} stellt
+die Integrität über interne Verify-Jobs sicher.
+Retention Policies werden im \ac{PBS} als \emph{Prune}-Regeln
+formuliert (z.\,B.\ \texttt{keep-last=3}) und automatisch angewendet.
