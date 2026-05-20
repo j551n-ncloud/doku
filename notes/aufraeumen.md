@@ -6,27 +6,27 @@ Ich erledige dann die `git rm`s in einem eigenen Commit.
 
 ## Bilder (aus altem Beispielprojekt)
 
-- [ ] `Bilder/ECR-Workflow-new.png`
-- [ ] `Bilder/ECR-Workflow-old.png`
-- [ ] `Bilder/eca-e-flowchart.drawio`
-- [ ] `Bilder/eca-e-flowchart.png`
-- [ ] `Bilder/UseCase.pdf`
-- [ ] `Bilder/ERDiagramm.pdf`
-- [ ] `Bilder/Klassendiagramm.pdf`
-- [ ] `Bilder/MockupModul.pdf`
-- [ ] `Bilder/MockupModules.pdf`
-- [ ] `Bilder/MockupTag.pdf`
-- [ ] `Bilder/database.pdf`
-- [ ] `Bilder/doc.pdf`
-- [ ] `Bilder/modulimport.pdf`
-- [ ] `Bilder/modulliste.pdf`
-- [ ] `Bilder/tagliste.pdf`
-- [ ] `Bilder/testcase.jpg`
-- [ ] `Bilder/Entwicklungsprozess.pdf`
-- [ ] `Bilder/weather-*.png` (5 Stück)
-- [ ] `Bilder/CC-Attribution.pdf`, `CC-Logo.pdf`, `CC-ShareAlike.pdf`
+- [x] `Bilder/ECR-Workflow-new.png`
+- [x] `Bilder/ECR-Workflow-old.png`
+- [x] `Bilder/eca-e-flowchart.drawio`
+- [x] `Bilder/eca-e-flowchart.png`
+- [x] `Bilder/UseCase.pdf`
+- [x] `Bilder/ERDiagramm.pdf`
+- [x] `Bilder/Klassendiagramm.pdf`
+- [x] `Bilder/MockupModul.pdf`
+- [x] `Bilder/MockupModules.pdf`
+- [x] `Bilder/MockupTag.pdf`
+- [x] `Bilder/database.pdf`
+- [x] `Bilder/doc.pdf`
+- [x] `Bilder/modulimport.pdf`
+- [x] `Bilder/modulliste.pdf`
+- [x] `Bilder/tagliste.pdf`
+- [x] `Bilder/testcase.jpg`
+- [x] `Bilder/Entwicklungsprozess.pdf`
+- [x] `Bilder/weather-*.png` (5 Stück)
+- [x] `Bilder/CC-Attribution.pdf`, `CC-Logo.pdf`, `CC-ShareAlike.pdf`
       (CC-Lizenz-Logos der alten Vorlage)
-- [ ] `Bilder/LogoBetrieb.pdf` (war Xylem-Logo; DKFZ-Logo liegt als `DKFZ-Logo.png`)
+- [x] `Bilder/LogoBetrieb.pdf` (war Xylem-Logo; DKFZ-Logo liegt als `DKFZ-Logo.png`)
 
 ## Beibehalten
 
@@ -38,47 +38,47 @@ Diese werden noch gebraucht oder sind harmlos:
 
 ## Listings & PlantUML
 
-- [ ] `Listings/TeamHelper.java`
-- [ ] `Listings/cnmi.php`
-- [ ] `Listings/tests.php`
-- [ ] `PlantUML/BeispielDiagramm.puml`
-- [ ] `PlantUML/eca-e.puml`
-- [ ] `PlantUML/use-case.puml`
-- [ ] `Anhang/BeispielDiagramm.pdf`
-- [ ] `Anhang/eca-e.pdf`
-- [ ] `Anhang/use-case.pdf`
+- [x] `Listings/TeamHelper.java`
+- [x] `Listings/cnmi.php`
+- [x] `Listings/tests.php`
+- [x] `PlantUML/BeispielDiagramm.puml`
+- [x] `PlantUML/eca-e.puml`
+- [x] `PlantUML/use-case.puml`
+- [x] `Anhang/BeispielDiagramm.pdf`
+- [x] `Anhang/eca-e.pdf`
+- [x] `Anhang/use-case.pdf`
 
 ## Tabellen (alte Beispieldaten)
 
-- [ ] `Tabellen/Kostenaufstellung.tex` (aktuell nicht referenziert,
+- [x] `Tabellen/Kostenaufstellung.tex` (aktuell nicht referenziert,
       neue Wirtschaftlichkeit ist direkt im Fließtext in 03)
-- [ ] `Tabellen/Nutzwert.tex` (alte Beispiel-Bewertung,
+- [x] `Tabellen/Nutzwert.tex` (alte Beispiel-Bewertung,
       aktuell nicht referenziert)
-- [ ] `Tabellen/IssueLog.tex` (Issue-Log aus altem Projekt)
-- [ ] `Tabellen/ZeitplanungKomplett.xlsx` (Excel-Quelle vom alten
+- [x] `Tabellen/IssueLog.tex` (Issue-Log aus altem Projekt)
+- [x] `Tabellen/ZeitplanungKomplett.xlsx` (Excel-Quelle vom alten
       Projekt; die `.tex` wurde neu geschrieben)
 
 ## Anhang-Dateien
 
-- [ ] `Anhang/AnhangPflichtenheft.tex` (aktuell nicht eingebunden,
+- [x] `Anhang/AnhangPflichtenheft.tex` (aktuell nicht eingebunden,
       enthält Referenzen auf den alten `\NI`-Befehl)
-- [ ] `Anhang/AnhangEntwuerfe.tex` (nicht eingebunden)
-- [ ] `Anhang/AnhangScreenshots.tex` (nicht eingebunden)
-- [ ] `Anhang/AnhangBenutzerDoku.tex` (nicht eingebunden)
-- [ ] `Anhang/AnhangTest.tex` (nicht eingebunden)
-- [ ] `Anhang/AnhangDoc.tex` (nicht eingebunden)
+- [x] `Anhang/AnhangEntwuerfe.tex` (nicht eingebunden)
+- [x] `Anhang/AnhangScreenshots.tex` (nicht eingebunden)
+- [x] `Anhang/AnhangBenutzerDoku.tex` (nicht eingebunden)
+- [x] `Anhang/AnhangTest.tex` (nicht eingebunden)
+- [x] `Anhang/AnhangDoc.tex` (nicht eingebunden)
 
 ## PDF-Reste
 
-- [ ] `Projektantrag_07112023105120.pdf` (alter Antrag)
-- [ ] `Projektdokumentation_Barry_Allan_30112021223316_928627.pdf`
+- [x] `Projektantrag_07112023105120.pdf` (alter Antrag)
+- [x] `Projektdokumentation_Barry_Allan_30112021223316_928627.pdf`
       (Beispiel-Doku der Vorlage)
-- [ ] `out/Projektdokumentation_Schmidberger_Fabian.pdf`
+- [x] `out/Projektdokumentation_Schmidberger_Fabian.pdf`
       (alter Build-Output)
 
 ## Sonstiges
 
-- [ ] `.DS_Store`  (macOS-Müll, sollte sowieso in `.gitignore`)
-- [ ] `Vorlage.tex` (Erläuterungen zur Original-Vorlage,
+- [x] `.DS_Store`  (macOS-Müll, sollte sowieso in `.gitignore`)
+- [x] `Vorlage.tex` (Erläuterungen zur Original-Vorlage,
       nicht Teil der Doku)
-- [ ] `Projektantrag_PBS_ODCF (2).xml` (Word-XML, jetzt eingearbeitet)
+- [x] `Projektantrag_PBS_ODCF (2).xml` (Word-XML, jetzt eingearbeitet)
