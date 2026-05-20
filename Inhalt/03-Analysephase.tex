@@ -54,49 +54,6 @@ Die bestehende Sicherung ist heterogen aufgebaut:
 \end{itemize}
 
 
-\subsection{Anforderungsanalyse}
-\label{sec:Anforderungsanalyse}
-Aus dem Projektantrag und der Ist-Analyse ergeben sich folgende
-Anforderungen an die neue Backup-Lösung:
-\begin{itemize}
-    \item Dedizierter \acl{PBS} auf eigener Hardware, getrennt von
-          Primär-Storage und produktiven Hypervisor.
-    \item Native Sicherung aller relevanten \acp{VM} und Container
-          des \ac{PVE}-Clusters mit Job-Plänen und Retention je
-          \ac{VM}-Klasse.
-    \item Restore einzelner Dateien sowie ganzer \acp{VM} bzw.\
-          Container.
-    \item E-Mail-Benachrichtigung und Anbindung an das vorhandene
-          \ac{Prometheus}-Monitoring.
-    \item Authentifizierung über das \ac{DKFZ}-\ac{LDAP} plus
-          lokalem \texttt{root}-Account; Einbindung in die bestehende
-          Netzwerkstruktur (\emph{server}/\emph{cluster}/\emph{external}/
-          \emph{ceph}-\ac{VLAN}).
-    \item Open-Source-Lösung ohne Lizenzkosten.
-\end{itemize}
-
-
-\subsection{Im Projekt zu treffende Entscheidungen}
-\label{sec:Entscheidungen}
-Folgende Entscheidungen sind im Rahmen des Projekts zu treffen und
-werden in der Entwurfsphase (Abschnitt~\ref{sec:Entwurfsphase})
-detaillierter behandelt:
-\begin{itemize}
-    \item \textbf{Hardware:} Auswahl eines passenden Servers für den
-          \ac{PBS}; angedacht ist die Nachnutzung eines vorhandenen
-          IBM System x3755, um Beschaffungskosten zu vermeiden.
-    \item \textbf{Backup-Strategie:} Festlegung von Frequenz und
-          Aufbewahrung je \ac{VM}-Klasse (kritisch mit
-          \ac{SOP}-Pflicht vs.\ Test-\acp{VM}).
-    \item \textbf{Netzwerkanbindung:} Einbindung des \ac{PBS} in die
-          vorhandenen \acp{VLAN} (server / cluster / external / ceph).
-    \item \textbf{Authentifizierung:} Kombination aus lokalem
-          \texttt{root}-Zugang und Anbindung an das \ac{DKFZ}-\ac{LDAP}.
-    \item \textbf{Storage-Layout:} Auswahl zwischen Hardware-\ac{RAID}
-          und \ac{ZFS}; Festlegung des Disk-Layouts für den Datastore.
-\end{itemize}
-
-
 \subsection{Wirtschaftlichkeitsanalyse}
 \label{sec:Wirtschaftlichkeitsanalyse}
 Da konkrete interne Stundensätze und Hardware-Listenpreise nicht
