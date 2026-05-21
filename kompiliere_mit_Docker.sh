@@ -78,7 +78,15 @@ compile_puml() {
     base="$(basename "$s" .svg)"
     pdfName="${ANHANG_DIR}/${base}.pdf"
     echo "Konvertiere $s -> $pdfName"
-    inkscape --export-filename="${pdfName}" "$s" || { echo "inkscape fehlgeschlagen für $s"; return 1; }
+    if command -v rsvg-convert >/dev/null 2>&1; then
+      rsvg-convert -f pdf -o "${pdfName}" "$s" || { echo "rsvg-convert fehlgeschlagen für $s"; return 1; }
+    elif command -v inkscape >/dev/null 2>&1; then
+      inkscape --export-filename="${pdfName}" "$s" || { echo "inkscape fehlgeschlagen für $s"; return 1; }
+    else
+      echo "Weder rsvg-convert noch inkscape gefunden." >&2
+      echo "Installiere eines davon, z.B.: sudo apt install librsvg2-bin" >&2
+      return 1
+    fi
   done
 
   echo "Entferne SVG-Dateien"
@@ -108,19 +116,24 @@ else
 fi
 
 # SVG-Bilder in Bilder/ vor dem LaTeX-Lauf zu PDFs konvertieren
-# (z.B. cabling*.svg aus NetBox). Benötigt Inkscape im PATH.
-if command -v inkscape >/dev/null 2>&1; then
+# (z.B. cabling*.svg aus NetBox). Bevorzugt rsvg-convert, fällt
+# sonst auf inkscape zurück.
+if command -v rsvg-convert >/dev/null 2>&1 || command -v inkscape >/dev/null 2>&1; then
   shopt -s nullglob
   for s in "${ROOT_DIR}/Bilder"/*.svg; do
     pdf="${s%.svg}.pdf"
     if [ ! -f "$pdf" ] || [ "$s" -nt "$pdf" ]; then
       echo "Konvertiere $s -> $pdf"
-      inkscape --export-filename="$pdf" "$s" || { echo "inkscape fehlgeschlagen für $s"; exit 1; }
+      if command -v rsvg-convert >/dev/null 2>&1; then
+        rsvg-convert -f pdf -o "$pdf" "$s" || { echo "rsvg-convert fehlgeschlagen für $s"; exit 1; }
+      else
+        inkscape --export-filename="$pdf" "$s" || { echo "inkscape fehlgeschlagen für $s"; exit 1; }
+      fi
     fi
   done
   shopt -u nullglob
 else
-  echo "Hinweis: inkscape nicht im PATH; SVGs in Bilder/ werden nicht konvertiert."
+  echo "Hinweis: weder rsvg-convert noch inkscape im PATH; SVGs in Bilder/ werden nicht konvertiert."
 fi
 
 # LaTeX mit Docker (zweimal wie im Original)
