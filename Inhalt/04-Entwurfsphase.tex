@@ -33,9 +33,16 @@ organisiert:
 \end{itemize}
 Diese Kapazität ist angesichts der aktuell ca.\ 6\,TB belegten
 Primärdaten und der durch \ac{PBS} eingesetzten Deduplizierung
-ausreichend dimensioniert. Als Dateisystem wird \texttt{ext4} auf
-dem Hardware-\ac{RAID} verwendet; die Datenintegrität gewährleisten
-die in \ac{PBS} integrierten Verify-Jobs.
+ausreichend dimensioniert.
+
+\subsubsection*{Bewusste Entscheidung gegen \acs{ZFS}}
+Ursprünglich war \ac{ZFS} als Dateisystem für den Datastore vorgesehen,
+da es Prüfsummen und Snapshots auf Dateisystem-Ebene mitbringt.
+Aufgrund des vorhandenen Hardware-\ac{RAID}-Controllers und der
+begrenzten \ac{RAM}-Ausstattung des Altsystems wird stattdessen ein
+klassisches Hardware-\ac{RAID} mit \texttt{ext4} als Dateisystem
+verwendet. Die Datenintegrität wird stattdessen durch die in \ac{PBS}
+integrierten Verify-Jobs sichergestellt.
 
 
 \subsection{Netzwerkarchitektur}
@@ -86,13 +93,29 @@ Verify-Jobs sichergestellt. Eine clientseitige Verschlüsselung ist
 nicht Teil dieses Projekts, da der \ac{PBS} ausschließlich
 innerhalb des \ac{DKFZ}-Netzes erreichbar ist.
 
-Für die Authentifizierung wird ein zweistufiges Konzept verwendet:
-ein lokaler \texttt{root}-Account für Initialkonfiguration und
-Notfallzugriff sowie die Anbindung an das \ac{DKFZ}-\ac{LDAP}
-(\ac{AD}-Gruppe \texttt{ODCF-SysAdmins}) für reguläre Admin-User.
-Die Anbindung des \ac{PVE}-Clusters erfolgt über einen technischen
-\ac{API}-Token mit eng gefasstem Berechtigungsumfang. Zur
-Qualitätssicherung wird jeder neue Backup-Job nach Einrichtung
-manuell ausgelöst, durch File- und VM-Restore-Tests verifiziert
+
+\subsection{Authentifizierung und Berechtigungen}
+\label{sec:AuthZ}
+Für den \ac{PBS} wird ein zweistufiges Authentifizierungskonzept
+verwendet:
+\begin{itemize}
+    \item Ein lokaler \texttt{root}-Account für die Initial-
+          konfiguration, Notfallzugriff und automatisierte interne
+          Aufgaben.
+    \item Anbindung an das \ac{DKFZ}-\ac{LDAP} für reguläre Admin-
+          User, die ihre persönlichen Konten verwenden.
+\end{itemize}
+Die Anbindung des \ac{PVE}-Clusters an den \ac{PBS} erfolgt nicht über
+einen interaktiven Benutzer, sondern über einen technischen
+\ac{API}-Token mit eng gefasstem Berechtigungs\-umfang
+(nur Backup-/Verify-Operationen auf dem dafür angelegten Datastore).
+
+
+\subsection{Maßnahmen zur Qualitätssicherung}
+\label{sec:QS}
+Zur Absicherung der Lösung werden nach der Einrichtung jeder neue
+Backup-Job manuell ausgelöst, Restore-Tests auf einem Test-Hypervisor
+sowohl für einzelne Dateien als auch für ganze \acp{VM} bzw.\
+Container durchgeführt, regelmäßige Verify-Jobs im \ac{PBS} angelegt
 und die Anbindung an \ac{Prometheus} sowie der E-Mail-Versand auf
 Funktion geprüft.
