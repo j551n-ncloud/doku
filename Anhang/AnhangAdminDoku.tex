@@ -141,7 +141,50 @@ proxmox-backup-manager garbage-collection start backup
           Frank Thommen.
 \end{enumerate}
 
-\subsubsection*{9. Monitoring (Prometheus / pbs-exporter)}
+\subsubsection*{9. Firewall-Konfiguration}
+Auf \texttt{odcf-fs04} läuft \texttt{firewalld} mit der Default-Zone
+\texttt{public}. Aktiv sind ausschließlich die für den Betrieb
+benötigten Ports und Dienste; \texttt{cockpit}, \texttt{http} und
+\texttt{https} wurden bewusst entfernt.
+
+\begin{tabular}{lll}
+\rowcolor{heading}\textbf{Port / Dienst} & \textbf{Scope} & \textbf{Zweck} \\
+\texttt{ssh} (22/tcp) & offen & Adminzugang \\
+\rowcolor{odd}8007/tcp & offen & \ac{PBS}-Web-UI und Backup-Clients \\
+9100/tcp & offen & pbs-exporter Metrics (Prometheus-Scrape) \\
+\rowcolor{odd}\texttt{dhcpv6-client} & offen & Default \\
+\end{tabular}
+
+Reproduzierbare Konfiguration (idempotent):
+\begin{lstlisting}[language=bash,caption={Firewall-Endzustand setzen}]
+set -e
+systemctl enable --now firewalld
+firewall-cmd --set-default-zone=public
+
+# Unerwuenschte Default-Services entfernen
+for svc in cockpit http https; do
+  firewall-cmd --permanent --zone=public --remove-service=$svc || true
+done
+
+# SSH offen halten (sonst Lockout-Gefahr!)
+firewall-cmd --permanent --zone=public --add-service=ssh
+
+# PBS Web-UI / Backup-Clients
+firewall-cmd --permanent --zone=public --add-port=8007/tcp
+
+# pbs-exporter
+firewall-cmd --permanent --zone=public --add-port=9100/tcp
+
+firewall-cmd --reload
+firewall-cmd --zone=public --list-all
+\end{lstlisting}
+
+\noindent\textbf{Hinweis:} Port \texttt{9100/tcp} ist aktuell
+zonenweit offen. Soll der Scope eingeschränkt werden, Port-Eintrag
+durch eine Rich-Rule mit \texttt{source address=<prometheus-ip>/32}
+ersetzen.
+
+\subsubsection*{10. Monitoring (Prometheus / pbs-exporter)}
 Auf \texttt{odcf-fs04} läuft der \texttt{natrontech/pbs-exporter}
 als systemd-Unit \texttt{prometheus-pbs-exporter.service} unter dem
 System-User \texttt{pbs-exporter}; Metriken werden auf
@@ -168,7 +211,7 @@ mit Rolle \texttt{Audit}) liegen unter
 \texttt{/etc/pbs-exporter.env}; das Token-Geheimnis ist im
 Bitwarden-Tresor abgelegt.
 
-\subsubsection*{10. Troubleshooting / FAQ}
+\subsubsection*{11. Troubleshooting / FAQ}
 \begin{itemize}\setlength{\itemsep}{1pt}
     \item \textbf{Login mit LDAP-Account schlägt fehl:}
           Realm-Auswahl im Login-Dialog auf \texttt{dkfz-heidelberg.de}
@@ -196,7 +239,7 @@ Bitwarden-Tresor abgelegt.
           \texttt{prune}/\texttt{garbage-collection}.
 \end{itemize}
 
-\subsubsection*{11. Zugriffe und Zuständigkeiten}
+\subsubsection*{12. Zugriffe und Zuständigkeiten}
 \begin{itemize}\setlength{\itemsep}{1pt}
     \item Operativ verantwortlich: Stefan Becker
           (\ac{ODCF}-SysAdmin-Team).
