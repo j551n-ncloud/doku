@@ -1,29 +1,208 @@
-\subsection{Betriebsdokumentation (Auszug)}
+\subsection{Kundendokumentation (Betriebsdoku, Auszug)}
 \label{app:BetriebsDoku}
 
-Es folgt eine Übersicht der in der Betriebsdokumentation
-behandelten Verfahren. Die vollständigen Anleitungen werden im
-internen DokuWiki der \ac{ODCF} gepflegt.
+Diese Kundendokumentation richtet sich an das System\-administrations\-team
+der \ac{ODCF} (AD-Gruppe \texttt{ODCF-SysAdmins}) und beschreibt die
+wiederkehrenden Betriebsaufgaben am \ac{PBS} \texttt{odcf-fs04}.
+Sie geht von Linux- und Virtualisierungs-Grundwissen aus und bildet
+den Kern dessen ab, was im internen DokuWiki gepflegt wird;
+DKFZ-spezifische Bind-Daten (LDAP) sind hier geschwärzt.
 
-\subsubsection*{Datastore anlegen}
-% TODO: konkrete Schritte / CLI-Beispiel hier einfuegen, sobald
-% die Wiki-Seite finalisiert ist.
+\subsubsection*{1. Überblick}
+\begin{itemize}\setlength{\itemsep}{1pt}
+    \item Host: \texttt{odcf-fs04} (10.131.196.78), Standort
+          DCODCF-Rack14.
+    \item \ac{PBS}~4 (no-subscription), Debian-basiert.
+    \item Web-UI: \url{https://10.131.196.78:8007}.
+    \item Datastore: \texttt{backup}, ext4 auf
+          \texttt{/mnt/datastore/backup}, ca.\ 20\,TB nutzbar
+          (Hardware-\ac{RAID}\,5 über 6$\times$4\,TB HDDs).
+    \item Netzwerk: \texttt{bond0} (2$\times$10\,GbE, \ac{LACP}/
+          802.3ad) am \emph{server}-\ac{VLAN}.
+    \item Authentifizierung: lokaler \texttt{root} (Bitwarden) +
+          \ac{LDAP}-Realm \texttt{ad: dkfz-heidelberg.de} für die
+          \ac{AD}-Gruppe \texttt{ODCF-SysAdmins}.
+\end{itemize}
 
-\subsubsection*{Backup-Job-Definition (Beispiel)}
-% TODO: Beispiel eines kritischen Jobs (Schedule, Retention)
-% einfuegen.
+\subsubsection*{2. Datastore anlegen}
+Der Datastore \texttt{backup} ist im Auslieferungszustand bereits
+angelegt. Soll ein zusätzlicher Datastore eingerichtet werden:
+\begin{lstlisting}[language=bash,caption={Neuen Datastore anlegen}]
+# 1. Mountpoint vorbereiten (Beispiel)
+mkdir -p /mnt/datastore/<name>
+mount /dev/<volume> /mnt/datastore/<name>
+# fstab-Eintrag ergaenzen, damit der Mount persistent ist
 
-\subsubsection*{Restore einer einzelnen Datei}
-% TODO: Schritt-fuer-Schritt-Anleitung (File-Restore aus PVE-UI).
+# 2. Datastore in PBS anlegen
+proxmox-backup-manager datastore create <name> /mnt/datastore/<name>
 
-\subsubsection*{Restore einer ganzen VM}
-% TODO: Schritt-fuer-Schritt-Anleitung (Restore aus PBS-Datastore).
+# 3. Status pruefen
+proxmox-backup-manager datastore list
+\end{lstlisting}
+Anschließend in der Web-UI unter \emph{Datastore $\to$ Prune \& GC}
+die Aufbewahrungsregeln und ein Garbage-Collection-Schedule
+festlegen.
 
-\subsubsection*{Verify-Job manuell starten}
-% TODO: CLI-Beispiel (\texttt{proxmox-backup-manager verify-job ...}).
+\subsubsection*{3. Backup-Job definieren (im PVE)}
+Backup-Jobs werden im \ac{PVE} pro \ac{VM}-/\ac{CT}-Gruppe angelegt
+und übertragen ihre Daten an den Datastore \texttt{backup}:
+\begin{enumerate}\setlength{\itemsep}{1pt}
+    \item PVE-Web-UI: \emph{Datacenter $\to$ Backup $\to$ Add}.
+    \item \emph{Storage}: PBS-Storage-Eintrag wählen
+          (Ziel = Datastore \texttt{backup}).
+    \item \emph{Selection mode}: \texttt{Include selected VMs} und
+          die kritischen bzw.\ Test-\acp{VM} auswählen.
+    \item \emph{Schedule}: \texttt{02:00} und \texttt{14:00}
+          (zwei Sicherungen pro Tag).
+    \item \emph{Retention}: \texttt{keep-last = 3}.
+    \item \emph{Notification}: \texttt{always} (auch bei Erfolg
+          während der Stabilisierungsphase).
+\end{enumerate}
+Jeden neu angelegten Job einmal manuell auslösen (\emph{Run now}),
+um Laufzeit und Bandbreite zu beobachten.
 
-\subsubsection*{Prune-Logik debuggen}
-% TODO: Vorgehen bei unerwartetem Prune-Ergebnis.
+\subsubsection*{4. Restore -- einzelne Datei}
+Wenn nur einzelne Dateien zurückgespielt werden müssen:
+\begin{enumerate}\setlength{\itemsep}{1pt}
+    \item PVE-Web-UI: \emph{Storage \texttt{<PBS-storage>} $\to$
+          Content} öffnen.
+    \item Snapshot der betroffenen \ac{VM} auswählen.
+    \item Button \emph{File Restore} klicken.
+    \item Im Browser durch das Disk-Image navigieren, gewünschte
+          Datei markieren und \emph{Download} bzw.\
+          \emph{Extract} wählen.
+\end{enumerate}
+Der File-Restore-Mechanismus läuft in einer temporären Restore-
+\ac{VM} im \ac{PVE}; größere Verzeichnisse werden als
+\texttt{tar.zst} heruntergeladen.
 
-\subsubsection*{Vorgehen bei vollem Datastore}
-% TODO: Schritte zum Freiraeumen und ggfs. Notfall-Prune.
+\subsubsection*{5. Restore -- ganze VM oder Container}
+\begin{enumerate}\setlength{\itemsep}{1pt}
+    \item PVE-Web-UI: \emph{Storage \texttt{<PBS-storage>} $\to$
+          Content}.
+    \item Snapshot auswählen und \emph{Restore} klicken.
+    \item Ziel-Knoten und Ziel-Storage für die Disks wählen.
+    \item Neue VMID vergeben (Original-VM nicht versehentlich
+          überschreiben!) oder bestätigen, dass die alte VMID
+          überschrieben wird.
+    \item Nach Abschluss die wiederhergestellte \ac{VM} starten
+          und Funktion prüfen.
+\end{enumerate}
+
+\subsubsection*{6. Verify-Job manuell starten}
+\begin{lstlisting}[language=bash,caption={Verify auf dem Datastore}]
+# Alle bestehenden Verify-Jobs anzeigen
+proxmox-backup-manager verify-job list
+
+# Einen einzelnen Verify-Job ausfuehren
+proxmox-backup-manager verify-job run <job-id>
+
+# Ad-hoc-Verify auf den kompletten Datastore (laufzeitintensiv)
+proxmox-backup-manager verify backup
+\end{lstlisting}
+Der Standard-Verify-Job läuft wöchentlich. Bei einem fehlgeschla\-genen
+Snapshot wird in der Web-UI unter \emph{Datastore $\to$ Content}
+ein rotes Warnsymbol angezeigt; betroffene Snapshots gezielt erneut
+verifizieren oder im Härtefall löschen.
+
+\subsubsection*{7. Prune-Logik nachvollziehen}
+Der Prune entscheidet anhand der Regel \texttt{keep-last=3}, welche
+Snapshots gelöscht werden. Vor jeder destruktiven Aktion empfiehlt
+sich ein \emph{Dry-Run}:
+\begin{lstlisting}[language=bash,caption={Prune simulieren / ausfuehren}]
+# Dry-Run: zeigt, welche Snapshots geloescht WUERDEN
+proxmox-backup-manager prune backup --keep-last 3 --dry-run
+
+# Echte Pruning-Aktion (nur, wenn das Dry-Run-Ergebnis OK ist)
+proxmox-backup-manager prune backup --keep-last 3
+\end{lstlisting}
+Eigentlicher Plattenplatz wird erst durch die anschließende
+Garbage Collection freigegeben (siehe nächster Punkt).
+
+\subsubsection*{8. Vorgehen bei vollem Datastore}
+Wenn die Belegung kritisch wird:
+\begin{enumerate}\setlength{\itemsep}{1pt}
+    \item Belegung prüfen:
+          \texttt{proxmox-backup-manager datastore show backup}
+          oder Web-UI \emph{Datastore $\to$ Summary}.
+    \item Prune-Regeln überprüfen
+          (\emph{Datastore $\to$ Prune \& GC}). Falls Regeln zu
+          großzügig sind, anpassen.
+    \item Sofortmaßnahme: manueller Prune (siehe Punkt~7) plus
+          \texttt{garbage-collection start}:
+\begin{lstlisting}[language=bash]
+proxmox-backup-manager garbage-collection start backup
+\end{lstlisting}
+    \item Wenn das nicht reicht: temporär Aufbewahrung reduzieren
+          (z.\,B.\ \texttt{keep-last=2}), erneut prunen und
+          garbage-collecten.
+    \item Mittelfristig Storage-Erweiterung planen; Eskalation an
+          Frank Thommen.
+\end{enumerate}
+
+\subsubsection*{9. Monitoring (Prometheus / pbs-exporter)}
+Auf \texttt{odcf-fs04} läuft der \texttt{natrontech/pbs-exporter}
+als systemd-Unit \texttt{prometheus-pbs-exporter.service} unter dem
+System-User \texttt{pbs-exporter}; Metriken werden auf
+\texttt{:9100/metrics} bereitgestellt. Die Anbindung an den
+zentralen \ac{Prometheus} der \ac{ODCF} erfolgt über einen
+Scrape-Job auf \texttt{odcf-fs04:9100}.
+
+Wichtige Kennzahlen / PromQL-Beispiele:
+\begin{lstlisting}[language=bash,caption={Nuetzliche PromQL-Queries}]
+# Datastore-Fuellgrad in %
+100 * pbs_used / pbs_size
+
+# Alter des letzten Backups je VM (Stunden)
+(time() - pbs_snapshot_vm_last_timestamp) / 3600
+
+# Alert: Backup aelter als 26 h
+(time() - pbs_snapshot_vm_last_timestamp) > 26 * 3600
+
+# Alert: Verify fehlgeschlagen
+pbs_snapshot_vm_last_verify == 0
+\end{lstlisting}
+Konfiguration und Token (geschwärzt: \texttt{root@pam!pbs-exporter}
+mit Rolle \texttt{Audit}) liegen unter
+\texttt{/etc/pbs-exporter.env}; das Token-Geheimnis ist im
+Bitwarden-Tresor abgelegt.
+
+\subsubsection*{10. Troubleshooting / FAQ}
+\begin{itemize}\setlength{\itemsep}{1pt}
+    \item \textbf{Login mit LDAP-Account schlägt fehl:}
+          Realm-Auswahl im Login-Dialog auf \texttt{dkfz-heidelberg.de}
+          prüfen; Gruppenmitgliedschaft in
+          \texttt{ODCF-SysAdmins} verifizieren
+          (\texttt{ldapsearch} vom Host aus).
+    \item \textbf{Backup hängt / läuft sehr lange:} aktive Tasks
+          unter \emph{Datastore $\to$ Tasks} prüfen,
+          ggf.\ Job stoppen und Bandbreite/Last auf dem
+          Quell-Hypervisor kontrollieren.
+    \item \textbf{Verify schlägt fehl:} betroffenen Snapshot
+          erneut verifizieren; bei Wiederholung Datastore-
+          Integrität (\texttt{verify backup}) prüfen und das
+          Hardware-\ac{RAID} (Controller-Logs) checken.
+    \item \textbf{\texttt{pbs-exporter} liefert keine Metriken
+          (\texttt{pbs\_up=0}):} fast immer fehlende Permission
+          auf dem API-Token. Token in PBS hat Privilege Separation
+          \emph{Yes}, daher muss die Audit-Rolle explizit auf den
+          Token gesetzt sein (nicht auf \texttt{root@pam}).
+    \item \textbf{\texttt{systemctl status prometheus-pbs-exporter}:}
+          schneller Smoke-Test; Logs via
+          \texttt{journalctl -u prometheus-pbs-exporter -f}.
+    \item \textbf{Datastore voll:} siehe Punkt~8 -- nie einfach
+          Snapshots im Dateisystem löschen, immer über
+          \texttt{prune}/\texttt{garbage-collection}.
+\end{itemize}
+
+\subsubsection*{11. Zugriffe und Zuständigkeiten}
+\begin{itemize}\setlength{\itemsep}{1pt}
+    \item Operativ verantwortlich: Stefan Becker
+          (\ac{ODCF}-SysAdmin-Team).
+    \item Eskalation: Frank Thommen (\ac{ODCF}).
+    \item Geheimnisse: lokales \texttt{root}-Passwort, API-Token,
+          LDAP-Bind-Credentials -- alle im Bitwarden-Tresor der
+          \ac{ODCF}.
+    \item Änderungen an dieser Doku werden im DokuWiki der
+          \ac{ODCF} versioniert.
+\end{itemize}
