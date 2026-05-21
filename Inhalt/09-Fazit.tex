@@ -5,25 +5,57 @@
 \subsection{Soll-/Ist-Vergleich}
 \label{sec:SollIstVergleich}
 
-% TODO: nach Projektabschluss tatsächliche Zeiten vs. Plan eintragen.
-% Tabelle Tabellen/Zeitnachher.tex aktualisieren und hier referenzieren:
-% \tabelle{Soll-/Ist-Vergleich}{tab:Vergleich}{Zeitnachher}
+Die im Projektantrag veranschlagten 40~Stunden sind insgesamt
+eingehalten worden. Die größten Abweichungen ergaben sich in der
+Installations- und der Integrationsphase: Die Grundinstallation
+des \ac{PBS} fiel mit ca.\ 5~Stunden etwas aufwändiger aus als
+geplant, dafür liefen LDAP-Anbindung und PVE-Integration mit jeweils
+ca.\ 30~Minuten deutlich schneller, sodass sich die Differenzen in
+Summe ausgeglichen haben. Eine detaillierte Gegenüberstellung der
+geplanten und tatsächlichen Stunden je Phase befindet sich in
+Tabelle~\ref{tab:Vergleich}.
+\tabelle{Soll-/Ist-Vergleich}{tab:Vergleich}{Zeitnachher}
+
+% TODO: Nach Abschluss aller Phasen die endgueltigen Werte in
+% Tabellen/Zeitnachher.tex eintragen.
 
 
 \subsection{Lessons Learned}
 \label{sec:LessonsLearned}
 
-% TODO: persönliche Lernerfahrungen festhalten, z.\,B.:
-%   - Umgang mit produktiver Infrastruktur (Wartungsfenster, Abstimmung)
-%   - Backup-/Restore-Konzepte und Hardware-RAID in der Praxis
-%   - Zusammenarbeit mit dem Netzwerk- und Admin-Team
-%   - Was würde man bei einem ähnlichen Projekt anders machen?
+Im Laufe des Projekts haben sich vor allem drei Lerneffekte
+herausgestellt. Erstens hat sich gezeigt, wie wichtig eine frühe
+Abstimmung mit dem Netzwerkteam ist: Der Einbau der \ac{SFP}-
+Karte und die \ac{LACP}-Konfiguration waren technisch trivial,
+hingen aber von der rechtzeitigen Bereitstellung der Switch-Ports
+und der Patchpanel-Verkabelung ab. Zweitens hat der Aufbau auf
+Altbestands-Hardware (IBM x3755~M3) klare Grenzen gezeigt, etwa
+beim Speicherausbau und bei der Auswahl des Dateisystems
+(Hardware-\ac{RAID} statt eines Software-Stacks). Drittens wurde
+deutlich, dass eine sauber gepflegte Betriebsdokumentation -- in
+diesem Fall im DokuWiki der \ac{ODCF} -- für ein Sysadmin-Projekt
+mindestens so wertvoll ist wie die eigentliche Implementierung,
+weil der laufende Betrieb anschließend ohne den Prüfling
+weiterläuft.
+
+% TODO: ggfs. eigene Erfahrungen ergaenzen (Kommunikation,
+% Tooling, Zeitmanagement).
 
 
 \subsection{Ausblick}
 \label{sec:Ausblick}
 
-% TODO: mögliche Folgeschritte:
-%   - Off-Site-Replikation des PBS-Datastores
-%   - Ablösung der Tape-Sicherung (perspektivisch)
-%   - Erweiterung um weitere Hypervisor / Cluster
+Mit dem fertigen Blueprint stehen mehrere Folgeschritte offen.
+Kurzfristig kann das \ac{ODCF}-Team auf Basis der erstellten
+Referenzkonfiguration eine produktive \ac{PBS}-Instanz
+aufsetzen und die lokalen Hypervisor-Backups schrittweise auf den
+\ac{PBS} migrieren. Mittelfristig sind eine Off-Site-Replikation
+des Datastores sowie die langfristige Ablösung der \ac{TSM}-/Tape-
+Sicherung als zusätzliche Sicherungsebene denkbar. Darüber hinaus
+lässt sich das eingerichtete Monitoring um weitere Metriken und
+Alerts ausbauen (z.\,B.\ Trend-Alerts auf Datastore-Belegung
+oder Verify-Fehlerquoten), sodass sich der Betrieb mittelfristig
+nahezu vollständig automatisiert überwachen lässt.
+
+% TODO: ggfs. konkretere Folgeprojekte mit Frank abstimmen und
+% hier referenzieren.
