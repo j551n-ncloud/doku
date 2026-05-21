@@ -2,10 +2,60 @@
 \section{Abnahmephase}
 \label{sec:Abnahmephase}
 
-% TODO: Test- und Abnahmeprozess beschreiben:
-%   - durchgeführte Backup-Tests pro VM-/CT-Gruppe
-%   - durchgeführte Restore-Tests (einzelne Dateien, ganze VM/CT)
-%   - Verify-Jobs zur Integritätsprüfung des Datastores
-%   - Funktionsprüfung der Benachrichtigungen
-%   - Abnahme durch Frank Thommen / ODCF
-% Auffälligkeiten und ggfs. Nachbesserungen kurz festhalten.
+Da es sich beim aufgebauten \ac{PBS} um eine Blueprint-Testinstanz
+handelt, wurde die Abnahme nicht produktiv, sondern auf den
+eigens dafür eingerichteten Test-\acp{VM} und -Containern
+durchgeführt. Der Prüfling hat die Abnahmetests selbst gegen das
+in Abschnitt~\ref{sec:Backupkonzept} festgelegte Backup-Konzept
+gefahren; Frank Thommen (\ac{ODCF}) hat die Ergebnisse abschließend
+gesichtet und freigegeben.
+
+\subsection{Abnahmetests gegen das Backup-Konzept}
+Geprüft wurden die für den Blueprint relevanten Funktionen entlang
+der Anforderungen aus dem Lastenheft (siehe \Anhang{app:Lastenheft}):
+\begin{itemize}\setlength{\itemsep}{1pt}
+    \item Anlegen und Start eines Backup-Jobs aus dem \ac{PVE}
+          gegen den Datastore \texttt{backup} auf
+          \texttt{odcf-fs04}.
+    \item Funktionsprüfung der \ac{LDAP}-Anmeldung über die
+          \ac{AD}-Gruppe \texttt{ODCF-SysAdmins}.
+    \item E-Mail-Benachrichtigung bei erfolgreichem und
+          fehlgeschlagenem Job.
+    \item Auslieferung der Metriken über den
+          \texttt{pbs-exporter} an \ac{Prometheus}
+          (\texttt{pbs\_up=1}, Datastore-Belegung sichtbar).
+    \item Trennung Primär-/Sicherungs-Storage: Backups landen
+          ausschließlich auf dem dedizierten Datastore, nicht im
+          \ac{Ceph}-\ac{RBD}-Pool.
+\end{itemize}
+
+\subsection{Restore-Tests auf der Test-Instanz}
+Die Restore-Verfahren wurden vollständig durchgespielt:
+\begin{itemize}\setlength{\itemsep}{1pt}
+    \item \textbf{File-Restore:} Auswahl einzelner Dateien aus einem
+          Snapshot über die \ac{PVE}-Weboberfläche und
+          Wiederherstellung auf die Test-\ac{VM}.
+    \item \textbf{Vollständiger \ac{VM}-Restore:} Wiederherstellung
+          einer Test-\ac{VM} mit neuer VMID aus einem Snapshot des
+          Datastores \texttt{backup}; anschließendes Hochfahren und
+          Funktionsprüfung der Dienste in der \ac{VM}.
+    \item \textbf{Container-Restore:} entsprechende
+          Wiederherstellung eines Test-\ac{LXC}.
+\end{itemize}
+Alle Restore-Tests sind erfolgreich abgeschlossen worden; die
+Wiederherstellungszeiten lagen erwartungsgemäß deutlich unter
+denen der bisherigen \ac{TSM}-/Tape-Lösung.
+
+\subsection{Integritätsprüfung}
+Auf dem Datastore wurde ein manueller Verify-Job ausgelöst
+(\texttt{proxmox-backup-manager verify-job run}) und gegen die
+gespeicherten Snapshots laufen gelassen. Sämtliche Chunks wurden
+als gültig markiert; Folgeläufe sind als wöchentlicher
+Schedule eingerichtet.
+
+\subsection{Abnahme und Übergabe}
+Auf Basis der bestandenen Tests sowie der vorliegenden Betriebs\-
+und Projekt\-dokumentation hat Frank Thommen die Blueprint-Instanz
+abgenommen. Damit ist die Voraussetzung für die in
+Abschnitt~\ref{sec:Einfuehrungsphase} beschriebene Übergabe an
+Stefan Becker und das \ac{ODCF}-Sysadmin-Team erfüllt.
