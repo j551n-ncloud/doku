@@ -17,13 +17,13 @@ entfällt eine externe Beschaffung. Die Vorbereitung umfasst:
           logischen Interface (Aufwand: ca.~10\,min).
     \item Verkabelung beider Ports über die Patchpanels in Rack14
           und Rack16 zum Cisco-Switch
-          \texttt{aci-dc03-og2-r16-aly-2153}.
+          \texttt{aci-dc03-og2-r16-aly-2153}. Die Netzwerk-
+          Infrastruktur (server-\ac{VLAN}, Firewall-Freischaltungen
+          zwischen \ac{PVE}-Cluster und \ac{PBS}) ist bereits
+          vorhanden; eine gesonderte Abstimmung mit dem
+          Netzwerkteam war daher nicht erforderlich.
     \item Herunterladen des aktuellen \ac{PBS}-4-ISOs von Proxmox und
           Vorbereitung eines bootfähigen Installationsmediums.
-    \item Abstimmung der Netzwerkkonfiguration (Anschluss an das
-          \emph{server}-\ac{VLAN}, Firewall-Freischaltungen zwischen
-          \ac{PVE}-Cluster und \ac{PBS}) mit dem Netzwerkteam des
-          \ac{DKFZ}.
 \end{itemize}
 
 Auf Linux-Seite wird das Bond als \texttt{bond0} im Modus
