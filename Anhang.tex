@@ -12,6 +12,51 @@
 \input{Anhang/AnhangAdminDoku.tex}
 \clearpage
 
+\clearpage
+\subsection{Gesamtarchitektur}
+\label{app:Architektur}
+Die folgende Übersicht zeigt die Hauptkomponenten der Lösung: den
+\ac{PVE}-Cluster als Backup-Quelle, den neuen \ac{PBS}
+\texttt{odcf-fs04} mit eigenem Datastore, die flankierenden Dienste
+(\ac{DKFZ}-\ac{LDAP}, \ac{Prometheus}, Bitwarden) sowie die parallel
+weiterlaufende \ac{TSM}-/Tape-Sicherung.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth,keepaspectratio]{architecture}
+    \caption{Komponenten- und Datenflüsse der PBS-Blueprint-Lösung}
+    \label{fig:Architektur}
+\end{figure}
+\clearpage
+
+\subsection{Ablauf eines Backup-Jobs}
+\label{app:BackupSeq}
+Der folgende Sequenzablauf veranschaulicht, wie ein geplanter
+Backup-Job vom \ac{PVE}-Hypervisor ausgelöst, am \ac{PBS}
+authentifiziert und im Datastore inkrementell abgelegt wird.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\linewidth,keepaspectratio]{backup-sequence}
+    \caption{Ablauf eines Backup-Jobs (PVE → PBS) mit anschließendem Verify}
+    \label{fig:BackupSeq}
+\end{figure}
+\clearpage
+
+\subsection{Ablauf eines File-Restores}
+\label{app:RestoreSeq}
+Beim File-Restore startet der \ac{PBS} eine temporäre Restore-\ac{VM},
+mountet den ausgewählten Snapshot read-only und stellt die Datei
+über die Web-Oberfläche zur Verfügung.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\linewidth,keepaspectratio]{restore-sequence}
+    \caption{File-Restore aus dem PBS über die PVE-Weboberfläche}
+    \label{fig:RestoreSeq}
+\end{figure}
+\clearpage
+
 \subsection{PVE-Cluster-Topologie}
 \label{app:ClusterTopologie}
 Das folgende Diagramm zeigt die Netzwerk-Topologie des

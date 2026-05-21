@@ -1,0 +1,32 @@
+@startuml backup-sequence
+title Ablauf eines Backup-Jobs (PVE -> PBS)
+
+skinparam shadowing false
+skinparam SequenceArrowColor #444444
+skinparam DefaultFontName "Helvetica"
+
+actor "Scheduler\n(PVE)" as sched
+participant "PVE-\nHypervisor" as pve
+participant "PBS\nodcf-fs04" as pbs
+database "Datastore\nbackup" as ds
+participant "Verify-Job\n(woechentlich)" as verify
+
+sched -> pve : Trigger\n(02:00 / 14:00)
+pve -> pve : Snapshot der VM/CT\nerstellen
+pve -> pbs : connect\nPBSAPIToken=...
+note right of pve
+  TLS-Fingerprint\nwird geprueft
+end note
+pbs --> pve : 200 OK
+pve -> pbs : upload chunks\n(Deduplizierung,\ninkrementell)
+pbs -> ds : persist chunks\n+ index
+pbs --> pve : success
+pve -> pve : prune\n(keep-last=3)
+pve --> sched : Job done\n(Mail-Benachrichtigung)
+
+== Spaeter (woechentlich) ==
+verify -> ds : lese Chunks
+verify -> verify : Pruefsummen vergleichen
+verify --> pbs : Verify-Status\n(OK / corrupt)
+
+@enduml
