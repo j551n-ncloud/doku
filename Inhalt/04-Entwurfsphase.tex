@@ -67,9 +67,11 @@ Da die Backups über die regulären Hypervisor-Schnittstellen erfolgen,
 ist keine direkte Anbindung an das \emph{ceph}-\ac{VLAN} erforderlich;
 dadurch bleibt der Storage-Traffic von Primärdaten und Backups
 sauber getrennt.
-
-% TODO: ggfs. ein einfaches Netzwerkdiagramm (PlantUML) im Anhang
-% ergänzen.
+Eine vollständige Übersicht der Cluster-Topologie -- Hypervisor-
+Knoten je Etage, Switch-Paare, \ac{LACP}-Bonds für Ceph- und
+\ac{PVE}/Management-Netz sowie die Anbindung von
+\texttt{odcf-fs04} -- befindet sich in
+\Anhang{app:ClusterTopologie}.
 
 
 \subsection{Backup-Konzept}

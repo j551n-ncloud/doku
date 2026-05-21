@@ -1,0 +1,90 @@
+flowchart TB
+    %% =====================
+    %% SWITCHES PRO STANDORT
+    %% =====================
+    subgraph SW_OG2["Switches 2. OG"]
+        SW2A["Switch 2OG-A"]
+        SW2B["Switch 2OG-B"]
+        SW2A <-->|LACP Trunk| SW2B
+    end
+
+    subgraph SW_OG4["Switches 4. OG"]
+        SW4A["Switch 4OG-A"]
+        SW4B["Switch 4OG-B"]
+        SW4A <-->|LACP Trunk| SW4B
+    end
+
+    subgraph SW_DC["Switches UG / DC"]
+        SWDCA["Switch DC-A"]
+        SWDCB["Switch DC-B"]
+        SWDCA <-->|LACP Trunk| SWDCB
+    end
+
+    %% =====================
+    %% INTER-SWITCH UPLINKS (Etagen-Verbindungen)
+    %% =====================
+    SW2A <-->|Uplink| SWDCA
+    SW2B <-->|Uplink| SWDCB
+    SW4A <-->|Uplink| SWDCA
+    SW4B <-->|Uplink| SWDCB
+
+    %% =====================
+    %% HOSTS PRO ETAGE
+    %% =====================
+    subgraph OG2["2. OG"]
+        PVE1["PVE-01"]
+        PVE2["PVE-02"]
+        PVE3["PVE-03"]
+        FS["odcf-fs04"]
+    end
+
+    subgraph OG4["4. OG"]
+        PVE4["PVE-04"]
+        PVE5["PVE-05"]
+    end
+
+    subgraph DC["UG / DC"]
+        PVE6["PVE-06"]
+    end
+
+    %% =====================
+    %% CEPH NETWORK (bond_ceph) - durchgezogen
+    %% =====================
+    PVE1 -->|Ceph LACP| SW2A
+    PVE1 -->|Ceph LACP| SW2B
+    PVE2 -->|Ceph LACP| SW2A
+    PVE2 -->|Ceph LACP| SW2B
+    PVE3 -->|Ceph LACP| SW2A
+    PVE3 -->|Ceph LACP| SW2B
+
+    PVE4 -->|Ceph LACP| SW4A
+    PVE4 -->|Ceph LACP| SW4B
+    PVE5 -->|Ceph LACP| SW4A
+    PVE5 -->|Ceph LACP| SW4B
+
+    PVE6 -->|Ceph LACP| SWDCA
+    PVE6 -->|Ceph LACP| SWDCB
+
+    %% =====================
+    %% PVE / MGMT NETWORK (bond_pve) - gestrichelt
+    %% =====================
+    PVE1 -.->|PVE/MGMT LACP| SW2A
+    PVE1 -.->|PVE/MGMT LACP| SW2B
+    PVE2 -.->|PVE/MGMT LACP| SW2A
+    PVE2 -.->|PVE/MGMT LACP| SW2B
+    PVE3 -.->|PVE/MGMT LACP| SW2A
+    PVE3 -.->|PVE/MGMT LACP| SW2B
+
+    PVE4 -.->|PVE/MGMT LACP| SW4A
+    PVE4 -.->|PVE/MGMT LACP| SW4B
+    PVE5 -.->|PVE/MGMT LACP| SW4A
+    PVE5 -.->|PVE/MGMT LACP| SW4B
+
+    PVE6 -.->|PVE/MGMT LACP| SWDCA
+    PVE6 -.->|PVE/MGMT LACP| SWDCB
+
+    %% =====================
+    %% FILESERVER
+    %% =====================
+    FS -->|LACP| SW2A
+    FS -->|LACP| SW2B
