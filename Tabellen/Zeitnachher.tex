@@ -1,21 +1,22 @@
 % Tatsächliche Zeiten am Ende des Projekts eintragen.
-% Stand: laufend gepflegt; Werte mit ?? sind noch ausstehend.
 \begin{tabular}{lrrr}
 \rowcolor{heading}\textbf{Phase} & \textbf{Geplant} & \textbf{Tatsächlich} & \textbf{Differenz} \\
-Analyse                              &  4 h & ?? h    & ?? h    \\
-\rowcolor{odd}Planung \& Konzeption  &  5 h & ?? h    & ?? h    \\
-Beschaffung \& Vorbereitung          &  3 h & ?? h    & ?? h    \\
-\rowcolor{odd}Installation PBS       &  4 h & 5 h     & +1 h    \\
-Konfiguration Datastore              &  4 h & ?? h    & ?? h    \\
-\rowcolor{odd}PVE-Integration\textsuperscript{*} &  4 h & 1 h & -3 h \\
-Backup-Jobs                          &  5 h & ?? h    & ?? h    \\
-\rowcolor{odd}Test \& Validierung    &  3 h & ?? h    & ?? h    \\
-Monitoring                           &  2 h & ?? h    & ?? h    \\
-\rowcolor{odd}Dokumentation          &  6 h & ?? h    & ?? h    \\
+Analyse                                            &  4 h & 1{,}5 h & -2{,}5 h \\
+\rowcolor{odd}Planung \& Konzeption                &  5 h & 2 h     & -3 h    \\
+Beschaffung \& Vorbereitung\textsuperscript{*}     &  3 h & 5 h     & +2 h    \\
+\rowcolor{odd}Installation PBS                     &  4 h & 5 h     & +1 h    \\
+Konfiguration Datastore                            &  4 h & 1 h     & -3 h    \\
+\rowcolor{odd}PVE-Integration\textsuperscript{**}  &  4 h & 1 h     & -3 h    \\
+Backup-Jobs                                        &  5 h & 1 h     & -4 h    \\
+\rowcolor{odd}Test \& Validierung                  &  3 h & 3 h     &  0 h    \\
+Monitoring                                         &  2 h & 2 h     &  0 h    \\
+\rowcolor{odd}Betriebsdokumentation                &  6 h & 5 h     & -1 h    \\
+Projektdokumentation                               &  -- & 5 h     & +5 h    \\
 \hline
 \hline
-\textbf{Gesamt}                      & \textbf{40 h} & \textbf{?? h} & \textbf{?? h} \\
+\textbf{Gesamt}                                    & \textbf{40 h} & \textbf{31{,}5 h} & \textbf{-8{,}5 h} \\
 \end{tabular}
 \\[0.5em]
-{\footnotesize\textsuperscript{*}~enthält 0{,}5\,h LDAP-Anbindung und
-0{,}5\,h PVE-Anbindung.}
+{\footnotesize
+\textsuperscript{*}~Mehraufwand durch Hardware-RAID-Komplikationen.\\
+\textsuperscript{**}~enthält 0{,}5\,h LDAP-Anbindung und 0{,}5\,h PVE-Anbindung.}
