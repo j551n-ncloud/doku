@@ -58,7 +58,7 @@ ca.~5\,h.
 Auf dem \ac{RAID}\,5-Volume wird ein \texttt{ext4}-Dateisystem
 angelegt und unter \texttt{/mnt/datastore/backup} eingehängt;
 darauf legt der \ac{PBS} den Datastore \texttt{backup}
-an. Der entsprechende Eintrag in
+an~\citep{PBSAdminGuide}. Der entsprechende Eintrag in
 \texttt{/etc/proxmox-backup/datastore.cfg} ist in
 Listing~\ref{lst:datastore} im Anhang dokumentiert.
 Auf dem Datastore wird zusätzlich ein wöchentlicher Verify-Job
@@ -91,7 +91,7 @@ ausschließlich die für Backups und Verifizierung notwendigen
 Berechtigungen auf dem entsprechenden Datastore.
 
 Im \ac{PVE} wird der \ac{PBS} anschließend als Storage vom Typ
-\emph{Proxmox Backup Server} hinzugefügt;
+\emph{Proxmox Backup Server} hinzugefügt~\citep{PVEAdminGuide};
 dabei werden Server-Adresse
 (\texttt{odcf-fs04} / \texttt{10.131.196.78}), Datastore-Name,
 \ac{API}-Token sowie der TLS-Fingerprint des \ac{PBS}-Zertifikats
@@ -117,7 +117,7 @@ geplanten Zeitplan umgestellt.
 Für Fehlerbenachrichtigungen wird der eingebaute E-Mail-Mechanismus
 des \ac{PBS} konfiguriert (SMTP-Relay des \ac{DKFZ}).
 Zusätzlich wird der Server in das bestehende \ac{Prometheus}-
-Monitoring der \ac{ODCF} aufgenommen; der
+Monitoring der \ac{ODCF}~\citep{PrometheusDocs} aufgenommen; der
 \ac{PBS} stellt dafür einen nativen Metrik-Endpunkt bereit, der per
 \texttt{node\_exporter} bzw.\ \texttt{proxmox-backup-exporter}
 angebunden wird.
