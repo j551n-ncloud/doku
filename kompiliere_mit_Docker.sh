@@ -78,15 +78,10 @@ compile_puml() {
     base="$(basename "$s" .svg)"
     pdfName="${ANHANG_DIR}/${base}.pdf"
     echo "Konvertiere $s -> $pdfName"
-    if command -v rsvg-convert >/dev/null 2>&1; then
-      rsvg-convert -f pdf -o "${pdfName}" "$s" || { echo "rsvg-convert fehlgeschlagen für $s"; return 1; }
-    elif command -v inkscape >/dev/null 2>&1; then
-      inkscape --export-filename="${pdfName}" "$s" || { echo "inkscape fehlgeschlagen für $s"; return 1; }
-    else
-      echo "Weder rsvg-convert noch inkscape gefunden." >&2
-      echo "Installiere eines davon, z.B.: sudo apt install librsvg2-bin" >&2
-      return 1
-    fi
+    # Inkscape via Docker (kein lokales Inkscape erforderlich)
+    docker run -i --rm -w /data -v "${ROOT_DIR}:/data" inkscape/inkscape \
+      inkscape --export-filename="/data/Anhang/${base}.pdf" "/data/PlantUML/${base}.svg" \
+      || { echo "inkscape (docker) fehlgeschlagen für $s"; return 1; }
   done
 
   echo "Entferne SVG-Dateien"
@@ -116,25 +111,20 @@ else
 fi
 
 # SVG-Bilder in Bilder/ vor dem LaTeX-Lauf zu PDFs konvertieren
-# (z.B. cabling*.svg aus NetBox). Bevorzugt rsvg-convert, fällt
-# sonst auf inkscape zurück.
-if command -v rsvg-convert >/dev/null 2>&1 || command -v inkscape >/dev/null 2>&1; then
-  shopt -s nullglob
-  for s in "${ROOT_DIR}/Bilder"/*.svg; do
-    pdf="${s%.svg}.pdf"
-    if [ ! -f "$pdf" ] || [ "$s" -nt "$pdf" ]; then
-      echo "Konvertiere $s -> $pdf"
-      if command -v rsvg-convert >/dev/null 2>&1; then
-        rsvg-convert -f pdf -o "$pdf" "$s" || { echo "rsvg-convert fehlgeschlagen für $s"; exit 1; }
-      else
-        inkscape --export-filename="$pdf" "$s" || { echo "inkscape fehlgeschlagen für $s"; exit 1; }
-      fi
-    fi
-  done
-  shopt -u nullglob
-else
-  echo "Hinweis: weder rsvg-convert noch inkscape im PATH; SVGs in Bilder/ werden nicht konvertiert."
-fi
+# (z.B. cabling*.svg aus NetBox). Inkscape laeuft als Docker-
+# Container, damit kein lokales Inkscape installiert sein muss.
+shopt -s nullglob
+for s in "${ROOT_DIR}/Bilder"/*.svg; do
+  pdf="${s%.svg}.pdf"
+  base="$(basename "$s")"
+  if [ ! -f "$pdf" ] || [ "$s" -nt "$pdf" ]; then
+    echo "Konvertiere $s -> $pdf"
+    docker run -i --rm -w /data -v "${ROOT_DIR}:/data" inkscape/inkscape \
+      inkscape --export-filename="/data/Bilder/${base%.svg}.pdf" "/data/Bilder/${base}" \
+      || { echo "inkscape (docker) fehlgeschlagen für $s"; exit 1; }
+  fi
+done
+shopt -u nullglob
 
 # LaTeX mit Docker (zweimal wie im Original)
 mkdir -p "${OUTDIR}"
