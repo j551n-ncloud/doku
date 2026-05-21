@@ -12,13 +12,12 @@
 \input{Anhang/AnhangAdminDoku.tex}
 \clearpage
 
-\clearpage
 \subsection{Gesamtarchitektur}
 \label{app:Architektur}
 Die folgende Übersicht zeigt die Hauptkomponenten der Lösung: den
 \ac{PVE}-Cluster als Backup-Quelle, den neuen \ac{PBS}
 \texttt{odcf-fs04} mit eigenem Datastore, die flankierenden Dienste
-(\ac{DKFZ}-\ac{LDAP}, \ac{Prometheus}, Bitwarden) sowie die parallel
+(\ac{DKFZ}-\ac{LDAP}, Prometheus, Bitwarden) sowie die parallel
 weiterlaufende \ac{TSM}-/Tape-Sicherung.
 
 \begin{figure}[htbp]

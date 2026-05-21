@@ -10,16 +10,16 @@ Hypervisor-Knoten -- drei älteren IBM- bzw.\ Lenovo-Servern und drei
 neueren Dell-VxRail-Knoten -- und betreibt derzeit etwa 60 \acp{VM}
 sowie eine Reihe von \acp{LXC} mit Forschungs- und
 Infrastrukturdiensten.
-Als primäres Storage-Backend wird ein \ac{Ceph}-Cluster mit einer
+Als primäres Storage-Backend wird ein Ceph-Cluster mit einer
 Brutto-Kapazität von rund 44\,TB eingesetzt, von denen aktuell ca.\
-6\,TB belegt sind.
+sechs\,TB belegt sind.
 
 Die bestehende Sicherung ist heterogen aufgebaut:
 \begin{itemize}
     \item Sicherungen der \acp{VM} und Container werden auf den
           \emph{lokalen} Storages der älteren Hypervisor-Knoten
           abgelegt. Die neueren Dell-VxRail-Knoten besitzen
-          \textbf{keinen} lokalen Storage; für die dort laufenden
+          \textbf{keinen} lokalen Storage, für die dort laufenden
           \acp{VM} gibt es daher keine lokale Sicherungsmöglichkeit.
     \item Ausgewählte \acp{VM} werden zusätzlich per \texttt{rsync} auf
           einen separaten Backup-Server kopiert.
@@ -31,9 +31,9 @@ Die bestehende Sicherung ist heterogen aufgebaut:
 \begin{itemize}
     \item \textbf{Restore-Reichweite:} Restores aus dem lokalen
           Storage einzelner Hypervisor sind zwar schnell (typisch
-          2--6\,min), funktionieren aber nur auf den älteren IBM-/
-          Lenovo-Knoten. Für die VxRail-Hypervisor existiert keine
-          äquivalente schnelle Restore-Quelle.
+          zwei bis sechs Minuten), funktionieren aber nur auf den
+          älteren IBM-/Lenovo-Knoten. Für die VxRail-Hypervisor
+          existiert keine äquivalente schnelle Restore-Quelle.
     \item \textbf{Fehlschläge bei Migrationen:} Bei der Migration
           großer \acp{VM} zwischen Knoten -- insbesondere von und zu
           VxRails -- kommt es vor, dass keine konsistente Sicherung
@@ -63,14 +63,14 @@ Backup-Lösung:
 \subsubsection*{Funktionale Anforderungen}
 \begin{itemize}
     \item Dedizierter \acl{PBS} auf eigener Hardware, unabhängig vom
-          produktiven \ac{Ceph}-Cluster.
+          produktiven Ceph-Cluster.
     \item Sicherung aller relevanten \acp{VM} und Container des
           \ac{PVE}-Clusters über die native \ac{PVE}-/\ac{PBS}-
           Integration.
     \item Definierte Backup-Jobs mit Zeitplänen und
           Aufbewahrungs\-richtlinien je \ac{VM}-Klasse.
     \item Automatisierte E-Mail-Benachrichtigung bei Fehlern und
-          Anbindung an das vorhandene \ac{Prometheus}-Monitoring.
+          Anbindung an das vorhandene Prometheus-Monitoring.
     \item Möglichkeit zur Wiederherstellung einzelner Dateien sowie
           ganzer \acp{VM} / Container.
 \end{itemize}
@@ -146,7 +146,7 @@ der Personal- bzw.\ Beschaffungsabteilung ersetzen}).
           vermiedener mehrstündiger Restore-Vorgang pro Jahr
           amortisiert die kalkulierten Projektkosten.
     \item Reduzierung des Risikos eines Totalverlusts bei einem
-          Ausfall des \ac{Ceph}-Clusters.
+          Ausfall des Ceph-Clusters.
     \item Zentrale Verwaltung, Monitoring und Integritätsprüfung der
           Sicherungen senken den laufenden administrativen Aufwand.
 \end{itemize}
