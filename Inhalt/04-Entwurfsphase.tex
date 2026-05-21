@@ -35,14 +35,12 @@ Diese Kapazität ist angesichts der aktuell ca.\ 6\,TB belegten
 Primärdaten und der durch \ac{PBS} eingesetzten Deduplizierung
 ausreichend dimensioniert.
 
-\subsubsection*{Bewusste Entscheidung gegen \acs{ZFS}}
-Ursprünglich war \ac{ZFS} als Dateisystem für den Datastore vorgesehen,
-da es Prüfsummen und Snapshots auf Dateisystem-Ebene mitbringt.
-Aufgrund des vorhandenen Hardware-\ac{RAID}-Controllers und der
-begrenzten \ac{RAM}-Ausstattung des Altsystems wird stattdessen ein
-klassisches Hardware-\ac{RAID} mit \texttt{ext4} als Dateisystem
-verwendet. Die Datenintegrität wird stattdessen durch die in \ac{PBS}
-integrierten Verify-Jobs sichergestellt.
+Als Dateisystem für den Datastore wird \texttt{ext4} auf dem
+Hardware-\ac{RAID}\,5 eingesetzt; der vorhandene
+Hardware-\ac{RAID}-Controller gibt diese Strategie vor. Die
+Datenintegrität wird durch die in \ac{PBS} integrierten Verify-Jobs
+sichergestellt, die alle gespeicherten Chunks regelmäßig gegen ihre
+Prüfsummen vergleichen.
 
 
 \subsection{Netzwerkarchitektur}
