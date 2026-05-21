@@ -4,23 +4,30 @@
 
 \subsection{Beschaffung und Vorbereitung}
 \label{sec:Beschaffung}
-Da als Hardware ein vorhandener IBM System x3755 M3 nachgenutzt
-wird, entfällt eine externe Beschaffung. Der Server wird in
-DCODCF-Rack14 bereitgestellt; der Hardware-\ac{RAID}-Controller
-wird auf \ac{RAID}\,1 für das System und \ac{RAID}\,5 über
-6$\times$4\,TB HDDs für den Datastore konfiguriert. Zusätzlich
-wird eine \ac{SFP}-Netzwerkkarte mit 2$\times$10\,GbE eingebaut
-und per \ac{LACP} zu einem logischen Interface gebündelt
-(Aufwand ca.\ 10\,min); die Verkabelung läuft über die Patchpanels
-in Rack14/16 zum Cisco-Switch
-\texttt{aci-dc03-og2-r16-aly-2153}. Parallel wird das aktuelle
-\ac{PBS}-4-ISO als bootfähiges Installationsmedium vorbereitet und
-mit dem \ac{DKFZ}-Netzwerkteam der Anschluss an das
-\emph{server}-\ac{VLAN} sowie die Firewall-Freischaltungen zum
-\ac{PVE}-Cluster abgestimmt.
+Da als Hardware ein vorhandener IBM System x3755 M3 nachgenutzt wird,
+entfällt eine externe Beschaffung. Die Vorbereitung umfasst:
+\begin{itemize}
+    \item Bereitstellung des Servers im Rechenzentrum der \ac{ODCF}
+          in DCODCF-Rack14.
+    \item Konfiguration des Hardware-\ac{RAID}-Controllers:
+          \ac{RAID}\,1 für das System, \ac{RAID}\,5 über 6$\times$4\,TB
+          HDDs für den Datastore.
+    \item Einbau einer Netzwerk-\ac{SFP}-Karte mit 2$\times$10\,GbE
+          und Bündelung der beiden Ports per \ac{LACP} zu einem
+          logischen Interface (Aufwand: ca.~10\,min).
+    \item Verkabelung beider Ports über die Patchpanels in Rack14
+          und Rack16 zum Cisco-Switch
+          \texttt{aci-dc03-og2-r16-aly-2153}.
+    \item Herunterladen des aktuellen \ac{PBS}-4-ISOs von Proxmox und
+          Vorbereitung eines bootfähigen Installationsmediums.
+    \item Abstimmung der Netzwerkkonfiguration (Anschluss an das
+          \emph{server}-\ac{VLAN}, Firewall-Freischaltungen zwischen
+          \ac{PVE}-Cluster und \ac{PBS}) mit dem Netzwerkteam des
+          \ac{DKFZ}.
+\end{itemize}
 
-Die endgültige LACP-Konfiguration auf dem \ac{PBS} zeigt das
-folgende Listing:
+Die endgültige LACP-Konfiguration auf dem \ac{PBS} ist im
+folgenden Listing dargestellt:
 \begin{lstlisting}[caption={\texttt{/etc/network/interfaces} auf odcf-fs04}]
 auto lo
 iface lo inet loopback

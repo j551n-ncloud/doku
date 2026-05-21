@@ -56,23 +56,35 @@ Die bestehende Sicherung ist heterogen aufgebaut:
 
 \subsection{Anforderungsanalyse}
 \label{sec:Anforderungsanalyse}
-Aus dem Projektantrag und der Ist-Analyse ergeben sich folgende
-Anforderungen an die neue Backup-Lösung:
+Aus dem Projektantrag und der Ist-Analyse ergeben sich die folgenden
+funktionalen und nicht-funktionalen Anforderungen an die neue
+Backup-Lösung:
+
+\subsubsection*{Funktionale Anforderungen}
 \begin{itemize}
-    \item Dedizierter \acl{PBS} auf eigener Hardware, getrennt von
-          Primär-Storage und produktiven Hypervisor.
-    \item Native Sicherung aller relevanten \acp{VM} und Container
-          des \ac{PVE}-Clusters mit Job-Plänen und Retention je
-          \ac{VM}-Klasse.
-    \item Restore einzelner Dateien sowie ganzer \acp{VM} bzw.\
-          Container.
-    \item E-Mail-Benachrichtigung und Anbindung an das vorhandene
-          \ac{Prometheus}-Monitoring.
-    \item Authentifizierung über das \ac{DKFZ}-\ac{LDAP} plus
-          lokalem \texttt{root}-Account; Einbindung in die bestehende
-          Netzwerkstruktur (\emph{server}/\emph{cluster}/\emph{external}/
+    \item Dedizierter \acl{PBS} auf eigener Hardware, unabhängig vom
+          produktiven \ac{Ceph}-Cluster.
+    \item Sicherung aller relevanten \acp{VM} und Container des
+          \ac{PVE}-Clusters über die native \ac{PVE}-/\ac{PBS}-
+          Integration.
+    \item Definierte Backup-Jobs mit Zeitplänen und
+          Aufbewahrungs\-richtlinien je \ac{VM}-Klasse.
+    \item Automatisierte E-Mail-Benachrichtigung bei Fehlern und
+          Anbindung an das vorhandene \ac{Prometheus}-Monitoring.
+    \item Möglichkeit zur Wiederherstellung einzelner Dateien sowie
+          ganzer \acp{VM} / Container.
+\end{itemize}
+
+\subsubsection*{Nicht-funktionale Anforderungen}
+\begin{itemize}
+    \item Trennung von Primär- und Sicherungs-Storage.
+    \item Authentifizierung über das bestehende \ac{DKFZ}-\ac{LDAP},
+          ergänzt um einen lokalen \texttt{root}-Account für die
+          Initialkonfiguration und Notfallzugriff.
+    \item Betrieb in der bestehenden Netzwerkstruktur der \ac{ODCF}
+          (\emph{server}-, \emph{cluster}-, \emph{external}- und
           \emph{ceph}-\ac{VLAN}).
-    \item Open-Source-Lösung ohne Lizenzkosten.
+    \item Open-Source-Lösung, keine Lizenzkosten.
 \end{itemize}
 
 
@@ -99,23 +111,49 @@ detaillierter behandelt:
 
 \subsection{Wirtschaftlichkeitsanalyse}
 \label{sec:Wirtschaftlichkeitsanalyse}
-Da konkrete interne Stundensätze und Hardware-Listenpreise nicht
-abschließend vorliegen, wird mit Platzhalterwerten kalkuliert. Die
-Projektkosten setzen sich zusammen aus ca.\ 40\,h Eigenleistung des
-Prüflings ($\approx$\,1\,000\,\texteuro\ bei 25\,\texteuro/h
-Vollkostensatz), ca.\ 5\,h Betreuung ($\approx$\,400\,\texteuro\ bei
-80\,\texteuro/h) sowie geschätzten 200\,\texteuro\ für Strom und
-Stellplatz des nachgenutzten IBM x3755 -- in Summe ca.\
-1\,600\,\texteuro. Hardware- und Lizenzkosten fallen nicht an, da
-vorhandene Hardware genutzt wird und der \ac{PBS} unter AGPLv3 frei
-verfügbar ist.
+Die Wirtschaftlichkeit des Projekts ergibt sich vor allem aus zwei
+Faktoren: Die Reduktion des Risikos eines Datenverlusts durch eine von
+der Primär-Storage getrennte Sicherung sowie die deutlich vereinfachte
+und schnellere Wiederherstellung einzelner \acp{VM} und Container.
 
-Der Nutzen ergibt sich vor allem aus der Trennung von Primär- und
-Sicherungsdaten sowie deutlich kürzeren Restore-Zeiten gegenüber
-\ac{TSM}/Tape; bereits ein einziger vermiedener mehrstündiger Restore-
-Vorgang pro Jahr amortisiert die Projektkosten. Hinzu kommt die
-zentrale Verwaltung und automatische Integritätsprüfung, die den
-laufenden administrativen Aufwand reduziert.
+\subsubsection*{Annahmen}
+Da konkrete interne Stundensätze und Hardware-Listenpreise zum
+Zeitpunkt der Erstellung nicht abschließend vorliegen, werden für die
+folgende Kalkulation plausible Platzhalterwerte angesetzt
+(\emph{Platzhalter -- in der finalen Fassung durch reale Zahlen aus
+der Personal- bzw.\ Beschaffungsabteilung ersetzen}).
+
+\subsubsection*{Projektkosten}
+\begin{itemize}
+    \item \textbf{Personalkosten Prüfling:} 40\,h $\times$
+          ca.\ 25\,\texteuro/h (Vollkostensatz Azubi inkl.\ Gemeinkosten,
+          Platzhalter) $=$ ca.\ 1\,000\,\texteuro.
+    \item \textbf{Betreuung / Abstimmung:} ca.\ 5\,h $\times$
+          80\,\texteuro/h (Platzhalter Senior-Admin) $=$ 400\,\texteuro.
+    \item \textbf{Hardware:} keine Beschaffungskosten, da ein
+          vorhandener IBM System x3755 (32~Kerne AMD Opteron~6220,
+          32\,GB \ac{RAM}, 6\,$\times$\,4\,TB HDD) nachgenutzt wird.
+          Anzusetzen sind lediglich Strom- und Standkosten (Platzhalter
+          ca.\ 200\,\texteuro\ über die Projektlaufzeit).
+    \item \textbf{Software:} keine Lizenzkosten, da \ac{PBS} unter der
+          AGPLv3 verfügbar ist (no-subscription-Repository).
+\end{itemize}
+
+\subsubsection*{Nutzen}
+\begin{itemize}
+    \item Deutlich kürzere Restore-Zeiten gegenüber dem heutigen
+          Vorgehen über \ac{TSM}/Tape -- bereits ein einziger
+          vermiedener mehrstündiger Restore-Vorgang pro Jahr
+          amortisiert die kalkulierten Projektkosten.
+    \item Reduzierung des Risikos eines Totalverlusts bei einem
+          Ausfall des \ac{Ceph}-Clusters.
+    \item Zentrale Verwaltung, Monitoring und Integritätsprüfung der
+          Sicherungen senken den laufenden administrativen Aufwand.
+\end{itemize}
+
+% TODO: nach Rücksprache mit Frank / Personalabteilung echte Zahlen
+% einsetzen und ggfs. eine Tabelle in Tabellen/Kostenaufstellung.tex
+% pflegen.
 
 
 \subsection{Lasten-/Pflichtenheft}
