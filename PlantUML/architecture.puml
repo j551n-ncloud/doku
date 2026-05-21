@@ -1,4 +1,5 @@
 @startuml architecture
+!pragma layout smetana
 title Gesamtarchitektur PBS-Blueprint (ODCF)
 
 skinparam componentStyle rectangle
