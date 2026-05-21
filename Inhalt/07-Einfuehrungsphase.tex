@@ -24,10 +24,11 @@ hinterlegt ist (siehe Abschnitt~\ref{sec:LDAPAnbindung}).
 \begin{itemize}
     \item Das lokale \texttt{root}-Passwort wird im zentralen
           Bitwarden-Tresor der \ac{ODCF} hinterlegt.
-    \item Die im Rahmen des Projekts verwendeten \ac{API}-Token
-          werden bei einem späteren Produktivgang rotiert; für die
-          Blueprint-Instanz dokumentiert das Projekt das genaue
-          Vorgehen.
+    \item Sämtliche Zugangsdaten (\texttt{root}-Passwort sowie der
+          \ac{API}-Token des \texttt{pbs-exporter} für das
+          Prometheus-Monitoring) werden bei einem späteren
+          Produktivgang rotiert; für die Blueprint-Instanz
+          dokumentiert das Projekt das genaue Vorgehen.
 \end{itemize}
 
 \subsection{Verhältnis zur bestehenden Sicherung}
