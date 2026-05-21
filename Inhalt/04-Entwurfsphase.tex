@@ -126,10 +126,11 @@ verwendet:
     \item Anbindung an das \ac{DKFZ}-\ac{LDAP} für reguläre Admin-
           User, die ihre persönlichen Konten verwenden.
 \end{itemize}
-Die Anbindung des \ac{PVE}-Clusters an den \ac{PBS} erfolgt nicht über
-einen interaktiven Benutzer, sondern über einen technischen
-\ac{API}-Token mit eng gefasstem Berechtigungs\-umfang
-(nur Backup-/Verify-Operationen auf dem dafür angelegten Datastore).
+Die Anbindung des \ac{PVE}-Clusters an den \ac{PBS} erfolgt über das
+lokale \texttt{root}-Passwort des \ac{PBS} in Kombination mit dem
+TLS-Fingerprint des \ac{PBS}-Zertifikats; dadurch ist gewährleistet,
+dass sich das \ac{PVE} ausschließlich gegen den richtigen
+\ac{PBS}-Host authentifiziert.
 
 
 \subsection{Maßnahmen zur Qualitätssicherung}

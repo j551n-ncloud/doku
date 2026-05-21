@@ -85,17 +85,16 @@ Tatsächlicher Zeitaufwand für die LDAP-Einrichtung: ca.~0{,}5\,h.
 
 \subsection{Integration in den PVE-Cluster}
 \label{sec:PVEIntegration}
-Für die Anbindung des \ac{PBS} an den \ac{PVE}-Cluster wird ein
-dedizierter \ac{API}-Token im \ac{PBS} erstellt. Dieser Token erhält
-ausschließlich die für Backups und Verifizierung notwendigen
-Berechtigungen auf dem entsprechenden Datastore.
+Für die Anbindung des \ac{PBS} an den \ac{PVE}-Cluster wird der
+lokale \texttt{root}-Account des \ac{PBS} verwendet; das zugehörige
+Passwort ist im Bitwarden-Tresor der \ac{ODCF} hinterlegt.
 
 Im \ac{PVE} wird der \ac{PBS} anschließend als Storage vom Typ
 \emph{Proxmox Backup Server} hinzugefügt~\citep{PVEAdminGuide};
 dabei werden Server-Adresse
 (\texttt{odcf-fs04} / \texttt{10.131.196.78}), Datastore-Name,
-\ac{API}-Token sowie der TLS-Fingerprint des \ac{PBS}-Zertifikats
-hinterlegt.
+\texttt{root}-Zugangsdaten sowie der TLS-Fingerprint des
+\ac{PBS}-Zertifikats hinterlegt.
 Ein Test-Backup einer unkritischen \ac{VM} verifiziert die korrekte
 Anbindung, bevor produktive Jobs aufgesetzt werden.
 
