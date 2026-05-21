@@ -12,5 +12,25 @@
 \input{Anhang/AnhangAdminDoku.tex}
 \clearpage
 
-% Hinweis: Auf Bilder/Diagramme (NetBox-Verkabelung, Screenshots
-% etc.) wird in dieser Doku bewusst verzichtet.
+\subsection{PVE-Cluster-Topologie}
+\label{app:ClusterTopologie}
+Das folgende Diagramm zeigt die Netzwerk-Topologie des
+\ac{PVE}-Clusters der \ac{ODCF} mit den sechs Hypervisor-Knoten
+(verteilt auf 2.\,OG, 4.\,OG und Rechenzentrum), den jeweiligen
+Switch-Paaren je Etage, den \ac{LACP}-Bonds für das Ceph- und
+\ac{PVE}-/Management-Netz sowie der Anbindung des neuen
+\ac{PBS} \texttt{odcf-fs04}.
+Quelle: Mermaid-Diagramm \texttt{mermaid/pve-cluster.mmd} im Repo.
+
+\begin{landscape}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth,height=0.85\textheight,keepaspectratio]{pve-cluster}
+    \caption{PVE-Cluster-Topologie der ODCF (Ceph: durchgezogen, PVE/MGMT: gestrichelt)}
+    \label{fig:ClusterTopologie}
+\end{figure}
+\end{landscape}
+\clearpage
+
+% Cluster-Topologie liegt als Mermaid-Source in mermaid/pve-cluster.mmd
+% und gerendert als Bilder/pve-cluster.{png,pdf}.
