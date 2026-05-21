@@ -2,15 +2,40 @@
 \section{Einführungsphase}
 \label{sec:Einfuehrungsphase}
 
-Der aufgebaute \ac{PBS} \texttt{odcf-fs04} ist eine
-\textbf{Blueprint-Testinstanz}, keine Produktivumgebung. Mit dem
-Projekt wird daher kein Produktivgang durchgeführt; übergeben wird
-eine reproduzierbare, dokumentierte Referenzkonfiguration an Stefan
-Becker (\ac{ODCF}), die als Vorlage für die spätere Produktivinstanz
-dient. Administrativer Zugriff erfolgt über die \ac{AD}-Gruppe
-\texttt{ODCF-SysAdmins} (\ac{LDAP}-Realm, siehe
-Abschnitt~\ref{sec:LDAPAnbindung}); das lokale \texttt{root}-Passwort
-wird im Bitwarden-Tresor der \ac{ODCF} hinterlegt. Die bestehenden
-lokalen Hypervisor-Backups und die \ac{TSM}-/Tape-Sicherung laufen
-unverändert weiter -- eine produktive Ablösung ist ausdrücklich
-nicht Teil dieses Abschlussprojekts.
+Der im Rahmen dieses Projekts aufgebaute \ac{PBS} \texttt{odcf-fs04}
+ist eine \textbf{Blueprint-Testinstanz} und nicht die spätere
+Produktivumgebung. Ziel der Einführungsphase ist daher nicht der
+Produktivgang, sondern die Übergabe einer reproduzierbaren,
+dokumentierten Referenzkonfiguration an das \ac{ODCF}-Team, die
+dort als Basis für die eigentliche Produktivinstanz dient.
+Eine mehrstufige Schulung ist nicht vorgesehen; statt einer
+Einweisung wird die übergebene Betriebsdokumentation
+(siehe Abschnitt~\ref{sec:Dokumentation}) als Grundlage für den
+weiteren Aufbau genutzt.
+
+\subsection{Übergabe und Zuständigkeiten}
+Die Blueprint-Instanz und die zugehörige Dokumentation gehen an
+Stefan Becker (\ac{ODCF}) über. Administrativer Zugriff auf die
+Testinstanz erfolgt über die bestehende \ac{AD}-Gruppe
+\texttt{ODCF-SysAdmins}, die im \ac{PBS} als \ac{LDAP}-Realm
+hinterlegt ist (siehe Abschnitt~\ref{sec:LDAPAnbindung}).
+
+\subsubsection*{Zugänge und Geheimnisse}
+\begin{itemize}
+    \item Das lokale \texttt{root}-Passwort wird im zentralen
+          Bitwarden-Tresor der \ac{ODCF} hinterlegt.
+    \item Die im Rahmen des Projekts verwendeten \ac{API}-Token
+          werden bei einem späteren Produktivgang rotiert; für die
+          Blueprint-Instanz dokumentiert das Projekt das genaue
+          Vorgehen.
+\end{itemize}
+
+\subsection{Verhältnis zur bestehenden Sicherung}
+Da es sich um eine Blueprint-Testinstanz handelt, wird im Rahmen
+dieses Projekts \emph{keine} bestehende Sicherung abgelöst.
+Sowohl die lokalen Hypervisor-Backups als auch die \ac{TSM}-/Tape-
+Sicherung bleiben unverändert in Betrieb.
+Die spätere Ablösung der lokalen Hypervisor-Backups durch eine
+produktive \ac{PBS}-Instanz sowie die Festlegung eines Stichtags
+für die Komplettumstellung sind ausdrücklich nicht Teil dieses
+Abschlussprojekts.
