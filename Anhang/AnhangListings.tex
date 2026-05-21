@@ -1,0 +1,60 @@
+\subsection{Konfigurations-Listings}
+\label{app:Listings}
+Die folgenden Auszüge zeigen die produktiven Konfigurations\-dateien
+auf \texttt{odcf-fs04} (Stand der Blueprint-Instanz). Vertrauliche
+Bestandteile (DKFZ-LDAP-Bind, Distinguished Names, Filter,
+LDAP-Server) sind durch \texttt{XXX} ersetzt.
+
+\begin{lstlisting}[caption={\texttt{/etc/network/interfaces} -- LACP-Bond aus 2$\times$10\,GbE},label=lst:interfaces]
+auto lo
+iface lo inet loopback
+
+iface nic0 inet manual
+iface nic1 inet manual
+iface nic2 inet manual
+iface nic3 inet manual
+
+auto nic4
+iface nic4 inet manual
+
+auto nic5
+iface nic5 inet manual
+
+auto bond0
+iface bond0 inet static
+        address 10.131.196.78/22
+        gateway 10.131.196.97
+        bond-slaves nic4 nic5
+        bond-miimon 100
+        bond-mode 802.3ad
+        bond-xmit-hash-policy layer3+4
+        bond-lacp-rate fast
+
+source /etc/network/interfaces.d/*
+\end{lstlisting}
+
+\begin{lstlisting}[caption={\texttt{/etc/proxmox-backup/datastore.cfg}},label=lst:datastore]
+datastore: backup
+        path /mnt/datastore/backup
+\end{lstlisting}
+
+\begin{lstlisting}[caption={\texttt{/etc/proxmox-backup/domains.cfg} (DKFZ-spezifische Daten geschwärzt)},label=lst:ldap]
+pam: pam
+        comment Linux PAM standard authentication
+        type pam
+
+pbs: pbs
+        comment Proxmox Backup authentication server
+        type pbs
+
+ad: dkfz-heidelberg.de
+        base-dn XXX
+        bind-dn XXX
+        default true
+        filter XXX
+        mode ldaps
+        port 636
+        server1 XXX
+        sync-attributes email=mail,firstname=givenName,lastname=sn
+        user-classes user
+\end{lstlisting}

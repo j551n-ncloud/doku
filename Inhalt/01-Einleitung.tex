@@ -18,7 +18,10 @@ Infrastruktur- und Forschungsdienste betrieben werden.
 
 \subsection{Projektumfeld}
 \label{sec:Projektumfeld}
-Das Projekt wird in den Räumen der \ac{ODCF} am \ac{DKFZ} in Heidelberg
+Es handelt sich um ein \textbf{internes Projekt} der \ac{ODCF}; sowohl
+Auftraggeber als auch Auftragnehmer sind Teil des \ac{DKFZ}, eine
+externe Vergabe findet nicht statt.
+Das Projekt wird in den Räumen der \ac{ODCF} am \ac{DKFZ}~\citep{DKFZWebsite} in Heidelberg
 durchgeführt, wo der Prüfling seine Ausbildung zum Fachinformatiker
 Systemintegration absolviert.
 Auftraggeber und fachlicher Betreuer ist Frank Thommen (\ac{ODCF}).
@@ -37,7 +40,8 @@ Die \ac{ODCF} betreibt einen \ac{PVE}-Cluster, der eine Vielzahl
 Infrastrukturaufgaben bereitstellt.
 Eine grundlegende Backup-Infrastruktur ist vorhanden, jedoch
 heterogen aufgebaut: Sicherungen der \acp{VM} und Container werden
-auf den \emph{lokalen} Storages der älteren Hypervisor-Knoten
+auf den \emph{lokalen} Storages der älteren Hypervisor-Knoten -- im
+Zusammenspiel mit \ac{Ceph}~\citep{CephDocs} als Primärspeicher --
 abgelegt; zusätzlich werden Daten einzelner \acp{VM} per
 \texttt{rsync} auf einen separaten Backup-Server übertragen und von
 dort über \ac{TSM} auf Tape (Bandlaufwerk) ausgelagert.
