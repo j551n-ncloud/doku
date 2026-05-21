@@ -4,12 +4,12 @@
 
 \subsection{Vorstellung des DKFZ und der ODCF}
 \label{sec:Vorstellung_DKFZ}
-Das Deutsche Krebsforschungszentrum (\ac{DKFZ}) in Heidelberg ist die größte
+Das \ac{DKFZ} in Heidelberg ist die größte
 biomedizinische Forschungseinrichtung Deutschlands und betreibt
 Spitzenforschung im Bereich der Krebsentstehung und -bekämpfung.
-Innerhalb des DKFZ stellt die \ac{ODCF} (Omics IT and Data Management Core
-Facility) den Forschungsgruppen eine komplexe IT-Infrastruktur zur
-Verarbeitung großer Mengen genomischer Daten bereit.
+Innerhalb des DKFZs stellt die \ac{ODCF} den Forschungsgruppen eine
+komplexe IT-Infrastruktur zur Verarbeitung großer Mengen genomischer
+Daten bereit.
 Dazu zählen unter anderem ein Hochleistungs-Compute-Cluster mit dem
 Scheduling-System \ac{LSF} für die Verarbeitung rechenintensiver
 Analyse-Workloads, Storage-Systeme sowie ein separater
@@ -21,7 +21,7 @@ Infrastruktur- und Forschungsdienste betrieben werden.
 Es handelt sich um ein \textbf{internes Projekt} der \ac{ODCF}; sowohl
 Auftraggeber als auch Auftragnehmer sind Teil des \ac{DKFZ}, eine
 externe Vergabe findet nicht statt.
-Das Projekt wird in den Räumen der \ac{ODCF} am \ac{DKFZ}~\citep{DKFZWebsite} in Heidelberg
+Das Projekt wird in den Räumlichkeiten der \ac{ODCF} am \ac{DKFZ}~\citep{DKFZWebsite} in Heidelberg
 durchgeführt, wo der Prüfling seine Ausbildung zum Fachinformatiker
 Systemintegration absolviert.
 Auftraggeber und fachlicher Betreuer ist Frank Thommen (\ac{ODCF}).
@@ -41,8 +41,8 @@ Infrastrukturaufgaben bereitstellt.
 Eine grundlegende Backup-Infrastruktur ist vorhanden, jedoch
 heterogen aufgebaut: Sicherungen der \acp{VM} und Container werden
 auf den \emph{lokalen} Storages der älteren Hypervisor-Knoten -- im
-Zusammenspiel mit \ac{Ceph}~\citep{CephDocs} als Primärspeicher --
-abgelegt; zusätzlich werden Daten einzelner \acp{VM} per
+Zusammenspiel mit Ceph~\citep{CephDocs} als Primärspeicher --
+abgelegt. Zusätzlich werden Daten einzelner \acp{VM} per
 \texttt{rsync} auf einen separaten Backup-Server übertragen und von
 dort über \ac{TSM} auf Tape (Bandlaufwerk) ausgelagert.
 Die neueren Dell-VxRail-Knoten besitzen jedoch keinen lokalen
@@ -56,7 +56,7 @@ ist zudem nicht ideal, da Primär- und Sicherungsdaten dadurch auf
 derselben Infrastruktur liegen und die VxRail-Knoten gänzlich
 ausgeschlossen sind.
 Ziel ist daher der Wechsel auf eine dedizierte Backup-Lösung, die
-unabhängig vom \ac{Ceph}-Cluster sowie vom lokalen Storage der
+unabhängig vom Ceph-Cluster sowie vom lokalen Storage der
 Hypervisor betrieben wird und eine einheitliche, zentral verwaltete
 Sicherung aller virtualisierten Dienste ermöglicht.
 Die bisherige Lösung führt zu eingeschränkter Wiederherstellbarkeit,
@@ -89,8 +89,8 @@ einer Forschungsinfrastruktur nicht ausreichend.
 Restores von einzelnen \acp{VM} oder gar einzelnen Dateien sind aufwändig,
 inkrementelle Sicherungen sind nicht möglich und eine zentrale Überwachung
 der Backup-Jobs fehlt.
-Mit einem dedizierten \acl{PBS} können Sicherungen deutlich häufiger,
-effizienter (Deduplizierung, inkrementelle Backups) und mit deutlich
+Mit einem dedizierten \acl{PBS} können Sicherungen häufiger,
+effizienter (Deduplizierung, inkrementelle Backups) und mit
 kürzeren Wiederherstellungszeiten durchgeführt werden.
 Gleichzeitig erlaubt der \ac{PBS} eine zentrale Verwaltung,
 Integritätsprüfung und Benachrichtigung über fehlgeschlagene Jobs.
