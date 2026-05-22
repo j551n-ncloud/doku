@@ -11,9 +11,9 @@ participant "PBS\nodcf-fs04" as pbs
 database "Datastore\nbackup" as ds
 participant "Verify-Job\n(woechentlich)" as verify
 
-sched -> pve : Trigger\n(02:00 / 14:00)
+sched -> pve : Trigger\n(00:00 / 12:00)
 pve -> pve : Snapshot der VM/CT\nerstellen
-pve -> pbs : connect\nPBSAPIToken=...
+pve -> pbs : connect\n(root-Passwort)
 note right of pve
   TLS-Fingerprint\nwird geprueft
 end note

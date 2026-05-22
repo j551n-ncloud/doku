@@ -20,11 +20,11 @@ cloud "Bestehende Sicherung\n(parallel, ausserhalb dieses Projekts)" as legacy {
     component "Backup-Server\n+ TSM / Tape" as tsm
 }
 
-pve -down-> pbs : Backups\n(API-Token, TLS)
+pve -down-> pbs : Backups\n(root-Passwort + TLS)
 pbs -down-> datastore : Snapshots\n(dedup, incremental)
 pbs -up-> ldap : LDAPS:636\n(Auth via\nODCF-SysAdmins)
-pbs -right-> prom : Metriken\n:9100/metrics\n(pbs-exporter)
-pbs ..> bw : root-PW,\nAPI-Token
+prom -right-> pbs : Metrik-Scrape\n:9100/metrics\n(API-Token\nroot@pam!pbs-exporter)
+pbs ..> bw : root-Passwort,\nAPI-Token (pbs-exporter)
 pbs -right-> tsm : Host-Backup\n(rsync + TSM,\nbleibt aktiv)
 
 @enduml
