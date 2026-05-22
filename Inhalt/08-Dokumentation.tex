@@ -2,6 +2,43 @@
 \section{Dokumentation}
 \label{sec:Dokumentation}
 
-Damit der Fachbereich weiß, wie man selbst eine Anpassung der organisationsspezifischen Rollen und Attribute vornimmt, wurde ein entsprechendes Handbuch angefertigt.
-Dieses Handbuch ist für Windchill-Administratoren gedacht, es ist also vorausgesetzt, dass der Leser sich umfassend mit dem System auskennt und auch selbständig Änderungen an \zB Workflows vornehmen kann.
-Ein Auszug dazu befindet sich im Anhang.
+Da im Anschluss an die Übergabe keine formale Schulung des Betriebs-
+teams vorgesehen ist (siehe Abschnitt~\ref{sec:Einfuehrungsphase}),
+nimmt die Betriebsdokumentation eine zentrale Rolle ein: sie ist
+der primäre Wissensträger für den künftigen Betrieb des \ac{PBS}
+durch das \ac{ODCF}-Team.
+
+\subsection{Plattform und Ablage}
+Die Betriebsdokumentation wird im internen DokuWiki der \ac{ODCF}
+abgelegt. Sie ist damit für alle Mitglieder der Gruppe
+\texttt{ODCF-SysAdmins} erreichbar und kann gemeinsam gepflegt
+werden.
+% TODO: konkreten Wiki-Pfad / Link ergänzen, sobald die Seiten
+% angelegt sind.
+
+\subsection{Adressaten}
+Zielgruppe der Betriebsdokumentation sind die Mitglieder der
+\ac{AD}-Gruppe \texttt{ODCF-SysAdmins}, also das System-
+administrationsteam der \ac{ODCF}. Es wird ein Linux- und
+Virtualisierungs-Grundwissen vorausgesetzt; die Doku beschränkt
+sich daher auf die für den \ac{PBS}-Betrieb spezifischen Themen.
+
+\subsection{Struktur}
+Die Dokumentation gliedert sich in folgende Kapitel:
+\begin{itemize}
+    \item Übersicht und Architektur
+    \item Hardware-Setup (IBM x3755 M3, \ac{RAID}-Konfiguration,
+          \ac{SFP}-Karte mit \ac{LACP})
+    \item Installation des \ac{PBS}~4
+    \item Anbindung an das \ac{DKFZ}-\ac{LDAP}
+    \item Anbindung an das \ac{PVE}-Cluster (\texttt{root}-Passwort,
+          TLS-Fingerprint)
+    \item Datastore-Verwaltung (Anlegen, Verify, Prune)
+    \item Backup-Jobs (kritisch / Test)
+    \item Restore-Verfahren (einzelne Dateien / ganze \ac{VM})
+    \item Monitoring und Integration in Prometheus
+    \item Troubleshooting / FAQ
+    \item Übergabe und Zuständigkeiten
+\end{itemize}
+Ein Auszug aus diesen Inhalten ist im
+\Anhang{app:BetriebsDoku} hinterlegt.

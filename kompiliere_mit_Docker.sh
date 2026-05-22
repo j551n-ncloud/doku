@@ -63,27 +63,17 @@ compile_puml() {
     return
   fi
 
+  # Direkt PNG erzeugen -- kein SVG->PDF Zwischenschritt noetig.
+  # Hohe DPI fuer scharfe Einbindung in LaTeX.
   for f in "${puml_files[@]}"; do
-    echo "Erzeuge SVG für $f"
-    java -jar plantuml.jar -charset UTF-8 -svg "$f" || { echo "plantuml fehlgeschlagen für $f"; return 1; }
-  done
-
-  svg_files=("${PLANTUML_DIR}"/*.svg)
-  if [ ${#svg_files[@]} -eq 0 ]; then
-    echo "Keine SVG-Dateien erzeugt."
-    return
-  fi
-
-  for s in "${svg_files[@]}"; do
-    base="$(basename "$s" .svg)"
-    pdfName="${ANHANG_DIR}/${base}.pdf"
-    echo "Konvertiere $s -> $pdfName"
-    inkscape --export-filename="${pdfName}" "$s" || { echo "inkscape fehlgeschlagen für $s"; return 1; }
-  done
-
-  echo "Entferne SVG-Dateien"
-  for s in "${svg_files[@]}"; do
-    rm -f "$s"
+    base="$(basename "$f" .puml)"
+    echo "Erzeuge PNG für $f"
+    java -jar plantuml.jar -charset UTF-8 -tpng -DPLANTUML_LIMIT_SIZE=8192 "$f" \
+      || { echo "plantuml fehlgeschlagen für $f"; return 1; }
+    # PlantUML legt das PNG neben die .puml -- nach Anhang/ verschieben
+    if [ -f "${PLANTUML_DIR}/${base}.png" ]; then
+      mv "${PLANTUML_DIR}/${base}.png" "${ANHANG_DIR}/${base}.png"
+    fi
   done
 }
 
@@ -106,6 +96,11 @@ if [ "${COMPILE_MERMAID-}" = "yes" ] || ( [ -z "${COMPILE_MERMAID-}" ] && (read 
 else
   echo "Mermaid werden nicht kompiliert"
 fi
+
+# Hinweis: SVGs in Bilder/ werden NICHT mehr automatisch konvertiert.
+# Falls dort SVGs liegen (z.B. cabling*.svg von NetBox), bitte vor
+# dem Build manuell als PNG oder PDF ablegen -- pdflatex haengt
+# sonst beim Einbinden.
 
 # LaTeX mit Docker (zweimal wie im Original)
 mkdir -p "${OUTDIR}"

@@ -2,19 +2,41 @@
 \section{Einführungsphase}
 \label{sec:Einfuehrungsphase}
 
-Das Deployment findet zusammen mit meinem Projektleiter auf einem Terminal-Only Linux-Server statt.
-Die Übertragung der Änderungen auf den Testserver läuft komplett manuell ab.
-Mithilfe des LoadFile Frameworks, das von PTC bereitgestellt wird, wurden die Types importiert.
-Der kompilierte Java Code und die Datei für die Rollendefinition wurde in der Windchill Codebasis abgelegt und alte Dateien gegebenenfalls überschrieben.
+Der im Rahmen dieses Projekts aufgebaute \ac{PBS} \texttt{odcf-fs04}
+ist eine \textbf{Blueprint-Testinstanz} und nicht die spätere
+Produktivumgebung. Ziel der Einführungsphase ist daher nicht der
+Produktivgang, sondern die Übergabe einer reproduzierbaren,
+dokumentierten Referenzkonfiguration an das \ac{ODCF}-Team, die
+dort als Basis für die eigentliche Produktivinstanz dient.
+Eine mehrstufige Schulung ist nicht vorgesehen; statt einer
+Einweisung wird die übergebene Betriebsdokumentation
+(siehe Abschnitt~\ref{sec:Dokumentation}) als Grundlage für den
+weiteren Aufbau genutzt.
 
-%todo:XML
+\subsection{Übergabe und Zuständigkeiten}
+Die Blueprint-Instanz und die zugehörige Dokumentation gehen an
+Stefan Becker (\ac{ODCF}) über. Administrativer Zugriff auf die
+Testinstanz erfolgt über die bestehende \ac{AD}-Gruppe
+\texttt{ODCF-SysAdmins}, die im \ac{PBS} als \ac{LDAP}-Realm
+hinterlegt ist (siehe Abschnitt~\ref{sec:LDAPAnbindung}).
 
-Der Import der Workflows, Life Cycle Templates und OIRs funktioniert über das UI - ebenfalls manuell - direkt im Windchill Server.
+\subsubsection*{Zugänge und Geheimnisse}
+\begin{itemize}
+    \item Das lokale \texttt{root}-Passwort wird im zentralen
+          Bitwarden-Tresor der \ac{ODCF} hinterlegt.
+    \item Sämtliche Zugangsdaten (\texttt{root}-Passwort sowie der
+          \ac{API}-Token des \texttt{pbs-exporter} für das
+          Prometheus-Monitoring) werden bei einem späteren
+          Produktivgang rotiert; für die Blueprint-Instanz
+          dokumentiert das Projekt das genaue Vorgehen.
+\end{itemize}
 
-Die Rollen wurden für zwei Team Templates händisch ausgetauscht.
-Ursprünglich war für das Abschlussprojekt vorgesehen, dass dies mit einem Java Programm automatisiert für alle Team Templates der Organisation funktioniert.
-Durch den Zeitdruck wurde dieses Vorhaben allerdings nach hinten verschoben und zudem auch an einen anderen Mitarbeiter übergeben.
-
-Die Übertragung auf den Produktivserver, die nicht von uns durchgeführt wird, wird automatisiert ablaufen.
-Dafür bereitet ein Experte von AWS ein ANT Buildscript vor.
-
+\subsection{Verhältnis zur bestehenden Sicherung}
+Da es sich um eine Blueprint-Testinstanz handelt, wird im Rahmen
+dieses Projekts \emph{keine} bestehende Sicherung abgelöst.
+Sowohl die lokalen Hypervisor-Backups als auch die \ac{TSM}-/Tape-
+Sicherung bleiben unverändert in Betrieb.
+Die spätere Ablösung der lokalen Hypervisor-Backups durch eine
+produktive \ac{PBS}-Instanz sowie die Festlegung eines Stichtags
+für die Komplettumstellung sind ausdrücklich nicht Teil dieses
+Abschlussprojekts.

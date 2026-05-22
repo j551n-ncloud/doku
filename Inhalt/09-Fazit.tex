@@ -1,43 +1,77 @@
 % !TEX root = ../Projektdokumentation.tex
-\section{Fazit} 
+\section{Fazit}
 \label{sec:Fazit}
 
 \subsection{Soll-/Ist-Vergleich}
 \label{sec:SollIstVergleich}
 
-Das Projektziel wurde zur Deadline nicht eingehalten.
-Grund dafür ist, dass sich auf der einen Seite die Anforderungen im Vergleich zum Start geändert haben.
-Auf der anderen Seite war die Zeit von rund 80 Stunden deutlich zu knapp bemessen für die Fertigstellung des Projekts.
-Darum wurde die Deadline um einige Wochen nach hinten verschoben.
-Das hat auch zur Folge, dass das Projektbudget aufgestockt werden musste.
-
-Durch den Zeitdruck und eine suboptimale Kommunikation sind außerdem einige Fehler in der Implementierung passiert.
-Teilweise wurden Anforderungen nicht optimal umgesetzt oder anders umgesetzt, als sich der Kunde das vorgestellt hat.
-Die Fehler wurden von den Testern entdeckt und dokumentiert.
-Das Projekt wird auch über das Abschlussprojekt hinaus forgesetzt, dabei sollen die Fehler ausgebessert werden.
-Trotzdem ist der Auftraggeber grundsätzlich zufrieden mit dem Ergebnis, denn es soll noch ein weiteres Projekt folgen.
-
-Auch das programmatische Umbenennen von Rollen wurde in der geplanten Zeit nicht geschafft.
-Deswegen wurde diese Aufgabe an einen anderen Mitarbeiter der Arsandis ausgelagert.
-Dies ist aber nicht weiter tragisch, da diese Funktion erst für den Umzug auf den Produktivserver wirklich relevant ist.
-Für das Testen auf den Testservern wurden einige Team-Templates händisch angepasst, wodurch diese Phase des Projekts nicht beeinflusst wurde.
-
-Im Projektantrag wurde bei den Aufgaben die Erstellung eines Use-Case Diagramms erwähnt, dies wurde während des Projekts allerdings fallen gelassen, da es für das Projekt nicht notwendig erschien.
-
-Abschließend ist der Zeitaufwand für das Anfertigen der Dokumentation unerwartet hoch ausgefallen, dafür wurde weniger Zeit in das Erstellen der Aktivitätsdiagramme investiert, damit 80 Stunden nicht überschritten werden.
-
-Wie in Tabelle~\ref{tab:Vergleich} zu erkennen ist, konnte die Zeitplanung nicht wie erwartet eingehalten werden.
-\tabelle{Soll-/Ist-Vergleich}{tab:Vergleich}{Zeitnachher.tex}
+Insgesamt wurden für das Projekt rund 34{,}5~Stunden aufgewendet
+und damit das geplante Zeitbudget von 40~Stunden um etwa
+5{,}5~Stunden unterschritten. Der größte Mehraufwand entstand in
+der Phase \emph{Beschaffung \& Vorbereitung} (+2~h) aufgrund von
+Komplikationen mit dem Hardware-\ac{RAID}-Controller; auch die
+Grundinstallation des \ac{PBS} fiel mit ca.~5~h etwas aufwändiger
+aus als geplant (+1~h). Dem stehen deutlich kürzere Laufzeiten
+bei der Datastore-Konfiguration, der LDAP- und PVE-Anbindung sowie
+der Einrichtung der Backup-Jobs gegenüber, die zusammen rund
+8~Stunden weniger benötigten als veranschlagt -- nicht zuletzt,
+weil viele Konfigurationsschritte in \ac{PBS} und \ac{PVE} sehr gut
+toolunterstützt sind. Der Scope des Projekts ist für einen durchschnittlichen Prüfling
+realistisch auf 40~Stunden ausgelegt -- insbesondere die
+Beschäftigung mit dem Hardware-\ac{RAID}, der LDAP-Anbindung an
+das Unternehmensverzeichnis, die Härtung über \texttt{firewalld},
+die Anbindung an das Prometheus-Monitoring per
+\texttt{pbs-exporter} sowie die Konfiguration eines vollwertigen
+Backup-Konzepts hätten bei einem ersten Kontakt mit den Themen
+deutlich mehr Zeit erfordert. Dass die Konfigurationsphasen hier
+schneller abgeschlossen werden konnten, geht u.\,a.\ auf
+Vorerfahrung des Prüflings mit \ac{PVE} und \ac{PBS} aus einem
+privaten Lab-Setup zurück. Der gesamte Dokumentationsaufwand von rund 10~Stunden verteilt sich
+dabei etwa hälftig auf die Betriebsdokumentation für das
+\ac{ODCF}-Team (siehe \Anhang{app:BetriebsDoku}) und die
+vorliegende Projektdokumentation für die \ac{IHK}.
+Eine vollständige Gegenüberstellung der
+geplanten und tatsächlichen Stunden je Phase befindet sich in
+Tabelle~\ref{tab:Vergleich}.
+\tabelle{Soll-/Ist-Vergleich}{tab:Vergleich}{Zeitnachher}
 
 
 \subsection{Lessons Learned}
 \label{sec:LessonsLearned}
 
-Dieses Projekt war eine hervorragende Möglichkeit, das bis dahin in der Ausbildung Gelernte anzuwenden.
-Da dies das erste große Projekt war, in dem ich mich mit der Zeitplanung hauptsächlich selbst befassen sollte, war dies zu Beginn eine große Herausforderung.
-Allerdings waren die Schulstunden zum Thema Projektmanagement eine große Hilfe, um Kundenanforderungen richtig zu planen.
+Im Laufe des Projekts haben sich vor allem drei Lerneffekte
+herausgestellt. Erstens hat sich gezeigt, wie wichtig eine frühe
+Abstimmung mit dem Netzwerkteam ist: Der Einbau der \ac{SFP}-
+Karte und die \ac{LACP}-Konfiguration waren technisch trivial,
+hingen aber von der rechtzeitigen Bereitstellung der Switch-Ports
+und der Patchpanel-Verkabelung ab. Zweitens hat der Aufbau auf
+Altbestands-Hardware (IBM x3755~M3) klare Grenzen gezeigt, etwa
+beim Speicherausbau und bei der Auswahl des Dateisystems
+(Hardware-\ac{RAID} statt eines Software-Stacks). Drittens wurde
+deutlich, dass eine sauber gepflegte Betriebsdokumentation -- in
+diesem Fall im DokuWiki der \ac{ODCF} -- für ein Sysadmin-Projekt
+mindestens so wertvoll ist wie die eigentliche Implementierung,
+weil der laufende Betrieb anschließend ohne den Prüfling
+weiterläuft.
 
-Zudem habe ich durch den regelmäßigen Austausch mit dem Kunden viel im Bereich der Kommunikation dazugewonnen.
-Es wurden zwar bereits vor dem Abschlussprojekt regelmäßige Gespräche mit langjährigen Kunden geführt, die Kunden dieses Projekts kannten wir allerdings noch nicht zuvor.
-Teilweise gab es Missverständnisse, die nach einem klärenden Gespräch beseitigt wurden.
-Dies war eine wertvolle Erfahrung, die im zukünftigen Berufsleben Gold wert ist.
+% TODO: ggfs. eigene Erfahrungen ergaenzen (Kommunikation,
+% Tooling, Zeitmanagement).
+
+
+\subsection{Ausblick}
+\label{sec:Ausblick}
+
+Mit dem fertigen Blueprint stehen mehrere Folgeschritte offen.
+Kurzfristig kann das \ac{ODCF}-Team auf Basis der erstellten
+Referenzkonfiguration eine produktive \ac{PBS}-Instanz
+aufsetzen und die lokalen Hypervisor-Backups schrittweise auf den
+\ac{PBS} migrieren. Mittelfristig sind eine Off-Site-Replikation
+des Datastores sowie die langfristige Ablösung der \ac{TSM}-/Tape-
+Sicherung als zusätzliche Sicherungsebene denkbar. Darüber hinaus
+lässt sich das eingerichtete Monitoring um weitere Metriken und
+Alerts ausbauen (z.\,B.\ Trend-Alerts auf Datastore-Belegung
+oder Verify-Fehlerquoten), sodass sich der Betrieb mittelfristig
+nahezu vollständig automatisiert überwachen lässt.
+
+% TODO: ggfs. konkretere Folgeprojekte mit Frank abstimmen und
+% hier referenzieren.
