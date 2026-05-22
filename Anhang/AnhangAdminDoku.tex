@@ -90,7 +90,118 @@ Der File-Restore-Mechanismus läuft in einer temporären Restore-
           und Funktion prüfen.
 \end{enumerate}
 
-\subsubsection*{6. Verify-Job manuell starten}
+\subsubsection*{6. Agent-basiertes Backup von Debian-Hosts}
+Neben den hypervisor-basierten Backups aus dem \ac{PVE} kann der
+\ac{PBS} auch direkt von einem Debian-Host aus angesprochen werden
+(Agent-Backup über \texttt{proxmox-backup-client}). Diese Variante
+sichert Dateien bzw.\ ganze Pfade unabhängig von der
+Virtualisierungs-Ebene und ist z.\,B.\ für physische Linux-Server
+oder Debian-\acp{VM} außerhalb des \ac{PVE} sinnvoll.
+
+\paragraph*{Voraussetzungen}
+Auf dem zu sichernden Host läuft Debian (getestet mit Debian~13);
+sämtliche Schritte werden als \texttt{root} ausgeführt:
+\begin{lstlisting}[language=bash]
+su
+\end{lstlisting}
+
+\paragraph*{Repository einrichten}
+Zuerst wird das Proxmox-Backup-Client-Repository eingebunden:
+\begin{lstlisting}[language=bash,caption={/etc/apt/sources.list.d/proxmox-backup-client.list}]
+deb http://download.proxmox.com/debian/pbs-client trixie main
+\end{lstlisting}
+Anschließend den passenden GPG-Schlüssel importieren (für Debian~13
+\emph{Trixie}):
+\begin{lstlisting}[language=bash]
+wget -qO - https://enterprise.proxmox.com/debian/proxmox-release-trixie.gpg \
+  | tee /etc/apt/trusted.gpg.d/proxmox-release-trixie.gpg >/dev/null
+\end{lstlisting}
+
+\paragraph*{Installation}
+\begin{lstlisting}[language=bash]
+apt update
+apt install proxmox-backup-client
+\end{lstlisting}
+
+\paragraph*{Verbindung zum \ac{PBS}}
+Anmeldung am \ac{PBS} \texttt{odcf-fs04} (Datastore \texttt{backup}).
+Es wird empfohlen, statt \texttt{root} ein dediziertes Backup-Konto
+mit ausschließlich den nötigen Berechtigungen zu verwenden:
+\begin{lstlisting}[language=bash]
+proxmox-backup-client login \
+  --repository <user>@<realm>@10.131.196.78:backup
+\end{lstlisting}
+Beim ersten Connect wird der TLS-Fingerprint angezeigt und nach
+Bestätigung gespeichert. Beispiel mit lokalem PAM-Konto:
+\texttt{backup@pam@10.131.196.78:backup}.
+
+\paragraph*{Backup durchführen}
+Einzelnes Verzeichnis sichern:
+\begin{lstlisting}[language=bash]
+proxmox-backup-client backup etc.pxar:/etc \
+  --repository <user>@<realm>@10.131.196.78:backup
+\end{lstlisting}
+Komplettes System (root-Dateisystem):
+\begin{lstlisting}[language=bash]
+proxmox-backup-client backup etc.pxar:/ \
+  --repository <user>@<realm>@10.131.196.78:backup
+\end{lstlisting}
+Das neue Snapshot taucht sofort im Datastore \texttt{backup} auf.
+
+\paragraph*{Snapshots anzeigen}
+\begin{lstlisting}[language=bash]
+proxmox-backup-client snapshots \
+  --repository <user>@<realm>@10.131.196.78:backup
+\end{lstlisting}
+Beispielausgabe:
+\begin{lstlisting}
+host/debian/2026-03-11T11:33:16Z   728 B   catalog.pcat1 etc.pxar index.json
+\end{lstlisting}
+
+\paragraph*{Restore}
+\begin{lstlisting}[language=bash]
+proxmox-backup-client restore <Snapshot> etc.pxar <Zielverzeichnis> \
+  --repository <user>@<realm>@10.131.196.78:backup
+\end{lstlisting}
+Konkretes Beispiel (Snapshot \texttt{host/debian/2026-03-11T11:33:16Z}
+nach \texttt{/home/restore} zurückspielen):
+\begin{lstlisting}[language=bash]
+proxmox-backup-client restore host/debian/2026-03-11T11:33:16Z etc.pxar \
+  /home/restore \
+  --repository backup@pam@10.131.196.78:backup
+\end{lstlisting}
+
+\paragraph*{Automatisierung per Cron}
+Skript unter \texttt{/usr/local/sbin/debian-backup.sh} ablegen
+(Werte in \texttt{<>} an die jeweilige Umgebung anpassen):
+\begin{lstlisting}[language=bash,caption={/usr/local/sbin/debian-backup.sh}]
+#!/bin/bash
+set -euo pipefail
+
+export PBS_REPOSITORY="<user>@<realm>@10.131.196.78:backup"
+export PBS_PASSWORD="<Passwort>"
+
+proxmox-backup-client backup \
+    home.pxar:/<verzeichnis>
+\end{lstlisting}
+Skript ausführbar machen und einen Crontab-Eintrag setzen
+(Beispiel: tägliches Backup um 03:30~Uhr):
+\begin{lstlisting}[language=bash]
+chmod +x /usr/local/sbin/debian-backup.sh
+crontab -e
+# Eintrag:
+30 3 * * * /usr/local/sbin/debian-backup.sh
+\end{lstlisting}
+
+\noindent\textbf{Sicherheitshinweis:}
+\texttt{PBS\_PASSWORD} im Klartext im Skript ist nur akzeptabel,
+wenn die Datei mit \texttt{chmod 700} und \texttt{root}-Ownership
+gegen Mitlesen abgesichert ist. Für produktive Hosts wird eine
+\ac{API}-Token-Authentifizierung empfohlen (siehe \ac{PBS}-
+Dokumentation).
+
+
+\subsubsection*{7. Verify-Job manuell starten}
 \begin{lstlisting}[language=bash,caption={Verify auf dem Datastore}]
 # Alle bestehenden Verify-Jobs anzeigen
 proxmox-backup-manager verify-job list
@@ -106,7 +217,7 @@ Snapshot wird in der Web-UI unter \emph{Datastore $\to$ Content}
 ein rotes Warnsymbol angezeigt; betroffene Snapshots gezielt erneut
 verifizieren oder im Härtefall löschen.
 
-\subsubsection*{7. Prune-Logik nachvollziehen}
+\subsubsection*{8. Prune-Logik nachvollziehen}
 Der Prune entscheidet anhand der Regel \texttt{keep-last=3}, welche
 Snapshots gelöscht werden. Vor jeder destruktiven Aktion empfiehlt
 sich ein \emph{Dry-Run}:
@@ -120,7 +231,7 @@ proxmox-backup-manager prune backup --keep-last 3
 Eigentlicher Plattenplatz wird erst durch die anschließende
 Garbage Collection freigegeben (siehe nächster Punkt).
 
-\subsubsection*{8. Vorgehen bei vollem Datastore}
+\subsubsection*{9. Vorgehen bei vollem Datastore}
 Wenn die Belegung kritisch wird:
 \begin{enumerate}\setlength{\itemsep}{1pt}
     \item Belegung prüfen:
@@ -129,7 +240,7 @@ Wenn die Belegung kritisch wird:
     \item Prune-Regeln überprüfen
           (\emph{Datastore $\to$ Prune \& GC}). Falls Regeln zu
           großzügig sind, anpassen.
-    \item Sofortmaßnahme: manueller Prune (siehe Punkt~7) plus
+    \item Sofortmaßnahme: manueller Prune (siehe Punkt~8) plus
           \texttt{garbage-collection start}:
 \begin{lstlisting}[language=bash]
 proxmox-backup-manager garbage-collection start backup
@@ -141,7 +252,7 @@ proxmox-backup-manager garbage-collection start backup
           Frank Thommen.
 \end{enumerate}
 
-\subsubsection*{9. Firewall-Konfiguration}
+\subsubsection*{10. Firewall-Konfiguration}
 Auf \texttt{odcf-fs04} läuft \texttt{firewalld} mit der Default-Zone
 \texttt{public}. Aktiv sind ausschließlich die für den Betrieb
 benötigten Ports und Dienste; \texttt{cockpit}, \texttt{http} und
@@ -184,7 +295,7 @@ zonenweit offen. Soll der Scope eingeschränkt werden, Port-Eintrag
 durch eine Rich-Rule mit \texttt{source address=<prometheus-ip>/32}
 ersetzen.
 
-\subsubsection*{10. Monitoring (Prometheus / pbs-exporter)}
+\subsubsection*{11. Monitoring (Prometheus / pbs-exporter)}
 Auf \texttt{odcf-fs04} läuft der \texttt{natrontech/pbs-exporter}
 als systemd-Unit \texttt{prometheus-pbs-exporter.service} unter dem
 System-User \texttt{pbs-exporter}; Metriken werden auf
@@ -211,7 +322,7 @@ mit Rolle \texttt{Audit}) liegen unter
 \texttt{/etc/pbs-exporter.env}; das Token-Geheimnis ist im
 Bitwarden-Tresor abgelegt.
 
-\subsubsection*{11. Troubleshooting / FAQ}
+\subsubsection*{12. Troubleshooting / FAQ}
 \begin{itemize}\setlength{\itemsep}{1pt}
     \item \textbf{Login mit LDAP-Account schlägt fehl:}
           Realm-Auswahl im Login-Dialog auf \texttt{dkfz-heidelberg.de}
@@ -239,7 +350,7 @@ Bitwarden-Tresor abgelegt.
           \texttt{prune}/\texttt{garbage-collection}.
 \end{itemize}
 
-\subsubsection*{12. Zugriffe und Zuständigkeiten}
+\subsubsection*{13. Zugriffe und Zuständigkeiten}
 \begin{itemize}\setlength{\itemsep}{1pt}
     \item Operativ verantwortlich: Stefan Becker
           (\ac{ODCF}-SysAdmin-Team).
