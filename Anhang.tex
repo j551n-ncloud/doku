@@ -1,47 +1,81 @@
 % !TEX root = Projektdokumentation.tex
 \section{Anhang}
+
 \subsection{Detaillierte Zeitplanung}
 \label{app:Zeitplanung}
-
 \tabelleAnhang{ZeitplanungKomplett}
 
-\subsection{Testprotokoll (Auszug)}
-\label{app:IssueLog}
-\tabelleAnhang{IssueLog}
-
 \input{Anhang/AnhangLastenheft.tex}
+
+\input{Anhang/AnhangListings.tex}
 
 \input{Anhang/AnhangAdminDoku.tex}
 \clearpage
 
-\subsection{Aktivitätsdiagramm ECA-E}
-\begin{figure}[htb]
+\subsection{Gesamtarchitektur}
+\label{app:Architektur}
+Die folgende Übersicht zeigt die Hauptkomponenten der Lösung: den
+\ac{PVE}-Cluster als Backup-Quelle, den neuen \ac{PBS}
+\texttt{odcf-fs04} mit eigenem Datastore, die flankierenden Dienste
+(\ac{DKFZ}-\ac{LDAP}, Prometheus, Bitwarden) sowie die parallel
+weiterlaufende \ac{TSM}-/Tape-Sicherung.
+
+\begin{figure}[htbp]
     \centering
-    \includegraphicsKeepAspectRatio{Bilder/eca-e-flowchart.png}{0.9}
-    \label{Aktivitaetsdiagramm}
-    \caption{Aktivitätsdiagramm ECA-E}
+    \includegraphics[width=0.95\linewidth,keepaspectratio]{architecture}
+    \caption{Komponenten- und Datenflüsse der PBS-Blueprint-Lösung}
+    \label{fig:Architektur}
 \end{figure}
 \clearpage
 
-\subsection{Workflow-Vergleich}
-\label{WorkflowVergleich}
+\subsection{Ablauf eines Backup-Jobs}
+\label{app:BackupSeq}
+Der folgende Sequenzablauf veranschaulicht, wie ein geplanter
+Backup-Job vom \ac{PVE}-Hypervisor ausgelöst, am \ac{PBS}
+authentifiziert und im Datastore inkrementell abgelegt wird.
 
-\begin{figure}[htb]
-    \includegraphicsKeepAspectRatio{ECR-Workflow-old.png}{0.8}
-    \caption{Workflow vor der Umstrukturierung}
-    \label{WorkflowVergleich1}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\linewidth,keepaspectratio]{backup-sequence}
+    \caption{Ablauf eines Backup-Jobs (PVE → PBS) mit anschließendem Verify}
+    \label{fig:BackupSeq}
 \end{figure}
-
-\begin{figure}[htb]
-    \includegraphicsKeepAspectRatio{ECR-Workflow-new.png}{0.8}
-    \caption{Workflow nach der Umstrukturierung}
-    \label{WorkflowVergleich2}
-\end{figure}
-
-\subsection{emptyRole Methode (Auszug)}
-\label{EmptyRoleMethode}
-\lstinputlisting[language=java, caption={Klasse: EmptyRole}]{Listings/TeamHelper.java}
-
-
-
 \clearpage
+
+\subsection{Ablauf eines File-Restores}
+\label{app:RestoreSeq}
+Beim File-Restore startet der \ac{PBS} eine temporäre Restore-\ac{VM},
+mountet den ausgewählten Snapshot read-only und stellt die Datei
+über die Web-Oberfläche zur Verfügung.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\linewidth,keepaspectratio]{restore-sequence}
+    \caption{File-Restore aus dem PBS über die PVE-Weboberfläche}
+    \label{fig:RestoreSeq}
+\end{figure}
+\clearpage
+
+\subsection{PVE-Cluster-Topologie}
+\label{app:ClusterTopologie}
+Das folgende Diagramm zeigt die Netzwerk-Topologie des
+\ac{PVE}-Clusters der \ac{ODCF} mit den sechs Hypervisor-Knoten
+(verteilt auf 2.\,OG, 4.\,OG und Rechenzentrum), den jeweiligen
+Switch-Paaren je Etage, den \ac{LACP}-Bonds für das Ceph- und
+\ac{PVE}-/Management-Netz sowie der Anbindung des neuen
+\ac{PBS} \texttt{odcf-fs04}. Ceph-Bonds sind als durchgezogene,
+\ac{PVE}-/Management-Bonds als gestrichelte Linien dargestellt.
+Quelle: Mermaid-Diagramm \texttt{mermaid/pve-cluster.mmd} im Repo.
+
+\begin{landscape}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth,height=0.85\textheight,keepaspectratio]{pve-cluster}
+    \caption{PVE-Cluster-Topologie der ODCF (Ceph: durchgezogen, PVE/MGMT: gestrichelt)}
+    \label{fig:ClusterTopologie}
+\end{figure}
+\end{landscape}
+\clearpage
+
+% Cluster-Topologie liegt als Mermaid-Source in mermaid/pve-cluster.mmd
+% und gerendert als Bilder/pve-cluster.{png,pdf}.

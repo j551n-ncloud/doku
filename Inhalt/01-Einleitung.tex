@@ -2,128 +2,150 @@
 \section{Einleitung}
 \label{sec:Einleitung}
 
-\subsection{Vorstellung der DKFZ}
+\subsection{Vorstellung des DKFZ und der ODCF}
 \label{sec:Vorstellung_DKFZ}
-Die ODCF (Omics IT and Data Management Core Facility) des Deutschen Krebsforschungszentrums (DKFZ) betreibt eine Proxmox VE (Virtual
-Environment) Cluster-Umgebung, die eine Vielzahl virtueller Maschinen (VMs) und Linux Container (LXC) für Forschungs- und Infrastrukturaufgaben
-bereitstellt.
-Eine grundlegende Backup-Infrastruktur ist vorhanden: Sicherungen der virtuellen Maschinen werden aktuell auf Hypervisor-Ebene als
-Snapshots erstellt und anschließend auf Tape (Bandlaufwerk) gesichert. Ein zentralisierter, dedizierter Proxmox Backup Server (PBS) für die
-Verwaltung, Überwachung und eﬀiziente inkrementelle Datensicherung aller VMs und Container existiert jedoch nicht.
-Dies führt zu eingeschränkter Wiederherstellbarkeit, fehlender zentraler Verwaltung der Backup-Jobs sowie begrenzten Möglichkeiten zur Überprüfung der Backup-Integrität.
+Das \ac{DKFZ} in Heidelberg ist die größte
+biomedizinische Forschungseinrichtung Deutschlands und betreibt
+Spitzenforschung im Bereich der Krebsentstehung und -bekämpfung.
+Innerhalb des DKFZs stellt die \ac{ODCF} den Forschungsgruppen eine
+komplexe IT-Infrastruktur zur Verarbeitung großer Mengen genomischer
+Daten bereit.
+Dazu zählen unter anderem ein Hochleistungs-Compute-Cluster mit dem
+Scheduling-System \ac{LSF} für die Verarbeitung rechenintensiver
+Analyse-Workloads, Storage-Systeme sowie ein separater
+Virtualisierungs-Cluster auf Basis von \ac{PVE}, auf dem kritische
+Infrastruktur- und Forschungsdienste betrieben werden.
+
 \subsection{Projektumfeld}
 \label{sec:Projektumfeld}
-Durchgeführt wird das Projekt von mir in den Räumen des DKFZ, bei der ich meine Ausbildung absolviere.
-Das Projekt wird im Auftrag von Frank Thommen durchgeführt, die in der Herstellung von Wasserpumpen tätig ist.
-\ac{AWS} ist ein Tochterunternehmen von Xylem, einem Unternehmen, das sich auf die Entwicklung und Bereitstellung von Wassertechnologien spezialisiert hat.
+Es handelt sich um ein \textbf{internes Projekt} der \ac{ODCF}; sowohl
+Auftraggeber als auch Auftragnehmer sind Teil des \ac{DKFZ}, eine
+externe Vergabe findet nicht statt.
+Das Projekt wird in den Räumlichkeiten der \ac{ODCF} am \ac{DKFZ}~\citep{DKFZWebsite} in Heidelberg
+durchgeführt, wo der Prüfling seine Ausbildung zum Fachinformatiker
+Systemintegration absolviert.
+Auftraggeber und fachlicher Betreuer ist Frank Thommen (\ac{ODCF}).
+Folgende Beteiligte und Schnittstellen sind für die Projektdurchführung
+relevant:
+\begin{itemize}
+    \item Betreuer / Ausbilder: verantwortlich für die fachliche Begleitung und die Abnahme des Projekts
+    \item \ac{ODCF}-Systemadministratoren: Betreiber der \ac{PVE}-Umgebung und Übergabeempfänger des fertigen \ac{PBS}
+    \item Forschungsgruppen des \ac{DKFZ}: Nutzer der virtualisierten Dienste (indirekt betroffen)
+    \item Netzwerkteam: zuständig für \ac{VLAN}-Konfiguration und Firewall-Freischaltungen
+\end{itemize}
 
-\subsubsection{Systeme}
-
-\subsubsection*{Produktivsystem}
-Der \acl{XGV} ist der Windchill-Server von Xylem und wird von PTC in einer Cloud gehostet.
-Der Login auf dieses System erfolgt für die User über Single-Sign-On.
-Die meisten Tochterfirmen von Xylem sind auf diesem Server als eigenständige Organisation eingerichtet.
-Für die Durchführung des Projekts hat dieser Server allerdings keine Relevanz, da die endgültige Übernahme auf das Produktivsystem nicht von uns durchgeführt wird.
-Wichtig ist, dass alle Änderungen, die von uns vorgenommen werden, ausschließlich die Organisationen von \ac{AWS} betreffen.
-
-\subsubsection*{Testsystem}
-Dieses Testsystem ist ein Klon vom \ac{XGV}-Produktivserver und wird von Xylem gehostet.
-Der Login auf dieses System erfolgt für die User ebenfalls über Single-Sign-On.
-Hier nimmt der Kunde die betriebseigenen Tests vor, um unsere Anpassungen zu überprüfen.
-Zusammen mit meinem Projektleiter werde ich die Übernahme von unserem Entwicklungssystem auf den Trainingsserver durchführen.
-
-\subsubsection*{Entwicklungssystem}
-Das Entwicklungssystem wird von Arsandis gehostet und verwaltet (Hyper-V VM) und wurde im Vorfeld als Klon des Testsystems für dieses Projekts eingerichtet, damit sämtliche Entwicklungsarbeiten darin vorgenommen werden können.
-Statt Single-Sign-On wurden hier lokale Testuser auf einem lokalen LDAP eingerichtet.
-Auch das Arsandis-Interne Testing wird hier stattfinden.
-Die Abschlussprojektarbeit wird - bis auf des Deployment auf den Trainingsserver - vollständig auf diesem Entwicklungssystem stattfinden.
+\subsubsection{Ist-Situation}
+Die \ac{ODCF} betreibt einen \ac{PVE}-Cluster, der eine Vielzahl
+\acp{VM} und \acp{LXC} mit kritischen Diensten für Forschungs- und
+Infrastrukturaufgaben bereitstellt.
+Eine grundlegende Backup-Infrastruktur ist vorhanden, jedoch
+heterogen aufgebaut: Sicherungen der \acp{VM} und Container werden
+auf den \emph{lokalen} Storages der älteren Hypervisor-Knoten -- im
+Zusammenspiel mit Ceph~\citep{CephDocs} als Primärspeicher --
+abgelegt. Zusätzlich werden Daten einzelner \acp{VM} per
+\texttt{rsync} auf einen separaten Backup-Server übertragen und von
+dort über \ac{TSM} auf Tape (Bandlaufwerk) ausgelagert.
+Die neueren Dell-VxRail-Knoten besitzen jedoch keinen lokalen
+Storage, sodass für diese Hypervisor keine lokalen Sicherungen
+möglich sind.
+Ein zentralisierter, dedizierter \acl{PBS} für die Verwaltung, Überwachung
+und effiziente inkrementelle Datensicherung aller \acp{VM} und Container
+existiert jedoch nicht.
+Die Speicherung der Sicherungen auf den produktiven Hypervisor-Knoten
+ist zudem nicht ideal, da Primär- und Sicherungsdaten dadurch auf
+derselben Infrastruktur liegen und die VxRail-Knoten gänzlich
+ausgeschlossen sind.
+Ziel ist daher der Wechsel auf eine dedizierte Backup-Lösung, die
+unabhängig vom Ceph-Cluster sowie vom lokalen Storage der
+Hypervisor betrieben wird und eine einheitliche, zentral verwaltete
+Sicherung aller virtualisierten Dienste ermöglicht.
+Die bisherige Lösung führt zu eingeschränkter Wiederherstellbarkeit,
+fehlender zentraler Verwaltung der Backup-Jobs sowie begrenzten
+Möglichkeiten zur Überprüfung der Backup-Integrität.
 
 \subsection{Projektziel}
 \label{sec:Projektziel}
-Das bestehende \ac{ECM} von \ac{AWS} soll angepasst und erweitert werden.
-Dem \ac{ECM}-Prozess sollen neue Funktionen hinzugefügt werden, die die Robustheit des Prozesses erhöhen und die benötigte Durchlaufzeit verringern.
-
-%Andererseits sollen neue Organisationen in das Windchill-\ac{ECM} eingebunden werden.
-%Dafür soll der manuelle Prozess der Befüllung von Excel-Dateien durch Windchill ersetzt werden.
-%User sollen den \ac{ECM}-Prozess in Windchill initiieren, wodurch alle Daten, die für das \ac{ECM} relevant sind, gebündelt an einem Ort abgelegt werden.
-%Da sich die CAD-Dateien ohnehin schon auf dem Windchill-Server befinden, lassen sich CAD-Dateien und \ac{ECM} somit praktisch verknüpfen.
+Ziel des Projekts ist die Einrichtung eines dedizierten \acl{PBS} sowie
+dessen vollständige Integration in die bestehende \ac{PVE}-Umgebung der
+\ac{ODCF}.
+Der \ac{PBS} ergänzt die vorhandene Tape-basierte Sicherung um eine
+zentrale, effiziente und inkrementelle Backup-Lösung auf Disk-Ebene.
+Nach Projektabschluss sollen alle relevanten \acp{VM} und Container
+automatisiert über den \ac{PBS} gesichert werden.
+Konkret sind folgende Ziele zu erreichen:
+\begin{itemize}
+    \item Installation und Konfiguration eines \acl{PBS} auf dedizierter Hardware
+    \item Anbindung des \ac{PBS} an den bestehenden \ac{PVE}-Cluster der \ac{ODCF}
+    \item Einrichtung von Backup-Jobs mit definierten Zeitplänen und Aufbewahrungsrichtlinien (Retention Policies: tägliche, wöchentliche, monatliche Sicherungen)
+    \item Konfiguration von Benachrichtigungen und Monitoring für Backup-Jobs
+    \item Erstellung einer Betriebsdokumentation und Übergabe an das \ac{ODCF}-Team
+\end{itemize}
 
 \subsection{Projektbegründung}
 \label{sec:Projektbegruendung}
-Es wird eine erhöhte Robustheit des aktuellen Prozesses angestrebt, indem das manuelle Erstellen von \acp{PR} automatisiert wird, was auch zu einer Zeitersparnis führt.
-%Außerdem soll der \ac{ECM}-Prozess in Organisationen eingeführt werden, die bisher entweder auf Excel-Tabellen und selbst entwickelte Webanwendungen oder auf persönliche Besprechung mit dem Produktmanager zurückgegriffen haben, um diese Prozesse abzubilden.
-%Dies führt zum einen zu einer erheblichen Zeitersparnis, da viele manuelle Vorgänge, wie das Befüllen von einer Excel-Tabelle, wegfallen.
-%Dadurch wird wiederum auch die Robustheit deutlich erhöht, da repetitive Tätigkeiten nicht mehr vergessen werden können und häufige Fehler vermieden werden können.
+Die bisherige, ausschließlich auf Tape basierende Sicherung bietet zwar
+einen Schutz vor Datenverlust, ist aber für die operativen Anforderungen
+einer Forschungsinfrastruktur nicht ausreichend.
+Restores von einzelnen \acp{VM} oder gar einzelnen Dateien sind aufwändig,
+inkrementelle Sicherungen sind nicht möglich und eine zentrale Überwachung
+der Backup-Jobs fehlt.
+Mit einem dedizierten \acl{PBS} können Sicherungen häufiger,
+effizienter (Deduplizierung, inkrementelle Backups) und mit
+kürzeren Wiederherstellungszeiten durchgeführt werden.
+Gleichzeitig erlaubt der \ac{PBS} eine zentrale Verwaltung,
+Integritätsprüfung und Benachrichtigung über fehlgeschlagene Jobs.
 
 \subsection{Projektabgrenzung}
-Das Abschlussprojekt nimmt ungefähr 80 \% des kompletten Projekts ein.
-Die restlichen 20 \% werden nach Fertigstellung des Abschlussprojekts angegangen.
-Es ist geplant, noch einige weitere Quality-Of-Life Verbesserungen zu implementieren.
+\label{sec:Projektabgrenzung}
+Im Rahmen des Abschlussprojekts wird ausschließlich eine
+\textbf{Blueprint-Testinstanz} des \acl{PBS} samt Anbindung an die
+bestehende \ac{PVE}-Umgebung der \ac{ODCF} aufgebaut.
+Diese Blueprint-Instanz dient dem \ac{ODCF}-Team als Vorlage für
+einen späteren produktiven \ac{PBS}, ersetzt die bisherigen
+Sicherungen aber nicht. Sowohl die lokalen Hypervisor-Backups als
+auch die \ac{TSM}-/Tape-Sicherung bleiben unverändert in Betrieb.
+Themen wie der produktive Rollout des \ac{PBS}, Off-Site-Replikation
+des Datastores, Disaster-Recovery-Konzepte über das Rechenzentrum
+hinaus oder die produktive Migration aller Forschungsdienste sind
+nicht Teil dieses Projekts.
+Ebenfalls außerhalb des Umfangs liegt die Anpassung der einzelnen
+Anwendungen innerhalb der \acp{VM}.
 
 \subsection{Projektschnittstellen}
 \label{sec:Projektschnittstellen}
-
-Das System, an dem das Projekt durchgeführt wird, interagiert mit einigen anderen System, wie zum Beispiel
+Das System interagiert mit folgenden Komponenten der \ac{ODCF}-Infrastruktur:
 \begin{itemize}
-    \item CAD-Anwendungen über den Windchill Workgroup Manager
-    \item Microsoft Sharepoint zur Datenübertragung
+    \item \acl{PVE}-Cluster: Quelle der zu sichernden \acp{VM} und Container
+    \item Netzwerk-Infrastruktur (\ac{VLAN}, Firewall): Anbindung des \ac{PBS}
+    \item E-Mail-Server / Monitoring: Versand von Benachrichtigungen über Backup-Jobs
+    \item Bestehendes Tape-Backup: bleibt parallel als zweite Sicherungsebene erhalten
 \end{itemize}
+Die direkten Nutzer des \ac{PBS} sind die \ac{ODCF}-Systemadministratoren,
+die nach der Übergabe für den laufenden Betrieb und die regelmäßige
+Überprüfung der Sicherungen zuständig sind.
 
-Diese sind allerdings für das Projekt nicht weiter von Belang und wurden hier deshalb nur zur Vollständigkeit aufgeführt.
+\subsection{Voraussetzungen für das Verständnis}
+\label{sec:Voraussetzungen}
+Für das Verständnis der folgenden Kapitel werden einige Technologien kurz
+vorgestellt.
 
-Bei den Nutzern, die mit dem System interagieren, handelt es sich vor allem um Ingenieure und Manager.
-Ingenieure nutzen das System hauptsächlich dafür, CAD-Modelle zu erstellen, zu ändern und zu verwalten.
-Manager hingegen genehmigen und koordinieren Unternehmensprozesse, wie \zB das Änderungsmanagement, auf das im Kapitel \ref{sec:ECM} noch näher eingegangen wird.
-Da der Windchill-Server schon lange im Einsatz ist, sind alle Mitarbeiter mit dem System bestens vertraut.
+\subsubsection{\acl{PVE}}
+\acl{PVE} ist eine quelloffene Virtualisierungsplattform auf Basis von
+Debian Linux, die sowohl \acp{VM} (KVM) als auch \acp{LXC} verwalten kann.
+\ac{PVE} wird in der \ac{ODCF} als Cluster betrieben, sodass mehrere
+Hypervisor-Knoten zentral verwaltet werden.
 
-\subsection{Vorraussetzungen für das Verständnis}
+\subsubsection{\acl{PBS}}
+Der \ac{PBS} ist die hauseigene Backup-Lösung von Proxmox.
+Er ist eng mit \ac{PVE} integriert und unterstützt inkrementelle
+Sicherungen, clientseitige Deduplizierung sowie Integritätsprüfungen
+über Prüfsummen.
+Der \ac{PBS} kann mehrere Datastores verwalten, auf denen die Sicherungen
+abgelegt werden.
 
-Windchill bietet umfassende Funktionen zur Verwaltung von Unternehmensdaten.
-Im Folgenden sollen einige dieser Funktionen vorgestellt werden, damit die Inhalte des Abschlussprojekts nachvollziehbar sind.
-
-\subsubsection{Workflows}
-Workflows sind Objekte, mit denen man Unternehmensprozesse abbildet.
-Dafür stellt Windchill einen Workflow-Editor bereit, mit dem man die Unternehmensprozesse in einer praktischen Benutzeroberfläche definieren kann.
-In Workflows lässt sich auch direkt Code definieren, der dann zusammen mit dem Workflow ausgeführt wird.
-Hier kann man auch auf Klassen und Methoden innerhalb der Windchill-Codebasis verweisen.
-Die folgenden Konzepte wurden und werden mit Hilfe von Workflows umgesetzt.
-
-\subsubsection{\acl{ECM}}
-\label{sec:ECM}
-Das Änderungsmanagement ist ein essenzieller Bestandteil von Windchill.
-Damit werden \glqq Änderungen eines Produkts vollständig definiert und kontrolliert.
-Dies sorgt dafür, dass Aufgaben an die Verantwortlichen in einem wiederholbaren und automatisiertem Workflow gesendet werden \grqq{} \cite{WindchillChangeManagement2}.
-Der Change Admin ist für die Koordination des Change Managements verantwortlich.
-In Windchill gibt es eigentlich drei verschiedene Change Administrator Rollen, vereinfacht wird in diesem Projekt aber lediglich vom Change Admin gesprochen.
-
-In Windchill sind drei Facetten des Änderungsmanagements implementiert: \acl{ECR}, \acl{ECN} und \acl{ECA}.
-Diese werden in den nächsten Abschnitten genauer erläutert.
-
-\subsubsection{\acl{ECR}}
-Der Änderungsantrag ist der erste Schritt im Änderungsmanagement.
-Grob gesagt wird im \ac{ECR} geklärt, \underline{ob} die Änderung umgesetzt werden kann.
-Der Change Admin wählt Unternehmensabteilungen aus.
-Diese stimmen dann darüber ab, ob die Änderung vollzogen werden soll.
-Nur wenn alle befragten Abteilungen für die Änderung sind, wird der Prozess mit der \ac{ECN} fortgesetzt.
-Stimmt mindestens eine Abteilung dagegen, so wird der Änderungsantrag verworfen.
-
-\subsubsection{\acl{ECN}}
-Die Änderungsmitteilung ist der zweite Schritt im Änderungsmanagement.
-Hier geht es darum, dass festgelegt wird, \underline{wie} die Änderung umgesetzt wird.
-Dafür legt der Change Admin die Abteilungen fest, die die Änderungen durchführen sollen.
-Außerdem werden in diesem Schritt die Aufgaben definiert, die umgesetzt werden müssen, um die Änderung zu vollziehen.
-
-\subsubsection{\acl{ECA}}
-Die Änderungsaufgabe ist der dritte und letzte Schritt im Änderungsmanagement.
-Die geplanten Änderungen werden hier umgesetzt und anschließend vom Change-Admin überprüft.
-Ist der Change-Admin unzufrieden mit den umgesetzten Änderungen, so kann er eine Überarbeitung von den relevanten Abteilungen anfordern.
-Sobald der Change-Administrator seine Zustimmung zu den Änderungen erteilt hat, markiert dies den erfolgreichen Abschluss der Änderungsaufgabe und damit auch des gesamten Change-Prozesses.
-
-\subsubsection{\acl{PR}}
-Der Erhöhungsantrag ist nicht direkt Teil dieses Projekts.
-Allerdings werden neue Mechanismen im \ac{ECM}-Workflow eingeführt, die das manuelle Erstellen von Erhöhungsanträgen ersetzen soll.
-Demzufolge wird der Erhöhungsantrag kurz erläutert.
-
-Ein Windchill-Objekt durchläuft stets verschiedene Phasen seines Lebenszyklus.
-Im Moment der Erstellung befindet es sich üblicherweise im Status `In Arbeit`.
-Um das Objekt in einen anderen Zustand zu überführen, wie beispielsweise `Freigegeben`, wird ein Erhöhungsantrag durchlaufen, wo ein Genehmiger entscheided, ob eine Änderung des Status des Objekts angebracht ist.
+\subsubsection{Retention Policies}
+Retention Policies legen fest, wie viele und welche Sicherungen über
+welchen Zeitraum vorgehalten werden. Üblich sind gestaffelte
+Aufbewahrungen (z.\,B. tägliche Backups der letzten Woche, wöchentliche
+des letzten Monats, monatliche des letzten Jahres). Der \ac{PBS} setzt
+diese Vorgaben über sogenannte \emph{Prune}-Regeln automatisch um.

@@ -1,0 +1,28 @@
+@startuml restore-sequence
+title File-Restore aus PBS (einzelne Datei)
+
+skinparam shadowing false
+skinparam SequenceArrowColor #444444
+skinparam DefaultFontName "Helvetica"
+
+actor "Admin\n(ODCF-SysAdmins)" as admin
+participant "PVE\nWeb-UI" as ui
+participant "PBS\nodcf-fs04" as pbs
+participant "Restore-VM\n(temporaer)" as rvm
+database "Datastore\nbackup" as ds
+
+admin -> ui : Login\n(LDAP-Realm)
+ui -> ui : Storage <PBS>\n-> Content
+admin -> ui : Snapshot waehlen\n-> File Restore
+ui -> pbs : starte Restore-VM
+pbs -> rvm : mountet Snapshot\nread-only
+pbs -> ds : liest Chunks\nfuer die VM
+admin -> ui : Datei browsen\n+ Download
+ui -> rvm : tar.zst\nder Datei
+rvm --> admin : Download
+
+== Anschliessend ==
+ui -> pbs : stop Restore-VM
+pbs -> rvm : terminate
+
+@enduml

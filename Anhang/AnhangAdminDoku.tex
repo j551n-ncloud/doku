@@ -1,20 +1,363 @@
-\subsection{Admin-Dokumentation (Auszug)}
-\label{app:AdminDokumentation}
-Ausschnitt aus der Admin-Dokumentation:
+\clearpage
+\subsection{Kundendokumentation (Betriebsdoku, Auszug)}
+\label{app:BetriebsDoku}
 
-\subsubsection*{Hide Radio Button Selections per Org}
-To hide a radio button selection for an org we need the two following files located on the server:
-\begin{itemize}
-    \item <Windchill>/codebase/ext/xylem/acl/attributeacl.xml
-    \item <Windchill>/codebase/ext/xylem/acl/aclvalidation.xml
+Diese Kundendokumentation richtet sich an das System\-administrations\-team
+der \ac{ODCF} (AD-Gruppe \texttt{ODCF-SysAdmins}) und beschreibt die
+wiederkehrenden Betriebsaufgaben am \ac{PBS} \texttt{odcf-fs04}.
+Sie geht von Linux- und Virtualisierungs-Grundwissen aus und bildet
+den Kern dessen ab, was im internen DokuWiki gepflegt wird;
+DKFZ-spezifische Bind-Daten (LDAP) sind hier geschwärzt.
+
+\subsubsection*{1. Überblick}
+\begin{itemize}\setlength{\itemsep}{1pt}
+    \item Host: \texttt{odcf-fs04} (10.131.196.78), Standort
+          DCODCF-Rack14.
+    \item \ac{PBS}~4 (no-subscription), Debian-basiert.
+    \item Web-UI: \url{https://10.131.196.78:8007}.
+    \item Datastore: \texttt{backup}, ext4 auf
+          \texttt{/mnt/datastore/backup}, ca.\ 20\,TB nutzbar
+          (Hardware-\ac{RAID}\,5 über 6$\times$4\,TB HDDs).
+    \item Netzwerk: \texttt{bond0} (2$\times$10\,GbE, \ac{LACP}/
+          802.3ad) am \emph{server}-\ac{VLAN}.
+    \item Authentifizierung: lokaler \texttt{root} (Bitwarden) +
+          \ac{LDAP}-Realm \texttt{ad: dkfz-heidelberg.de} für die
+          \ac{AD}-Gruppe \texttt{ODCF-SysAdmins}.
 \end{itemize}
-Use attributeacl.xml to find the internal name of the attribute by looking for the display name.
 
-\textit{For example we want to hide the Motor Design attribute for organization WT. So we need to look for “Motor Design” in the attributeacl.xml. The internal attribute name is MOTORDESIGN\_VALIDATION.}
+\subsubsection*{2. Datastore anlegen}
+Der Datastore \texttt{backup} ist im Auslieferungszustand bereits
+angelegt. Soll ein zusätzlicher Datastore eingerichtet werden:
+\begin{lstlisting}[language=bash,caption={Neuen Datastore anlegen}]
+# 1. Mountpoint vorbereiten (Beispiel)
+mkdir -p /mnt/datastore/<name>
+mount /dev/<volume> /mnt/datastore/<name>
+# fstab-Eintrag ergaenzen, damit der Mount persistent ist
 
-Use aclvalidation.xml to change the visibility of the attribute by adding the Organization name to the VALIDATION list.
+# 2. Datastore in PBS anlegen
+proxmox-backup-manager datastore create <name> /mnt/datastore/<name>
 
-\textit{For the Motor Design attribute we need to find the MOTORDESIGN\_VALIDATION entry and add WT to the value-list}
+# 3. Status pruefen
+proxmox-backup-manager datastore list
+\end{lstlisting}
+Anschließend in der Web-UI unter \emph{Datastore $\to$ Prune \& GC}
+die Aufbewahrungsregeln und ein Garbage-Collection-Schedule
+festlegen.
 
-If a hidden attribute should be visible just remove the organization from the list.
+\subsubsection*{3. Backup-Job definieren (im PVE)}
+Backup-Jobs werden im \ac{PVE} pro \ac{VM}-/\ac{CT}-Gruppe angelegt
+und übertragen ihre Daten an den Datastore \texttt{backup}:
+\begin{enumerate}\setlength{\itemsep}{1pt}
+    \item PVE-Web-UI: \emph{Datacenter $\to$ Backup $\to$ Add}.
+    \item \emph{Storage}: PBS-Storage-Eintrag wählen
+          (Ziel = Datastore \texttt{backup}).
+    \item \emph{Selection mode}: \texttt{Include selected VMs} und
+          die kritischen bzw.\ Test-\acp{VM} auswählen.
+    \item \emph{Schedule}: \texttt{00:00} und \texttt{12:00}
+          (zwei Sicherungen pro Tag, jeweils Mitternacht und Mittag).
+    \item \emph{Retention}: \texttt{keep-last = 3}.
+    \item \emph{Notification}: \texttt{always} (auch bei Erfolg
+          während der Stabilisierungsphase).
+\end{enumerate}
+Jeden neu angelegten Job einmal manuell auslösen (\emph{Run now}),
+um Laufzeit und Bandbreite zu beobachten.
 
+\subsubsection*{4. Restore -- einzelne Datei}
+Wenn nur einzelne Dateien zurückgespielt werden müssen:
+\begin{enumerate}\setlength{\itemsep}{1pt}
+    \item PVE-Web-UI: \emph{Storage \texttt{<PBS-storage>} $\to$
+          Content} öffnen.
+    \item Snapshot der betroffenen \ac{VM} auswählen.
+    \item Button \emph{File Restore} klicken.
+    \item Im Browser durch das Disk-Image navigieren, gewünschte
+          Datei markieren und \emph{Download} bzw.\
+          \emph{Extract} wählen.
+\end{enumerate}
+Der File-Restore-Mechanismus läuft in einer temporären Restore-
+\ac{VM} im \ac{PVE}; größere Verzeichnisse werden als
+\texttt{tar.zst} heruntergeladen.
+
+\subsubsection*{5. Restore -- ganze VM oder Container}
+\begin{enumerate}\setlength{\itemsep}{1pt}
+    \item PVE-Web-UI: \emph{Storage \texttt{<PBS-storage>} $\to$
+          Content}.
+    \item Snapshot auswählen und \emph{Restore} klicken.
+    \item Ziel-Knoten und Ziel-Storage für die Disks wählen.
+    \item Neue VMID vergeben (Original-VM nicht versehentlich
+          überschreiben!) oder bestätigen, dass die alte VMID
+          überschrieben wird.
+    \item Nach Abschluss die wiederhergestellte \ac{VM} starten
+          und Funktion prüfen.
+\end{enumerate}
+
+\subsubsection*{6. Agent-basiertes Backup von Debian-Hosts}
+Neben den hypervisor-basierten Backups aus dem \ac{PVE} kann der
+\ac{PBS} auch direkt von einem Debian-Host aus angesprochen werden
+(Agent-Backup über \texttt{proxmox-backup-client}). Diese Variante
+sichert Dateien bzw.\ ganze Pfade unabhängig von der
+Virtualisierungs-Ebene und ist z.\,B.\ für physische Linux-Server
+oder Debian-\acp{VM} außerhalb des \ac{PVE} sinnvoll.
+
+\paragraph*{Voraussetzungen}
+Auf dem zu sichernden Host läuft Debian (getestet mit Debian~13);
+sämtliche Schritte werden als \texttt{root} ausgeführt:
+\begin{lstlisting}[language=bash]
+su
+\end{lstlisting}
+
+\paragraph*{Repository einrichten}
+Zuerst wird das Proxmox-Backup-Client-Repository eingebunden:
+\begin{lstlisting}[language=bash,caption={/etc/apt/sources.list.d/proxmox-backup-client.list}]
+deb http://download.proxmox.com/debian/pbs-client trixie main
+\end{lstlisting}
+Anschließend den passenden GPG-Schlüssel importieren (für Debian~13
+\emph{Trixie}):
+\begin{lstlisting}[language=bash]
+wget -qO - https://enterprise.proxmox.com/debian/proxmox-release-trixie.gpg \
+  | tee /etc/apt/trusted.gpg.d/proxmox-release-trixie.gpg >/dev/null
+\end{lstlisting}
+
+\paragraph*{Installation}
+\begin{lstlisting}[language=bash]
+apt update
+apt install proxmox-backup-client
+\end{lstlisting}
+
+\paragraph*{Verbindung zum \ac{PBS}}
+Anmeldung am \ac{PBS} \texttt{odcf-fs04} (Datastore \texttt{backup}).
+Es wird empfohlen, statt \texttt{root} ein dediziertes Backup-Konto
+mit ausschließlich den nötigen Berechtigungen zu verwenden:
+\begin{lstlisting}[language=bash]
+proxmox-backup-client login \
+  --repository <user>@<realm>@10.131.196.78:backup
+\end{lstlisting}
+Beim ersten Connect wird der TLS-Fingerprint angezeigt und nach
+Bestätigung gespeichert. Beispiel mit lokalem PAM-Konto:
+\texttt{backup@pam@10.131.196.78:backup}.
+
+\paragraph*{Backup durchführen}
+Einzelnes Verzeichnis sichern:
+\begin{lstlisting}[language=bash]
+proxmox-backup-client backup etc.pxar:/etc \
+  --repository <user>@<realm>@10.131.196.78:backup
+\end{lstlisting}
+Komplettes System (root-Dateisystem):
+\begin{lstlisting}[language=bash]
+proxmox-backup-client backup etc.pxar:/ \
+  --repository <user>@<realm>@10.131.196.78:backup
+\end{lstlisting}
+Das neue Snapshot taucht sofort im Datastore \texttt{backup} auf.
+
+\paragraph*{Snapshots anzeigen}
+\begin{lstlisting}[language=bash]
+proxmox-backup-client snapshots \
+  --repository <user>@<realm>@10.131.196.78:backup
+\end{lstlisting}
+Beispielausgabe:
+\begin{lstlisting}
+host/debian/2026-03-11T11:33:16Z   728 B   catalog.pcat1 etc.pxar index.json
+\end{lstlisting}
+
+\paragraph*{Restore}
+\begin{lstlisting}[language=bash]
+proxmox-backup-client restore <Snapshot> etc.pxar <Zielverzeichnis> \
+  --repository <user>@<realm>@10.131.196.78:backup
+\end{lstlisting}
+Konkretes Beispiel (Snapshot \texttt{host/debian/2026-03-11T11:33:16Z}
+nach \texttt{/home/restore} zurückspielen):
+\begin{lstlisting}[language=bash]
+proxmox-backup-client restore host/debian/2026-03-11T11:33:16Z etc.pxar \
+  /home/restore \
+  --repository backup@pam@10.131.196.78:backup
+\end{lstlisting}
+
+\paragraph*{Automatisierung per Cron}
+Skript unter \texttt{/usr/local/sbin/debian-backup.sh} ablegen
+(Werte in \texttt{<>} an die jeweilige Umgebung anpassen):
+\begin{lstlisting}[language=bash,caption={/usr/local/sbin/debian-backup.sh}]
+#!/bin/bash
+set -euo pipefail
+
+export PBS_REPOSITORY="<user>@<realm>@10.131.196.78:backup"
+export PBS_PASSWORD="<Passwort>"
+
+proxmox-backup-client backup \
+    home.pxar:/<verzeichnis>
+\end{lstlisting}
+Skript ausführbar machen und einen Crontab-Eintrag setzen
+(Beispiel: tägliches Backup um 03:30~Uhr):
+\begin{lstlisting}[language=bash]
+chmod +x /usr/local/sbin/debian-backup.sh
+crontab -e
+# Eintrag:
+30 3 * * * /usr/local/sbin/debian-backup.sh
+\end{lstlisting}
+
+\noindent\textbf{Sicherheitshinweis:}
+\texttt{PBS\_PASSWORD} im Klartext im Skript ist nur akzeptabel,
+wenn die Datei mit \texttt{chmod 700} und \texttt{root}-Ownership
+gegen Mitlesen abgesichert ist. Für produktive Hosts wird eine
+\ac{API}-Token-Authentifizierung empfohlen (siehe \ac{PBS}-
+Dokumentation).
+
+
+\subsubsection*{7. Verify-Job manuell starten}
+\begin{lstlisting}[language=bash,caption={Verify auf dem Datastore}]
+# Alle bestehenden Verify-Jobs anzeigen
+proxmox-backup-manager verify-job list
+
+# Einen einzelnen Verify-Job ausfuehren
+proxmox-backup-manager verify-job run <job-id>
+
+# Ad-hoc-Verify auf den kompletten Datastore (laufzeitintensiv)
+proxmox-backup-manager verify backup
+\end{lstlisting}
+Der Standard-Verify-Job läuft wöchentlich. Bei einem fehlgeschla\-genen
+Snapshot wird in der Web-UI unter \emph{Datastore $\to$ Content}
+ein rotes Warnsymbol angezeigt; betroffene Snapshots gezielt erneut
+verifizieren oder im Härtefall löschen.
+
+\subsubsection*{8. Prune-Logik nachvollziehen}
+Der Prune entscheidet anhand der Regel \texttt{keep-last=3}, welche
+Snapshots gelöscht werden. Vor jeder destruktiven Aktion empfiehlt
+sich ein \emph{Dry-Run}:
+\begin{lstlisting}[language=bash,caption={Prune simulieren / ausfuehren}]
+# Dry-Run: zeigt, welche Snapshots geloescht WUERDEN
+proxmox-backup-manager prune backup --keep-last 3 --dry-run
+
+# Echte Pruning-Aktion (nur, wenn das Dry-Run-Ergebnis OK ist)
+proxmox-backup-manager prune backup --keep-last 3
+\end{lstlisting}
+Eigentlicher Plattenplatz wird erst durch die anschließende
+Garbage Collection freigegeben (siehe nächster Punkt).
+
+\subsubsection*{9. Vorgehen bei vollem Datastore}
+Wenn die Belegung kritisch wird:
+\begin{enumerate}\setlength{\itemsep}{1pt}
+    \item Belegung prüfen:
+          \texttt{proxmox-backup-manager datastore show backup}
+          oder Web-UI \emph{Datastore $\to$ Summary}.
+    \item Prune-Regeln überprüfen
+          (\emph{Datastore $\to$ Prune \& GC}). Falls Regeln zu
+          großzügig sind, anpassen.
+    \item Sofortmaßnahme: manueller Prune (siehe Punkt~8) plus
+          \texttt{garbage-collection start}:
+\begin{lstlisting}[language=bash]
+proxmox-backup-manager garbage-collection start backup
+\end{lstlisting}
+    \item Wenn das nicht reicht: temporär Aufbewahrung reduzieren
+          (z.\,B.\ \texttt{keep-last=2}), erneut prunen und
+          garbage-collecten.
+    \item Mittelfristig Storage-Erweiterung planen; Eskalation an
+          Frank Thommen.
+\end{enumerate}
+
+\subsubsection*{10. Firewall-Konfiguration}
+Auf \texttt{odcf-fs04} läuft \texttt{firewalld} mit der Default-Zone
+\texttt{public}. Aktiv sind ausschließlich die für den Betrieb
+benötigten Ports und Dienste; \texttt{cockpit}, \texttt{http} und
+\texttt{https} wurden bewusst entfernt.
+
+\begin{tabular}{lll}
+\rowcolor{heading}\textbf{Port / Dienst} & \textbf{Scope} & \textbf{Zweck} \\
+\texttt{ssh} (22/tcp) & offen & Adminzugang \\
+\rowcolor{odd}8007/tcp & offen & \ac{PBS}-Web-UI und Backup-Clients \\
+9100/tcp & offen & pbs-exporter Metrics (Prometheus-Scrape) \\
+\rowcolor{odd}\texttt{dhcpv6-client} & offen & Default \\
+\end{tabular}
+
+Reproduzierbare Konfiguration (idempotent):
+\begin{lstlisting}[language=bash,caption={Firewall-Endzustand setzen}]
+set -e
+systemctl enable --now firewalld
+firewall-cmd --set-default-zone=public
+
+# Unerwuenschte Default-Services entfernen
+for svc in cockpit http https; do
+  firewall-cmd --permanent --zone=public --remove-service=$svc || true
+done
+
+# SSH offen halten (sonst Lockout-Gefahr!)
+firewall-cmd --permanent --zone=public --add-service=ssh
+
+# PBS Web-UI / Backup-Clients
+firewall-cmd --permanent --zone=public --add-port=8007/tcp
+
+# pbs-exporter
+firewall-cmd --permanent --zone=public --add-port=9100/tcp
+
+firewall-cmd --reload
+firewall-cmd --zone=public --list-all
+\end{lstlisting}
+
+\noindent\textbf{Hinweis:} Port \texttt{9100/tcp} ist aktuell
+zonenweit offen. Soll der Scope eingeschränkt werden, Port-Eintrag
+durch eine Rich-Rule mit \texttt{source address=<prometheus-ip>/32}
+ersetzen.
+
+\subsubsection*{11. Monitoring (Prometheus / pbs-exporter)}
+Auf \texttt{odcf-fs04} läuft der \texttt{natrontech/pbs-exporter}
+als systemd-Unit \texttt{prometheus-pbs-exporter.service} unter dem
+System-User \texttt{pbs-exporter}; Metriken werden auf
+\texttt{:9100/metrics} bereitgestellt. Die Anbindung an den
+zentralen Prometheus der \ac{ODCF} erfolgt über einen
+Scrape-Job auf \texttt{odcf-fs04:9100}.
+
+Wichtige Kennzahlen / PromQL-Beispiele:
+\begin{lstlisting}[language=bash,caption={Nuetzliche PromQL-Queries}]
+# Datastore-Fuellgrad in %
+100 * pbs_used / pbs_size
+
+# Alter des letzten Backups je VM (Stunden)
+(time() - pbs_snapshot_vm_last_timestamp) / 3600
+
+# Alert: Backup aelter als 26 h
+(time() - pbs_snapshot_vm_last_timestamp) > 26 * 3600
+
+# Alert: Verify fehlgeschlagen
+pbs_snapshot_vm_last_verify == 0
+\end{lstlisting}
+Konfiguration und Token (geschwärzt: \texttt{root@pam!pbs-exporter}
+mit Rolle \texttt{Audit}) liegen unter
+\texttt{/etc/pbs-exporter.env}; das Token-Geheimnis ist im
+Bitwarden-Tresor abgelegt.
+
+\subsubsection*{12. Troubleshooting / FAQ}
+\begin{itemize}\setlength{\itemsep}{1pt}
+    \item \textbf{Login mit LDAP-Account schlägt fehl:}
+          Realm-Auswahl im Login-Dialog auf \texttt{dkfz-heidelberg.de}
+          prüfen; Gruppenmitgliedschaft in
+          \texttt{ODCF-SysAdmins} verifizieren
+          (\texttt{ldapsearch} vom Host aus).
+    \item \textbf{Backup hängt / läuft sehr lange:} aktive Tasks
+          unter \emph{Datastore $\to$ Tasks} prüfen,
+          ggf.\ Job stoppen und Bandbreite/Last auf dem
+          Quell-Hypervisor kontrollieren.
+    \item \textbf{Verify schlägt fehl:} betroffenen Snapshot
+          erneut verifizieren; bei Wiederholung Datastore-
+          Integrität (\texttt{verify backup}) prüfen und das
+          Hardware-\ac{RAID} (Controller-Logs) checken.
+    \item \textbf{\texttt{pbs-exporter} liefert keine Metriken
+          (\texttt{pbs\_up=0}):} fast immer fehlende Permission
+          auf dem API-Token. Token in PBS hat Privilege Separation
+          \emph{Yes}, daher muss die Audit-Rolle explizit auf den
+          Token gesetzt sein (nicht auf \texttt{root@pam}).
+    \item \textbf{\texttt{systemctl status prometheus-pbs-exporter}:}
+          schneller Smoke-Test; Logs via
+          \texttt{journalctl -u prometheus-pbs-exporter -f}.
+    \item \textbf{Datastore voll:} siehe Punkt~8 -- nie einfach
+          Snapshots im Dateisystem löschen, immer über
+          \texttt{prune}/\texttt{garbage-collection}.
+\end{itemize}
+
+\subsubsection*{13. Zugriffe und Zuständigkeiten}
+\begin{itemize}\setlength{\itemsep}{1pt}
+    \item Operativ verantwortlich: Stefan Becker
+          (\ac{ODCF}-SysAdmin-Team).
+    \item Eskalation: Frank Thommen (\ac{ODCF}).
+    \item Geheimnisse: lokales \texttt{root}-Passwort, API-Token,
+          LDAP-Bind-Credentials -- alle im Bitwarden-Tresor der
+          \ac{ODCF}.
+    \item Änderungen an dieser Doku werden im DokuWiki der
+          \ac{ODCF} versioniert.
+\end{itemize}

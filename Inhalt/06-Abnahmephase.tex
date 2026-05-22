@@ -2,14 +2,60 @@
 \section{Abnahmephase}
 \label{sec:Abnahmephase}
 
-Nach dem Deployment auf das Testsystem beginnt das Test-Team von AWS ihre internen Tests durchzuführen.
-Dabei gehen sie, ähnlich wie bei unseren Tests, manuell durch die Workflow-Prozesse durch und begutachten auch die Workflow-Templates.
-Die Anpassungen wird auf ihre korrekte Funktionalität überprüft.
-Dabei wird auch Wert darauf gelegt, ob Workflow-Prozesse, die vor unseren Änderungen gestartet wurden, auch weiterhin reibungslos funktionieren.
-Im Anschluss wird uns ein Testprotokoll zur Verfügung gestellt, in dem alle Auffälligkeiten und Fehler festgehalten werden.
-Diese werden nach dem Ende des Abschlussprojekts ausgebessert und die Ergebnisse daraufhin in einem weiteren Meeting vorgestellt.
+Da es sich beim aufgebauten \ac{PBS} um eine Blueprint-Testinstanz
+handelt, wurde die Abnahme nicht produktiv, sondern auf den
+eigens dafür eingerichteten Test-\acp{VM} und -Containern
+durchgeführt. Der Prüfling hat die Abnahmetests selbst gegen das
+in Abschnitt~\ref{sec:Backupkonzept} festgelegte Backup-Konzept
+gefahren; Frank Thommen (\ac{ODCF}) hat die Ergebnisse abschließend
+gesichtet und freigegeben.
 
-Da der Product Owner von AWS noch nicht gänzlich zufrieden mit dem Ergebnis war, wurde das Projekt noch nicht offiziell abgenommen.
-Dies wird erst nach Ende des Abschlussprojekts stattfinden.
+\subsection{Abnahmetests gegen das Backup-Konzept}
+Geprüft wurden die für den Blueprint relevanten Funktionen entlang
+der Anforderungen aus dem Lastenheft (siehe \Anhang{app:Lastenheft}):
+\begin{itemize}\setlength{\itemsep}{1pt}
+    \item Anlegen und Start eines Backup-Jobs aus dem \ac{PVE}
+          gegen den Datastore \texttt{backup} auf
+          \texttt{odcf-fs04}.
+    \item Funktionsprüfung der \ac{LDAP}-Anmeldung über die
+          \ac{AD}-Gruppe \texttt{ODCF-SysAdmins}.
+    \item E-Mail-Benachrichtigung bei erfolgreichem und
+          fehlgeschlagenem Job.
+    \item Auslieferung der Metriken über den
+          \texttt{pbs-exporter} an Prometheus
+          (\texttt{pbs\_up=1}, Datastore-Belegung sichtbar).
+    \item Trennung Primär-/Sicherungs-Storage: Backups landen
+          ausschließlich auf dem dedizierten Datastore, nicht im
+          Ceph-\ac{RBD}-Pool.
+\end{itemize}
 
-Ein Auszug des Testprotokolls findet sich im \Anhang{app:IssueLog}.
+\subsection{Restore-Tests auf der Test-Instanz}
+Die Restore-Verfahren wurden vollständig durchgespielt:
+\begin{itemize}\setlength{\itemsep}{1pt}
+    \item \textbf{File-Restore:} Auswahl einzelner Dateien aus einem
+          Snapshot über die \ac{PVE}-Weboberfläche und
+          Wiederherstellung auf die Test-\ac{VM}.
+    \item \textbf{Vollständiger \ac{VM}-Restore:} Wiederherstellung
+          einer Test-\ac{VM} mit neuer VMID aus einem Snapshot des
+          Datastores \texttt{backup}; anschließendes Hochfahren und
+          Funktionsprüfung der Dienste in der \ac{VM}.
+    \item \textbf{Container-Restore:} entsprechende
+          Wiederherstellung eines Test-\ac{LXC}.
+\end{itemize}
+Alle Restore-Tests sind erfolgreich abgeschlossen worden; die
+Wiederherstellungszeiten lagen erwartungsgemäß deutlich unter
+denen der bisherigen \ac{TSM}-/Tape-Lösung.
+
+\subsection{Integritätsprüfung}
+Auf dem Datastore wurde ein manueller Verify-Job ausgelöst
+(\texttt{proxmox-backup-manager verify-job run}) und gegen die
+gespeicherten Snapshots laufen gelassen. Sämtliche Chunks wurden
+als gültig markiert; Folgeläufe sind als wöchentlicher
+Schedule eingerichtet.
+
+\subsection{Abnahme und Übergabe}
+Auf Basis der bestandenen Tests sowie der vorliegenden Betriebs\-
+und Projekt\-dokumentation hat Frank Thommen die Blueprint-Instanz
+abgenommen. Damit ist die Voraussetzung für die in
+Abschnitt~\ref{sec:Einfuehrungsphase} beschriebene Übergabe an
+Stefan Becker und das \ac{ODCF}-Sysadmin-Team erfüllt.

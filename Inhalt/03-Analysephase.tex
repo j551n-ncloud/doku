@@ -1,99 +1,167 @@
 % !TEX root = ../Projektdokumentation.tex
-\section{Analysephase} 
+\section{Analysephase}
 \label{sec:Analysephase}
 
 
-\subsection{Ist-Analyse} 
+\subsection{Ist-Analyse}
 \label{sec:IstAnalyse}
-Dieser Abschnitt erhält Auszüge aus dem Projektantrag, um eine Übersicht über die aktuelle Situation des Systems zu geben.
+Der \ac{PVE}-Cluster der \ac{ODCF} besteht aus insgesamt sechs
+Hypervisor-Knoten -- drei älteren IBM- bzw.\ Lenovo-Servern und drei
+neueren Dell-VxRail-Knoten -- und betreibt derzeit etwa 60 \acp{VM}
+sowie eine Reihe von \acp{LXC} mit Forschungs- und
+Infrastrukturdiensten.
+Als primäres Storage-Backend wird ein Ceph-Cluster mit einer
+Brutto-Kapazität von rund 44\,TB eingesetzt, von denen aktuell ca.\
+sechs\,TB belegt sind.
 
-Der \ac{ECM} besteht aus den zwei Komponenten \ac{ECR} und \ac{ECN}.
-Aktuell werden Aufgaben im \ac{ECN} getrackt, dies ist so von Windchill eigentlich nicht vorgesehen.
-In Zukunft sollen Aufgaben deswegen in einem \ac{ECA} abgebildet werden.
-Dies führt dazu, dass die konkreten Implementierungsaufgaben logisch von der Planungsphase (ECN) abgegrenzt wird, was es dem Change Admin einfacher macht, einen Überblick über die aktuelle Situation zu bekommen.
-Die ECA soll auch das manuelle Erstellen des Erhöhungsantrags automatisieren.
-
-Im \ac{ECM} von \ac{AWS} sollen neue Abteilungen berücksichtigt werden.
-Dafür müssen diese dem bestehenden \ac{ECR} und \ac{ECN} hinzugefügt werden.
-
-Bei der Erstellung der \acsp{ECR} werden zudem Startparameter abgefragt.
-Das sind Boolean-Attribute, die die automatische Auswahl von Abteilungen beeinflussen.
-Dies ist eine Erleichterung für den Change Admin, da somit nicht jedes Mal alle Abteilungen manuell ausgefüllt werden müssen.
-Der \ac{ECR} ist für alle Organisationen gleich.
-Allerdings benötigen nicht alle Organisationen alle Attribute, die auf dem \ac{ECR} definiert wurden.
-Dafür wurde von einem anderen Softwareunternehmen eine XML-Datei entwickelt, die nicht benötigte Attribute von einer Organisation vom UI versteckt.
-Es sollen neue Boolean-Attribute definiert werden, die nur für die \ac{AWS} Organisationen sichtbar sind.
-Dazu müssen diese dem \ac{ECR} hinzugefügt werden und die in der XML-Datei für die anderen Organisationen versteckt werden.
-
-Um den Change Admin bei der Auswahl der beteiligten Abteilungen zu unterstützen, wurde von einem anderen Softwareunternehmen eine benutzerdefinierte JSP Seite entwickelt, die die Abteilungen in einer Liste darstellt.
-Der Change Admin kann dann über Checkboxen Abteilungen für den Prozess entfernen oder hinzufügen.
-Dieses Pop-Up-Fenster wurde von einem anderen Softwareunternehmen in einem bereits abgeschlossenem Projekt entwickelt.
-Allerdings bringt diese Lösung einige Probleme mit sich.
-Zum einen verzögern Customizations, die von den OOTB-Windchill-Konfigurationen abweichen, oft größere Windchill Upgrades, da nicht garantiert ist, dass die Customization auch in zukünftigen Versionen funktioniert.
-Zum anderen können nur Administratoren mit Zugriff zur virtuellen Maschine Änderungen an der Struktur des Pop-Up-Fensters vornehmen (\zB hinzufügen oder entfernen von Abteilungen), da die Customization als JSP-Datei auf dem Server liegt.
-Um diese beiden Probleme zu beseitigen, soll hier auf eine Lösung zurückgegriffen werden, die bereits von Haus aus in Windchill implementiert ist, nämlich den 'Set Up Participants'-Tab.
-Da es sich um eine OOTB-Funktion von Windchill handelt, ist es unwahrscheinlich, dass es damit Probleme bei einem Upgrade gibt.
-Außerdem können Windchill-Administratoren über den Workflow Template Editor Änderungen an den Abteilungen vornehmen, ohne Zugriff auf die VM zu benötigen.
-
-Zudem sind die aktuellen Workflowprozesse sehr unstrukturiert dargestellt und kaum dokumentiert.
-Dies macht es schwieriger für Entwickler, die nicht mit den Prozessen vertraut sind, Erweiterungen oder Änderungen vorzunehmen.
-\subsection{Wirtschaftlichkeitsanalyse}
-\label{sec:Wirtschaftlichkeitsanalyse}
-
-Da die exakten Gesamtkosten des Projekts nicht offenbart wurden, gehen wir von einem empfohlenen Festpreis von 8.000 € aus.
-Der Anteil dieser spezifischen Projektarbeit am Gesamtprojekt wird auf 80 \% geschätzt.
-Daher kalkulieren wir einen Umsatz von 6.400 € für die Umsetzung gemäß der hier beschriebenen Aufgabenstellung.
-
-\subsubsection{Projektkosten}
-\subsubsection*{Ausbildungsvergütung}
-Hier haben wir ein Bruttoentgelt von 1080 €.
-
-\subsubsection*{Arbeitgeberanteil Sozialversicherung}
-Die Arbeitgeber-Sozialabgaben betragen 199,92 € ohne die Unfallversicherung.
-Für die Unfallversicherung liegen mir keine Zahlen vor, auch eine Internetrecherche half nicht weiter.
-Deswegen wurde mir von der Personalabteilung geraten mit 20 € pro Monat zu rechnen.
-
-\subsubsection*{Abstimmungskosten}
-Der Projektleiter von Arsandis führte mehrere interne Abstimmungsgespräche mit mir zum Fortschritt des Projekts durch.
-Diese Gespräche hatten das Ziel sicherzustellen, dass die Qualitätsanforderungen erfüllt werden und die Umsetzung auf bewährten Methoden basiert, während die Lösung sich gut in den Gesamtentwurf des Kundensystems einfügt.
-Zusätzlich nahm der Projektleiter, wie in anderen Teilen des Projekts auch, an Meetings mit dem Kunden teil.
-Konkrete Zahlen dafür sind für mich nicht einsehbar.
-Es wurde mir geraten, mit einem festen Stundensatz von 100 € zu kalkulieren.
-
-\subsubsection*{Gemeinkosten}
-Intern verwenden wir keinen Gemeinkostenfaktor.
-Ungeachtet dessen müssen wir jedoch sicherstellen, dass unsere Gemeinkosten gedeckt werden.
-Aus diesem Grund werde ich eine weitere Annahme treffen, um eine standardmäßige Wirtschaftlichkeitsanalyse durchzuführen, da mir die genauen Zahlen nicht zugänglich sind.
+Die bestehende Sicherung ist heterogen aufgebaut:
 \begin{itemize}
-	\item Energiekosten: Heizung, Strom = 15 \%
-	\item Mietkosten: Büroräume = 15 \%
-	\item Ausrüstungskosten: Clients, Monitore, Server, Peripherie, Lizenzen = 10 \%
-	\item Gehälter für Marketingabteilung: 10 \%
-	\item Gehälter für Personalabteilung: 10 \%
+    \item Sicherungen der \acp{VM} und Container werden auf den
+          \emph{lokalen} Storages der älteren Hypervisor-Knoten
+          abgelegt. Die neueren Dell-VxRail-Knoten besitzen
+          \textbf{keinen} lokalen Storage, für die dort laufenden
+          \acp{VM} gibt es daher keine lokale Sicherungsmöglichkeit.
+    \item Ausgewählte \acp{VM} werden zusätzlich per \texttt{rsync} auf
+          einen separaten Backup-Server kopiert.
+    \item Vom Backup-Server werden die Daten über \ac{TSM} auf Tape
+          ausgelagert.
 \end{itemize}
 
-Das führt uns zu einem Gemeinkostenzuschlag von 60 \%
+\subsubsection*{Schmerzpunkte der heutigen Lösung}
+\begin{itemize}
+    \item \textbf{Restore-Reichweite:} Restores aus dem lokalen
+          Storage einzelner Hypervisor sind zwar schnell (typisch
+          zwei bis sechs Minuten), funktionieren aber nur auf den
+          älteren IBM-/Lenovo-Knoten. Für die VxRail-Hypervisor
+          existiert keine äquivalente schnelle Restore-Quelle.
+    \item \textbf{Fehlschläge bei Migrationen:} Bei der Migration
+          großer \acp{VM} zwischen Knoten -- insbesondere von und zu
+          VxRails -- kommt es vor, dass keine konsistente Sicherung
+          mehr zur Verfügung steht.
+    \item \textbf{Vollgelaufener Backup-Storage:} Da pro Hypervisor
+          lokal gesichert wird, läuft der lokale Storage einzelner
+          Knoten gelegentlich voll und führt zu fehlgeschlagenen
+          Backup-Läufen.
+    \item \textbf{Keine zentrale Verwaltung:} Backup-Jobs, Retention
+          und Status sind über alle Hypervisor verstreut und werden
+          nicht zentral überwacht.
+    \item \textbf{Keine Integritätsprüfung:} Eine automatische
+          Verifikation der gespeicherten Sicherungen findet nicht
+          statt.
+    \item \textbf{Keine Trennung Primär-/Sicherungsdaten:} Ein
+          Ausfall eines Hypervisors zieht den lokalen Backup-Bestand
+          desselben Hypervisors mit in Mitleidenschaft.
+\end{itemize}
 
-\subsubsection*{Gesamtkosten}
-Hier werden die Kosten eines Arbeitstages durch das Herunterbrechen des Jahresverdiensts auf einen Tag ermittelt.
-\citet{ArbeitstageImJahr}{Für das Jahr 2023 wurden 251 Arbeitstage angenommen}.
 
-Kosten für Arbeitstage des Prüflings = 12960 € / (251 Arbeitstage - 24 Urlaubstage) * 10 €/Stunde * 1,60 (Gemeinkostenzuschlag) = 914 €
+\subsection{Anforderungsanalyse}
+\label{sec:Anforderungsanalyse}
+Aus dem Projektantrag und der Ist-Analyse ergeben sich die folgenden
+funktionalen und nicht-funktionalen Anforderungen an die neue
+Backup-Lösung:
 
-Kosten für Abstimmungsgespräche = Stundensatz * Anzahl Stunden * Gemeinkostenzuschlag = 100 € * 6 * 1,60 = 960 €
+\subsubsection*{Funktionale Anforderungen}
+\begin{itemize}
+    \item Dedizierter \acl{PBS} auf eigener Hardware, unabhängig vom
+          produktiven Ceph-Cluster.
+    \item Sicherung aller relevanten \acp{VM} und Container des
+          \ac{PVE}-Clusters über die native \ac{PVE}-/\ac{PBS}-
+          Integration.
+    \item Definierte Backup-Jobs mit Zeitplänen und
+          Aufbewahrungs\-richtlinien je \ac{VM}-Klasse.
+    \item Automatisierte E-Mail-Benachrichtigung bei Fehlern und
+          Anbindung an das vorhandene Prometheus-Monitoring.
+    \item Möglichkeit zur Wiederherstellung einzelner Dateien sowie
+          ganzer \acp{VM} / Container.
+\end{itemize}
 
-Gesamtkosten = Kosten für Abstimmungsgespräche + Kosten für Arbeitstage des Prüflings = 914 € + 960 € = 1874 €
+\subsubsection*{Nicht-funktionale Anforderungen}
+\begin{itemize}
+    \item Trennung von Primär- und Sicherungs-Storage.
+    \item Authentifizierung über das bestehende \ac{DKFZ}-\ac{LDAP},
+          ergänzt um einen lokalen \texttt{root}-Account für die
+          Initialkonfiguration und Notfallzugriff.
+    \item Betrieb in der bestehenden Netzwerkstruktur der \ac{ODCF}
+          (\emph{server}-, \emph{cluster}-, \emph{external}- und
+          \emph{ceph}-\ac{VLAN}).
+    \item Open-Source-Lösung, keine Lizenzkosten.
+\end{itemize}
 
-\subsubsection{Amortisation}
-Der Gewinn wird errechnet indem die Gesamtkosten vom Umsatz abgezogen werden.
 
-Gewinn = Umsatz - Gesamtkosten = 6.400 € - 1.874 € = 4526 €
+\subsection{Im Projekt zu treffende Entscheidungen}
+\label{sec:Entscheidungen}
+Folgende Entscheidungen sind im Rahmen des Projekts zu treffen und
+werden in der Entwurfsphase (Abschnitt~\ref{sec:Entwurfsphase})
+detaillierter behandelt:
+\begin{itemize}
+    \item \textbf{Hardware:} Auswahl eines passenden Servers für den
+          \ac{PBS}; angedacht ist die Nachnutzung eines vorhandenen
+          IBM System x3755, um Beschaffungskosten zu vermeiden.
+    \item \textbf{Backup-Strategie:} Festlegung von Frequenz und
+          Aufbewahrung je \ac{VM}-Klasse (kritisch mit
+          \ac{SOP}-Pflicht vs.\ Test-\acp{VM}).
+    \item \textbf{Netzwerkanbindung:} Einbindung des \ac{PBS} in die
+          vorhandenen \acp{VLAN} (server / cluster / external / ceph).
+    \item \textbf{Authentifizierung:} Kombination aus lokalem
+          \texttt{root}-Zugang und Anbindung an das \ac{DKFZ}-\ac{LDAP}.
+    \item \textbf{Storage-Layout:} Auswahl zwischen Hardware-\ac{RAID}
+          (Hardware-\ac{RAID}); Festlegung des Disk-Layouts für den Datastore.
+\end{itemize}
 
-\subsection{Lastenheft/Pflichtenheft}
+
+\subsection{Wirtschaftlichkeitsanalyse}
+\label{sec:Wirtschaftlichkeitsanalyse}
+Die Wirtschaftlichkeit des Projekts ergibt sich vor allem aus zwei
+Faktoren: Die Reduktion des Risikos eines Datenverlusts durch eine von
+der Primär-Storage getrennte Sicherung sowie die deutlich vereinfachte
+und schnellere Wiederherstellung einzelner \acp{VM} und Container.
+
+\subsubsection*{Annahmen}
+Da konkrete interne Stundensätze und Hardware-Listenpreise zum
+Zeitpunkt der Erstellung nicht abschließend vorliegen, werden für die
+folgende Kalkulation plausible Platzhalterwerte angesetzt
+(\emph{Platzhalter -- in der finalen Fassung durch reale Zahlen aus
+der Personal- bzw.\ Beschaffungsabteilung ersetzen}).
+
+\subsubsection*{Projektkosten}
+\begin{itemize}
+    \item \textbf{Personalkosten Prüfling:} 40\,h $\times$
+          ca.\ 25\,\texteuro/h (Vollkostensatz Azubi inkl.\ Gemeinkosten,
+          Platzhalter) $=$ ca.\ 1\,000\,\texteuro.
+    \item \textbf{Betreuung / Abstimmung:} ca.\ 5\,h $\times$
+          80\,\texteuro/h (Platzhalter Senior-Admin) $=$ 400\,\texteuro.
+    \item \textbf{Hardware:} keine Beschaffungskosten, da ein
+          vorhandener IBM System x3755 (32~Kerne AMD Opteron~6220,
+          32\,GB \ac{RAM}, 6\,$\times$\,4\,TB HDD) nachgenutzt wird.
+          Anzusetzen sind lediglich Strom- und Standkosten (Platzhalter
+          ca.\ 200\,\texteuro\ über die Projektlaufzeit).
+    \item \textbf{Software:} keine Lizenzkosten, da \ac{PBS} unter der
+          AGPLv3 verfügbar ist (no-subscription-Repository).
+\end{itemize}
+
+\subsubsection*{Nutzen}
+\begin{itemize}
+    \item Deutlich kürzere Restore-Zeiten gegenüber dem heutigen
+          Vorgehen über \ac{TSM}/Tape -- bereits ein einziger
+          vermiedener mehrstündiger Restore-Vorgang pro Jahr
+          amortisiert die kalkulierten Projektkosten.
+    \item Reduzierung des Risikos eines Totalverlusts bei einem
+          Ausfall des Ceph-Clusters.
+    \item Zentrale Verwaltung, Monitoring und Integritätsprüfung der
+          Sicherungen senken den laufenden administrativen Aufwand.
+\end{itemize}
+
+% TODO: nach Rücksprache mit Frank / Personalabteilung echte Zahlen
+% einsetzen und ggfs. eine Tabelle in Tabellen/Kostenaufstellung.tex
+% pflegen.
+
+
+\subsection{Lasten-/Pflichtenheft}
 \label{sec:Lastenheft}
-Zu Beginn des Projekts hat der Kunde bereits einen Entwurf des Lastenhefts ausgearbeitet, welcher zusammen mit mir und dem Projektleiter von Arsandis weiter angepasst wurde.
-Dort sind alle Anforderungen des Auftraggebers für die Anpassungen der aktuellen Anwendung enthalten.
-Da sich die Kunden gut mit Windchill und seinen Funktionalitäten auskennen, haben sie bereits Lösungsvorschläge eingearbeitet.
-Darum kann man sagen, dass es sich bei diesem Dokument um einen Hybriden aus Lastenheft und Pflichtenheft handelt.
-Aus diesem Grund wurde vom Entwickler kein seperates Pflichtenheft mehr angefertigt.
-Im \Anhang{app:Lastenheft} befindet sich ein Auszug aus dem Lastenheft.
+Als Lastenheft dient der von der \ac{ODCF} freigegebene Projektantrag,
+der Ziel, Umfang und zu treffende Entscheidungen festlegt.
+Ein gesondertes Pflichtenheft wird nicht erstellt; die konkreten
+Umsetzungsentscheidungen werden stattdessen in der Entwurfsphase
+(Abschnitt~\ref{sec:Entwurfsphase}) dokumentiert.
+Ein Auszug aus den zentralen Anforderungen befindet sich im
+\Anhang{app:Lastenheft}.
