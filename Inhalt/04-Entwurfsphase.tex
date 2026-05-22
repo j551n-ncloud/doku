@@ -56,11 +56,14 @@ Die \ac{ODCF} verwendet vier separate \acp{VLAN}:
 \end{itemize}
 Der \ac{PBS} wird an das \emph{server}-\ac{VLAN} angebunden, um vom
 \ac{PVE}-Cluster aus erreichbar zu sein.
-Da der vorhandene Server nur Onboard-1\,GbE-Ports mitbringt, wird
-zusätzlich eine \ac{SFP}-Netzwerkkarte mit 2$\times$10\,GbE eingebaut.
-Die beiden Ports werden per \ac{LACP} zu einem logischen Interface
-gebündelt, um sowohl die Bandbreite zu erhöhen als auch eine
-Ausfallsicherheit auf Link-Ebene zu erreichen.
+Als Mindestanforderung für die Netzwerkanbindung wird eine
+\ac{SFP}-basierte Verbindung mit mindestens 10\,GbE festgelegt --
+RJ45-Ethernet-Ports sind aus Bandbreiten- und Stabilitätsgründen
+nicht zulässig. Entsprechend wird in den \ac{PBS} eine
+\ac{SFP}-Netzwerkkarte mit 2$\times$10\,GbE eingebaut. Die beiden
+Ports werden per \ac{LACP} zu einem logischen Interface gebündelt,
+um sowohl die Bandbreite zu erhöhen als auch eine Ausfallsicherheit
+auf Link-Ebene zu erreichen.
 Da die Backups über die regulären Hypervisor-Schnittstellen erfolgen,
 ist keine direkte Anbindung an das \emph{ceph}-\ac{VLAN} erforderlich;
 dadurch bleibt der Storage-Traffic von Primärdaten und Backups
