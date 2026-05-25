@@ -5,12 +5,12 @@
 Die Implementierung umfasst die physische Vorbereitung des Servers,
 die Installation und Konfiguration des \ac{PBS} sowie die Anbindung
 an alle beteiligten Systeme. Abbildung~\ref{fig:Architektur} zeigt
-die Gesamtarchitektur der Blueprint-Lösung im Überblick.
+die Gesamtarchitektur der Referenzkonfiguration im Überblick.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.95\linewidth,keepaspectratio]{architecture}
-    \caption{Gesamtarchitektur der PBS-Blueprint-Lösung:
+    \caption{Gesamtarchitektur der PBS-Referenzkonfiguration:
              PVE-Cluster, PBS odcf-fs04, LDAP, Prometheus und
              bestehende TSM-/Tape-Sicherung}
     \label{fig:Architektur}
@@ -35,7 +35,7 @@ als bootfähiges Installationsmedium vorbereitet.
 
 Auf Linux-Seite wird das Bond als \texttt{bond0} im Modus
 \texttt{802.3ad} (\ac{LACP}) mit \texttt{layer3+4}-Hashing
-konfiguriert; der vollständige Auszug aus
+konfiguriert~\citep{IEEE802ad}; der vollständige Auszug aus
 \texttt{/etc/network/interfaces} findet sich in
 Listing~\ref{lst:interfaces} im Anhang.
 
@@ -57,7 +57,7 @@ Die NTP-Synchronisation läuft gegen die internen Zeitserver des
 Tatsächlicher Zeitaufwand für Installation und Grundkonfiguration:
 ca.~fünf Stunden -- der Mehraufwand gegenüber den geplanten vier
 Stunden resultiert aus den Hardware-\ac{RAID}-Komplikationen beim
-initialen Disk-Setup.
+initialen Disk-Einrichtung.
 
 
 \subsection{Konfiguration des Datastores}
@@ -131,14 +131,14 @@ auf den automatischen Zeitplan umgestellt.
 Für Fehlerbenachrichtigungen wird der eingebaute E-Mail-Mechanismus
 des \ac{PBS} über das SMTP-Relay des \ac{DKFZ} konfiguriert.
 Zusätzlich wird auf \texttt{odcf-fs04} der
-\texttt{natrontech/pbs-exporter}~v0.8.0~\citep{PrometheusDocs} als
+\texttt{natrontech/pbs-exporter}~v0.8.0~\citep{PBSExporter} als
 systemd-Unit installiert, der über Port~9100 Metriken
 (Datastore-Belegung, Backup-Alter je \ac{VM}, Verify-Status) an
 das zentrale Prometheus der \ac{ODCF} liefert. Die Authentifizierung
 erfolgt über einen dedizierten \ac{API}-Token
 (\texttt{root@pam!pbs-exporter}, Rolle \texttt{Audit}).
 
-Zur Härtung des Hosts wird \texttt{firewalld} eingesetzt: Aktiv
+Zur Härtung des Hosts wird \texttt{firewalld}~\citep{FirewalldDocs} eingesetzt: Aktiv
 sind ausschließlich \texttt{ssh} (22/tcp), der \ac{PBS}-Port
 (8007/tcp) und der Exporter-Port (9100/tcp); alle übrigen
 Default-Dienste (cockpit, http, https) sind entfernt. Der Ablauf
