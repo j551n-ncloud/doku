@@ -2,29 +2,36 @@
 \section{Implementierungsphase}
 \label{sec:Implementierungsphase}
 
+Die Implementierung umfasst die physische Vorbereitung des Servers,
+die Installation und Konfiguration des \ac{PBS} sowie die Anbindung
+an alle beteiligten Systeme. Abbildung~\ref{fig:Architektur} zeigt
+die Gesamtarchitektur der Blueprint-Lösung im Überblick.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth,keepaspectratio]{architecture}
+    \caption{Gesamtarchitektur der PBS-Blueprint-Lösung:
+             PVE-Cluster, PBS odcf-fs04, LDAP, Prometheus und
+             bestehende TSM-/Tape-Sicherung}
+    \label{fig:Architektur}
+\end{figure}
+
 \subsection{Beschaffung und Vorbereitung}
 \label{sec:Beschaffung}
 Da als Hardware ein vorhandener IBM System x3755 M3 nachgenutzt wird,
-entfällt eine externe Beschaffung. Die Vorbereitung umfasst:
-\begin{itemize}
-    \item Bereitstellung des Servers im Rechenzentrum der \ac{ODCF}
-          in DCODCF-Rack14.
-    \item Konfiguration des Hardware-\ac{RAID}-Controllers:
-          \ac{RAID}\,1 für das System, \ac{RAID}\,5 über 6$\times$4\,TB
-          HDDs für den Datastore.
-    \item Einbau einer Netzwerk-\ac{SFP}-Karte mit 2$\times$10\,GbE
-          und Bündelung der beiden Ports per \ac{LACP} zu einem
-          logischen Interface (Aufwand: ca.~10\,min).
-    \item Verkabelung beider Ports über die Patchpanels in Rack14
-          und Rack16 zum Cisco-Switch
-          \texttt{aci-dc03-og2-r16-aly-2153}. Die Netzwerk-
-          Infrastruktur (server-\ac{VLAN}, Firewall-Freischaltungen
-          zwischen \ac{PVE}-Cluster und \ac{PBS}) ist bereits
-          vorhanden; eine gesonderte Abstimmung mit dem
-          Netzwerkteam war daher nicht erforderlich.
-    \item Herunterladen des aktuellen \ac{PBS}-4-ISOs von Proxmox und
-          Vorbereitung eines bootfähigen Installationsmediums.
-\end{itemize}
+entfällt eine externe Beschaffung. Der Server wird in DCODCF-Rack14
+bereitgestellt und mit einem Hardware-\ac{RAID}-Controller
+konfiguriert: \ac{RAID}\,1 für das Betriebssystem und
+\ac{RAID}\,5 über 6$\times$4\,TB HDDs (Modell ST4000NM033) für den
+Datastore (ca.~20\,TB nutzbar).
+Zusätzlich wird eine \ac{SFP}-Netzwerkkarte mit 2$\times$10\,GbE
+eingebaut und per \ac{LACP} zu einem logischen Interface gebündelt;
+die Verkabelung läuft über die Patchpanels in Rack14/16 zum
+Cisco-Switch \texttt{aci-dc03-og2-r16-aly-2153}. Die
+Netzwerk-Infrastruktur (\emph{server}-\ac{VLAN},
+Firewall-Freischaltungen) ist bereits vorhanden.
+Abschließend wird das aktuelle \ac{PBS}-4-ISO heruntergeladen und
+als bootfähiges Installationsmedium vorbereitet.
 
 Auf Linux-Seite wird das Bond als \texttt{bond0} im Modus
 \texttt{802.3ad} (\ac{LACP}) mit \texttt{layer3+4}-Hashing
@@ -33,97 +40,118 @@ konfiguriert; der vollständige Auszug aus
 Listing~\ref{lst:interfaces} im Anhang.
 
 
-\subsection{Installation des Proxmox Backup Servers}
+\subsection{Installation und Grundkonfiguration}
 \label{sec:InstallationPBS}
-Die Installation erfolgt direkt vom \ac{PBS}-4-ISO. Nach Abschluss des
-geführten Installers wird das System wie folgt grundkonfiguriert:
-\begin{itemize}
-    \item Hostname \texttt{odcf-fs04} mit der IP \texttt{10.131.196.78}
-          im \emph{server}-\ac{VLAN}; die Web-Oberfläche ist unter
-          \url{https://10.131.196.78:8007} erreichbar.
-    \item Eintrag im internen \ac{DKFZ}-DNS unter dem o.\,g.\
-          Hostnamen.
-    \item Konfiguration des \texttt{pbs-no-subscription}-
-          Repositories, da keine Enterprise-Subscription beschafft
-          wird; anschließend vollständiges \texttt{apt}-Upgrade.
-    \item NTP-Synchronisation gegen die internen Zeitserver des
-          \ac{DKFZ}.
-\end{itemize}
+Die Installation erfolgt direkt vom \ac{PBS}-4-ISO. Der geführte
+Installer richtet Debian mit dem \ac{PBS}-Paket auf dem
+\ac{RAID}\,1-System-Volume ein. Anschließend wird der Host wie
+folgt konfiguriert: Hostname \texttt{odcf-fs04} mit der IP
+\texttt{10.131.196.78} im \emph{server}-\ac{VLAN}, Eintrag im
+\ac{DKFZ}-DNS, Konfiguration des
+\texttt{pbs-no-subscription}-Repositories (keine
+Enterprise-Subscription) und vollständiges \texttt{apt}-Upgrade.
+Die NTP-Synchronisation läuft gegen die internen Zeitserver des
+\ac{DKFZ}. Die Web-Oberfläche des \ac{PBS} ist unter
+\url{https://10.131.196.78:8007} erreichbar.
+
 Tatsächlicher Zeitaufwand für Installation und Grundkonfiguration:
-ca.~5\,h.
+ca.~fünf Stunden -- der Mehraufwand gegenüber den geplanten vier
+Stunden resultiert aus den Hardware-\ac{RAID}-Komplikationen beim
+initialen Disk-Setup.
 
 
 \subsection{Konfiguration des Datastores}
 \label{sec:Datastore}
 Auf dem \ac{RAID}\,5-Volume wird ein \texttt{ext4}-Dateisystem
-angelegt und unter \texttt{/mnt/datastore/backup} eingehängt;
-darauf legt der \ac{PBS} den Datastore \texttt{backup}
-an~\citep{PBSAdminGuide}. Der entsprechende Eintrag in
-\texttt{/etc/proxmox-backup/datastore.cfg} ist in
-Listing~\ref{lst:datastore} im Anhang dokumentiert.
+angelegt und unter \texttt{/mnt/datastore/backup} eingehängt.
+Darauf legt der \ac{PBS} den Datastore \texttt{backup}
+an~\citep{PBSAdminGuide}; die Konfiguration ist in
+Listing~\ref{lst:datastore} im Anhang dokumentiert. Der Ablauf eines
+Backup-Jobs vom Scheduler-Trigger über die Chunk-Übertragung bis zum
+Verify ist in Abbildung~\ref{fig:BackupSeq} dargestellt.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\linewidth,keepaspectratio]{backup-sequence}
+    \caption{Ablauf eines Backup-Jobs: PVE-Hypervisor authentifiziert
+             sich am PBS, überträgt Chunks inkrementell und löst
+             anschließend den Prune aus}
+    \label{fig:BackupSeq}
+\end{figure}
+
 Auf dem Datastore wird zusätzlich ein wöchentlicher Verify-Job
-angelegt, der die Prüfsummen aller gespeicherten Chunks gegen die
-Metadaten verifiziert.
+eingerichtet, der die Prüfsummen aller gespeicherten Chunks gegen
+die Metadaten vergleicht und so die Integrität langfristig
+sicherstellt.
 
 
 \subsection{Anbindung an das DKFZ-LDAP}
 \label{sec:LDAPAnbindung}
-Für die Anmeldung regulärer Administratorinnen und Administratoren
-wird der \ac{PBS} an das \ac{DKFZ}-\ac{LDAP} per LDAPS auf Port 636
-angebunden; berechtigt sind Benutzer der \ac{AD}-Gruppe
-\texttt{ODCF-SysAdmins}, die anschließend ihre persönlichen Konten
-an der Web-Oberfläche verwenden können.
-Der lokale \texttt{root}-Account bleibt für die Initialkonfiguration
-und Notfallzugriffe erhalten.
-Die resultierende Realm-Konfiguration aus
-\texttt{/etc/proxmox-backup/domains.cfg} ist in
-Listing~\ref{lst:ldap} im Anhang abgebildet; vertrauliche
-DKFZ-spezifische Bind-Daten sind dort geschwärzt.
+Für die Anmeldung regulärer Administratoren wird der \ac{PBS} an
+das \ac{DKFZ}-\ac{LDAP} per LDAPS auf Port~636 angebunden.
+Berechtigt sind ausschließlich Benutzer der \ac{AD}-Gruppe
+\texttt{ODCF-SysAdmins}; nach dem Login an der Web-Oberfläche
+können sie Backup-Jobs überwachen, Restores starten und den
+Datastore verwalten. Der lokale \texttt{root}-Account bleibt für
+die Initialkonfiguration und Notfallzugriffe erhalten.
+Die Realm-Konfiguration ist in Listing~\ref{lst:ldap} im Anhang
+abgebildet; vertrauliche DKFZ-spezifische Bind-Daten sind dort
+geschwärzt.
 
-Tatsächlicher Zeitaufwand für die LDAP-Einrichtung: ca.~0{,}5\,h.
+Tatsächlicher Zeitaufwand: ca.~30~Minuten.
 
 
 \subsection{Integration in den PVE-Cluster}
 \label{sec:PVEIntegration}
 Für die Anbindung des \ac{PBS} an den \ac{PVE}-Cluster wird der
-lokale \texttt{root}-Account des \ac{PBS} verwendet; das zugehörige
-Passwort ist im Bitwarden-Tresor der \ac{ODCF} hinterlegt.
-
-Im \ac{PVE} wird der \ac{PBS} anschließend als Storage vom Typ
-\emph{Proxmox Backup Server} hinzugefügt~\citep{PVEAdminGuide};
-dabei werden Server-Adresse
-(\texttt{odcf-fs04} / \texttt{10.131.196.78}), Datastore-Name,
-\texttt{root}-Zugangsdaten sowie der TLS-Fingerprint des
-\ac{PBS}-Zertifikats hinterlegt.
+lokale \texttt{root}-Account des \ac{PBS} verwendet. Im \ac{PVE}
+wird der \ac{PBS} als Storage vom Typ \emph{Proxmox Backup
+Server}~\citep{PVEAdminGuide} hinzugefügt; dabei werden
+Server-Adresse (\texttt{odcf-fs04}), Datastore-Name,
+\texttt{root}-Zugangsdaten sowie der TLS-Fingerprint hinterlegt.
 Ein Test-Backup einer unkritischen \ac{VM} verifiziert die korrekte
 Anbindung, bevor produktive Jobs aufgesetzt werden.
 
-Tatsächlicher Zeitaufwand für die PVE-Anbindung: ca.~0{,}5\,h.
+Tatsächlicher Zeitaufwand: ca.~30~Minuten.
 
 
 \subsection{Einrichtung der Backup-Jobs}
 \label{sec:BackupJobs}
 Die produktiven Backup-Jobs werden im \ac{PVE} pro \ac{VM}-Klasse
-angelegt; sowohl für kritische als auch für Test-\acp{VM} gilt:
-zwei Sicherungen pro Tag, Prune-Regel \texttt{keep-last=3}.
-Die Jobs werden zunächst manuell ausgelöst, um Laufzeiten und
-Bandbreitenbedarf zu beobachten; anschließend werden sie auf den
-geplanten Zeitplan umgestellt.
+angelegt. Sowohl für kritische als auch für Test-\acp{VM} sind zwei
+Sicherungen pro Tag (00:00 und 12:00~Uhr) mit der Prune-Regel
+\texttt{keep-last=3} konfiguriert.
+Jeder neu angelegte Job wird zunächst manuell ausgelöst, um
+Laufzeiten und Bandbreitenbedarf zu beobachten, und erst danach
+auf den automatischen Zeitplan umgestellt.
 
 
-\subsection{Monitoring und Benachrichtigungen}
+\subsection{Monitoring und Härtung}
 \label{sec:Monitoring}
 Für Fehlerbenachrichtigungen wird der eingebaute E-Mail-Mechanismus
-des \ac{PBS} konfiguriert (SMTP-Relay des \ac{DKFZ}).
-Zusätzlich wird der Server in das bestehende Prometheus-
-Monitoring der \ac{ODCF}~\citep{PrometheusDocs} aufgenommen; der
-\ac{PBS} stellt dafür einen nativen Metrik-Endpunkt bereit, der per
-\texttt{node\_exporter} bzw.\ \texttt{proxmox-backup-exporter}
-angebunden wird.
-Überwacht werden insbesondere:
-\begin{itemize}
-    \item Erreichbarkeit und Auslastung des \ac{PBS}.
-    \item Belegung des Datastores (Vermeidung eines vollen Pools).
-    \item Status der Backup- und Verify-Jobs.
-    \item \ac{RAID}-Status des Hardware-Controllers.
-\end{itemize}
+des \ac{PBS} über das SMTP-Relay des \ac{DKFZ} konfiguriert.
+Zusätzlich wird auf \texttt{odcf-fs04} der
+\texttt{natrontech/pbs-exporter}~v0.8.0~\citep{PrometheusDocs} als
+systemd-Unit installiert, der über Port~9100 Metriken
+(Datastore-Belegung, Backup-Alter je \ac{VM}, Verify-Status) an
+das zentrale Prometheus der \ac{ODCF} liefert. Die Authentifizierung
+erfolgt über einen dedizierten \ac{API}-Token
+(\texttt{root@pam!pbs-exporter}, Rolle \texttt{Audit}).
+
+Zur Härtung des Hosts wird \texttt{firewalld} eingesetzt: Aktiv
+sind ausschließlich \texttt{ssh} (22/tcp), der \ac{PBS}-Port
+(8007/tcp) und der Exporter-Port (9100/tcp); alle übrigen
+Default-Dienste (cockpit, http, https) sind entfernt. Der Ablauf
+eines File-Restores -- vom Login an der Web-Oberfläche bis zur
+Datei-Extraktion aus einem Snapshot -- ist in
+Abbildung~\ref{fig:RestoreSeq} dargestellt.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\linewidth,keepaspectratio]{restore-sequence}
+    \caption{File-Restore: Admin startet über die PVE-Weboberfläche
+             eine temporäre Restore-VM, browst im Snapshot und
+             extrahiert die gewünschte Datei}
+    \label{fig:RestoreSeq}
+\end{figure}
+
