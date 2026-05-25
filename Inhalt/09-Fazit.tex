@@ -2,76 +2,94 @@
 \section{Fazit}
 \label{sec:Fazit}
 
-\subsection{Soll-/Ist-Vergleich}
+\subsection{Zielerreichung}
+\label{sec:Zielerreichung}
+
+Im Projektantrag (Abschnitt~\ref{sec:Projektziel}) wurden fünf
+konkrete Ziele definiert. Diese werden im Folgenden gegen das
+Ergebnis der Blueprint-Instanz \texttt{odcf-fs04} geprüft.
+
+\begin{enumerate}\setlength{\itemsep}{2pt}
+    \item \textbf{Installation und Konfiguration eines dedizierten
+          \ac{PBS} auf eigener Hardware:} Erfüllt. Der \ac{PBS}~4
+          läuft auf dem IBM x3755~M3 mit Hardware-\ac{RAID}\,5
+          (ca.~20\,TB nutzbar) im \emph{server}-\ac{VLAN} des
+          \ac{DKFZ}.
+    \item \textbf{Anbindung an den bestehenden \ac{PVE}-Cluster:}
+          Erfüllt. Alle sechs Hypervisor-Knoten erreichen den
+          \ac{PBS} über das 2$\times$10\,\ac{GbE}-\ac{LACP}-Bond;
+          die Authentifizierung erfolgt über das lokale
+          \texttt{root}-Passwort und den TLS-Fingerprint.
+    \item \textbf{Backup-Jobs mit definierten Zeitplänen und
+          Retention Policies:} Erfüllt. Für beide \ac{VM}-Klassen
+          (kritisch und Test) sind je zwei tägliche
+          Sicherungen um 00:00 und 12:00~Uhr mit
+          \texttt{keep-last=3} eingerichtet.
+    \item \textbf{Konfiguration von Benachrichtigungen und
+          Monitoring:} Erfüllt. E-Mail-Benachrichtigungen bei
+          fehlgeschlagenen Jobs sind aktiv; der
+          \texttt{pbs-exporter} liefert Metriken an Prometheus
+          (\texttt{pbs\_up=1}, Datastore-Belegung, Backup-Alter
+          pro \ac{VM}).
+    \item \textbf{Betriebsdokumentation und Übergabe an das
+          \ac{ODCF}-Team:} Erfüllt. Die Betriebsdokumentation
+          ist im DokuWiki der \ac{ODCF} abgelegt; ein Auszug
+          findet sich im \Anhang{app:BetriebsDoku}. Die Übergabe
+          an Stefan Becker (\ac{ODCF}) ist vorbereitet.
+\end{enumerate}
+
+Damit sind sämtliche im Antrag formulierten Ziele mit der
+Blueprint-Instanz nachweislich erfüllt. Die Primär- und
+Sicherungsdaten liegen auf getrennter Infrastruktur, Restores
+einzelner Dateien und ganzer \acp{VM} wurden erfolgreich
+getestet (Abschnitt~\ref{sec:Abnahmephase}), und das
+Monitoring zeigt den aktuellen Status jederzeit zentral an.
+
+\subsection{Soll-/Ist-Vergleich der Zeitplanung}
 \label{sec:SollIstVergleich}
 
-Insgesamt wurden für das Projekt rund 34{,}5~Stunden aufgewendet
-und damit das geplante Zeitbudget von 40~Stunden um etwa
-5{,}5~Stunden unterschritten. Der größte Mehraufwand entstand in
-der Phase \emph{Beschaffung \& Vorbereitung} (+2~h) aufgrund von
-Komplikationen mit dem Hardware-\ac{RAID}-Controller; auch die
-Grundinstallation des \ac{PBS} fiel mit ca.~5~h etwas aufwändiger
-aus als geplant (+1~h). Dem stehen deutlich kürzere Laufzeiten
-bei der Datastore-Konfiguration, der LDAP- und PVE-Anbindung sowie
-der Einrichtung der Backup-Jobs gegenüber, die zusammen rund
-8~Stunden weniger benötigten als veranschlagt -- nicht zuletzt,
-weil viele Konfigurationsschritte in \ac{PBS} und \ac{PVE} sehr gut
-toolunterstützt sind. Der Scope des Projekts ist für einen durchschnittlichen Prüfling
-realistisch auf 40~Stunden ausgelegt -- insbesondere die
-Beschäftigung mit dem Hardware-\ac{RAID}, der LDAP-Anbindung an
-das Unternehmensverzeichnis, die Härtung über \texttt{firewalld},
-die Anbindung an das Prometheus-Monitoring per
-\texttt{pbs-exporter} sowie die Konfiguration eines vollwertigen
-Backup-Konzepts hätten bei einem ersten Kontakt mit den Themen
-deutlich mehr Zeit erfordert. Dass die Konfigurationsphasen hier
-schneller abgeschlossen werden konnten, geht u.\,a.\ auf
-Vorerfahrung des Prüflings mit \ac{PVE} und \ac{PBS} aus einem
-privaten Lab-Setup zurück. Der gesamte Dokumentationsaufwand von rund 10~Stunden verteilt sich
-dabei etwa hälftig auf die Betriebsdokumentation für das
-\ac{ODCF}-Team (siehe \Anhang{app:BetriebsDoku}) und die
-vorliegende Projektdokumentation für die \ac{IHK}.
-Eine vollständige Gegenüberstellung der
-geplanten und tatsächlichen Stunden je Phase befindet sich in
+Die geplanten 40~Stunden wurden mit tatsächlich rund
+34{,}5~Stunden um etwa 5{,}5~Stunden unterschritten. Die
+wesentliche Ursache liegt in der Vorerfahrung des Prüflings mit
+\ac{PVE} und \ac{PBS} aus einem privaten Lab-Setup, durch die
+viele Konfigurationsschritte routiniert umgesetzt werden konnten.
+Der Scope des Projekts ist für einen durchschnittlichen Prüfling
+realistisch auf 40~Stunden ausgelegt, da insbesondere die
+Beschäftigung mit dem Hardware-\ac{RAID}, der LDAP-Anbindung, der
+Härtung über \texttt{firewalld}, der Prometheus-Anbindung per
+\texttt{pbs-exporter} sowie die Erstellung zweier Dokumentationen
+(Betriebsdokumentation und Projektdokumentation) bei einem
+ersten Kontakt mit den Themen mehr Zeit erfordert hätten.
+Eine vollständige Gegenüberstellung findet sich in
 Tabelle~\ref{tab:Vergleich}.
 \tabelle{Soll-/Ist-Vergleich}{tab:Vergleich}{Zeitnachher}
-
 
 \subsection{Lessons Learned}
 \label{sec:LessonsLearned}
 
 Im Laufe des Projekts haben sich vor allem drei Lerneffekte
 herausgestellt. Erstens hat sich gezeigt, wie wichtig eine frühe
-Abstimmung mit dem Netzwerkteam ist: Der Einbau der \ac{SFP}-
-Karte und die \ac{LACP}-Konfiguration waren technisch trivial,
+Abstimmung mit dem Netzwerkteam ist: Der Einbau der \ac{SFP}-Karte
+und die \ac{LACP}-Konfiguration waren technisch unkompliziert,
 hingen aber von der rechtzeitigen Bereitstellung der Switch-Ports
 und der Patchpanel-Verkabelung ab. Zweitens hat der Aufbau auf
 Altbestands-Hardware (IBM x3755~M3) klare Grenzen gezeigt, etwa
-beim Speicherausbau und bei der Auswahl des Dateisystems
+beim Speicherausbau und bei der Wahl des Dateisystems
 (Hardware-\ac{RAID} statt eines Software-Stacks). Drittens wurde
-deutlich, dass eine sauber gepflegte Betriebsdokumentation -- in
-diesem Fall im DokuWiki der \ac{ODCF} -- für ein Sysadmin-Projekt
-mindestens so wertvoll ist wie die eigentliche Implementierung,
-weil der laufende Betrieb anschließend ohne den Prüfling
-weiterläuft.
-
-% TODO: ggfs. eigene Erfahrungen ergaenzen (Kommunikation,
-% Tooling, Zeitmanagement).
-
+klar, dass eine sauber gepflegte Betriebsdokumentation für ein
+Infrastrukturprojekt mindestens so wertvoll ist wie die eigentliche
+Implementierung, weil der laufende Betrieb anschließend ohne den
+Prüfling weiterläuft.
 
 \subsection{Ausblick}
 \label{sec:Ausblick}
 
 Mit dem fertigen Blueprint stehen mehrere Folgeschritte offen.
 Kurzfristig kann das \ac{ODCF}-Team auf Basis der erstellten
-Referenzkonfiguration eine produktive \ac{PBS}-Instanz
-aufsetzen und die lokalen Hypervisor-Backups schrittweise auf den
-\ac{PBS} migrieren. Mittelfristig sind eine Off-Site-Replikation
-des Datastores sowie die langfristige Ablösung der \ac{TSM}-/Tape-
-Sicherung als zusätzliche Sicherungsebene denkbar. Darüber hinaus
-lässt sich das eingerichtete Monitoring um weitere Metriken und
-Alerts ausbauen (z.\,B.\ Trend-Alerts auf Datastore-Belegung
-oder Verify-Fehlerquoten), sodass sich der Betrieb mittelfristig
-nahezu vollständig automatisiert überwachen lässt.
-
-% TODO: ggfs. konkretere Folgeprojekte mit Frank abstimmen und
-% hier referenzieren.
+Referenzkonfiguration eine produktive \ac{PBS}-Instanz aufsetzen
+und die lokalen Hypervisor-Backups schrittweise ablösen.
+Mittelfristig sind eine Off-Site-Replikation des Datastores sowie
+die langfristige Ablösung der \ac{TSM}-/Tape-Sicherung denkbar.
+Darüber hinaus lässt sich das eingerichtete Monitoring um weitere
+Metriken und Alerts ausbauen (z.\,B.\ Trend-Alerts auf
+Datastore-Belegung oder Verify-Fehlerquoten).
