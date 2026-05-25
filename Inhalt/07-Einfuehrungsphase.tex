@@ -3,7 +3,7 @@
 \label{sec:Einfuehrungsphase}
 
 Der im Rahmen dieses Projekts aufgebaute \ac{PBS} \texttt{odcf-fs04}
-ist eine \textbf{Blueprint-Testinstanz} und nicht die spätere
+ist eine \textbf{Referenzkonfiguration} und nicht die spätere
 Produktivumgebung. Ziel der Einführungsphase ist daher nicht der
 Produktivgang, sondern die Übergabe einer reproduzierbaren,
 dokumentierten Referenzkonfiguration an das \ac{ODCF}-Team, die
@@ -14,25 +14,22 @@ Einweisung wird die übergebene Betriebsdokumentation
 weiteren Aufbau genutzt.
 
 \subsection{Übergabe und Zuständigkeiten}
-Die Blueprint-Instanz und die zugehörige Dokumentation gehen an
+Die Referenzkonfiguration und die zugehörige Dokumentation gehen an
 Stefan Becker (\ac{ODCF}) über. Administrativer Zugriff auf die
 Testinstanz erfolgt über die bestehende \ac{AD}-Gruppe
 \texttt{ODCF-SysAdmins}, die im \ac{PBS} als \ac{LDAP}-Realm
 hinterlegt ist (siehe Abschnitt~\ref{sec:LDAPAnbindung}).
 
 \subsubsection*{Zugänge und Geheimnisse}
-\begin{itemize}
-    \item Das lokale \texttt{root}-Passwort wird im zentralen
-          Bitwarden-Tresor der \ac{ODCF} hinterlegt.
-    \item Sämtliche Zugangsdaten (\texttt{root}-Passwort sowie der
-          \ac{API}-Token des \texttt{pbs-exporter} für das
-          Prometheus-Monitoring) werden bei einem späteren
-          Produktivgang rotiert; für die Blueprint-Instanz
-          dokumentiert das Projekt das genaue Vorgehen.
-\end{itemize}
+Sämtliche Zugangsdaten (\texttt{root}-Passwort sowie der
+\ac{API}-Token des \texttt{pbs-exporter} für das
+Prometheus-Monitoring) sind im zentralen Passwort-Tresor
+der \ac{ODCF} hinterlegt und werden bei einem späteren
+Produktivgang rotiert; für die Referenzkonfiguration
+dokumentiert das Projekt das genaue Vorgehen.
 
 \subsection{Verhältnis zur bestehenden Sicherung}
-Da es sich um eine Blueprint-Testinstanz handelt, wird im Rahmen
+Da es sich um eine Referenzkonfiguration handelt, wird im Rahmen
 dieses Projekts \emph{keine} bestehende Sicherung abgelöst.
 Sowohl die lokalen Hypervisor-Backups als auch die \ac{TSM}-/Tape-
 Sicherung bleiben unverändert in Betrieb.
