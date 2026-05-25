@@ -32,12 +32,12 @@ angelegt. Soll ein zusätzlicher Datastore eingerichtet werden:
 # 1. Mountpoint vorbereiten (Beispiel)
 mkdir -p /mnt/datastore/<name>
 mount /dev/<volume> /mnt/datastore/<name>
-# fstab-Eintrag ergaenzen, damit der Mount persistent ist
+# fstab-Eintrag ergänzen, damit der Mount persistent ist
 
 # 2. Datastore in PBS anlegen
 proxmox-backup-manager datastore create <name> /mnt/datastore/<name>
 
-# 3. Status pruefen
+# 3. Status prüfen
 proxmox-backup-manager datastore list
 \end{lstlisting}
 Anschließend in der Web-UI unter \emph{Datastore $\to$ Prune \& GC}
@@ -62,6 +62,18 @@ und übertragen ihre Daten an den Datastore \texttt{backup}:
 Jeden neu angelegten Job einmal manuell auslösen (\emph{Run now}),
 um Laufzeit und Bandbreite zu beobachten.
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth,keepaspectratio]{pve-backup-task}
+    \caption{Laufender Backup-Job (VM~141) im PVE-Task-Viewer}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth,keepaspectratio]{pve-backup-snapshots}
+    \caption{Backup-Snapshots im PVE-Storage-View mit Verify-Status}
+\end{figure}
+
 \subsubsection*{4. Restore -- einzelne Datei}
 Wenn nur einzelne Dateien zurückgespielt werden müssen:
 \begin{enumerate}\setlength{\itemsep}{1pt}
@@ -77,6 +89,12 @@ Der File-Restore-Mechanismus läuft in einer temporären Restore-
 \ac{VM} im \ac{PVE}; größere Verzeichnisse werden als
 \texttt{tar.zst} heruntergeladen.
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.75\linewidth,keepaspectratio]{pbs-file-restore}
+    \caption{File-Restore-Browser: Verzeichnisbaum aus einem Backup-Snapshot}
+\end{figure}
+
 \subsubsection*{5. Restore -- ganze VM oder Container}
 \begin{enumerate}\setlength{\itemsep}{1pt}
     \item PVE-Web-UI: \emph{Storage \texttt{<PBS-storage>} $\to$
@@ -89,6 +107,18 @@ Der File-Restore-Mechanismus läuft in einer temporären Restore-
     \item Nach Abschluss die wiederhergestellte \ac{VM} starten
           und Funktion prüfen.
 \end{enumerate}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.6\linewidth,keepaspectratio]{pve-restore-options}
+    \caption{Restore-Dialog: Quell-Snapshot, Ziel-Storage und Override-Optionen}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth,keepaspectratio]{pve-restore-start}
+    \caption{Laufender VM-Restore (VM~141) im PVE-Task-Viewer}
+\end{figure}
 
 \subsubsection*{6. Agent-basiertes Backup von Debian-Hosts}
 Neben den hypervisor-basierten Backups aus dem \ac{PVE} kann der
@@ -207,7 +237,7 @@ Dokumentation).
 # Alle bestehenden Verify-Jobs anzeigen
 proxmox-backup-manager verify-job list
 
-# Einen einzelnen Verify-Job ausfuehren
+# Einen einzelnen Verify-Job ausführen
 proxmox-backup-manager verify-job run <job-id>
 
 # Ad-hoc-Verify auf den kompletten Datastore (laufzeitintensiv)
@@ -218,12 +248,18 @@ Snapshot wird in der Web-UI unter \emph{Datastore $\to$ Content}
 ein rotes Warnsymbol angezeigt; betroffene Snapshots gezielt erneut
 verifizieren oder im Härtefall löschen.
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth,keepaspectratio]{pbs-verify-task}
+    \caption{Verify-Job im PBS-Task-Viewer -- prüft Chunks gegen Prüfsummen}
+\end{figure}
+
 \subsubsection*{8. Prune-Logik nachvollziehen}
 Der Prune entscheidet anhand der Regel \texttt{keep-last=3}, welche
 Snapshots gelöscht werden. Vor jeder destruktiven Aktion empfiehlt
 sich ein \emph{Dry-Run}:
-\begin{lstlisting}[language=bash,caption={Prune simulieren / ausfuehren}]
-# Dry-Run: zeigt, welche Snapshots geloescht WUERDEN
+\begin{lstlisting}[language=bash,caption={Prune simulieren / ausführen}]
+# Dry-Run: zeigt, welche Snapshots gelöscht WÜRDEN
 proxmox-backup-manager prune backup --keep-last 3 --dry-run
 
 # Echte Pruning-Aktion (nur, wenn das Dry-Run-Ergebnis OK ist)
@@ -253,6 +289,12 @@ proxmox-backup-manager garbage-collection start backup
           Frank Thommen.
 \end{enumerate}
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth,keepaspectratio]{pbs-gc-task}
+    \caption{Garbage Collection im PBS-Task-Viewer}
+\end{figure}
+
 \subsubsection*{10. Firewall-Konfiguration}
 Auf \texttt{odcf-fs04} läuft \texttt{firewalld} mit der Default-Zone
 \texttt{public}. Aktiv sind ausschließlich die für den Betrieb
@@ -273,7 +315,7 @@ set -e
 systemctl enable --now firewalld
 firewall-cmd --set-default-zone=public
 
-# Unerwuenschte Default-Services entfernen
+# Unerwünschte Default-Services entfernen
 for svc in cockpit http https; do
   firewall-cmd --permanent --zone=public --remove-service=$svc || true
 done
@@ -312,7 +354,7 @@ Wichtige Kennzahlen / PromQL-Beispiele:
 # Alter des letzten Backups je VM (Stunden)
 (time() - pbs_snapshot_vm_last_timestamp) / 3600
 
-# Alert: Backup aelter als 26 h
+# Alert: Backup älter als 26 h
 (time() - pbs_snapshot_vm_last_timestamp) > 26 * 3600
 
 # Alert: Verify fehlgeschlagen
