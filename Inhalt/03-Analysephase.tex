@@ -6,8 +6,8 @@
 \subsection{Ist-Analyse}
 \label{sec:IstAnalyse}
 Der \ac{PVE}-Cluster der \ac{ODCF} besteht aus insgesamt sechs
-Hypervisor-Knoten -- drei älteren IBM- bzw.\ Lenovo-Servern und drei
-neueren Dell-VxRail-Knoten -- und betreibt derzeit etwa 60 \acp{VM}
+Hypervisor-Knoten (drei ältere IBM- bzw.\ Lenovo-Server und drei
+neuere Dell-VxRail-Knoten) und betreibt derzeit etwa 60 \acp{VM}
 sowie eine Reihe von \acp{LXC} mit Forschungs- und
 Infrastrukturdiensten.
 Als primäres Storage-Backend wird ein Ceph-Cluster mit einer
@@ -35,8 +35,8 @@ Die bestehende Sicherung ist heterogen aufgebaut:
           älteren IBM-/Lenovo-Knoten. Für die VxRail-Hypervisor
           existiert keine äquivalente schnelle Restore-Quelle.
     \item \textbf{Fehlschläge bei Migrationen:} Bei der Migration
-          großer \acp{VM} zwischen Knoten -- insbesondere von und zu
-          VxRails -- kommt es vor, dass keine konsistente Sicherung
+          großer \acp{VM} zwischen Knoten, insbesondere von und zu
+          VxRails, kommt es vor, dass keine konsistente Sicherung
           mehr zur Verfügung steht.
     \item \textbf{Vollgelaufener Backup-Storage:} Da pro Hypervisor
           lokal gesichert wird, läuft der lokale Storage einzelner

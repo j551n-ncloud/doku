@@ -57,7 +57,7 @@ Die \ac{ODCF} verwendet vier separate \acp{VLAN}:
 Der \ac{PBS} wird an das \emph{server}-\ac{VLAN} angebunden, um vom
 \ac{PVE}-Cluster aus erreichbar zu sein.
 Als Mindestanforderung für die Netzwerkanbindung wird eine
-\ac{SFP}-basierte Verbindung mit mindestens 10\,GbE festgelegt --
+\ac{SFP}-basierte Verbindung mit mindestens 10\,GbE festgelegt.
 RJ45-Ethernet-Ports sind aus Bandbreiten- und Stabilitätsgründen
 nicht zulässig. Entsprechend wird in den \ac{PBS} eine
 \ac{SFP}-Netzwerkkarte mit 2$\times$10\,GbE eingebaut. Die beiden
@@ -68,10 +68,10 @@ Da die Backups über die regulären Hypervisor-Schnittstellen erfolgen,
 ist keine direkte Anbindung an das \emph{ceph}-\ac{VLAN} erforderlich;
 dadurch bleibt der Storage-Traffic von Primärdaten und Backups
 sauber getrennt.
-Eine vollständige Übersicht der Cluster-Topologie -- Hypervisor-
+Eine vollständige Übersicht der Cluster-Topologie (Hypervisor-
 Knoten je Etage, Switch-Paare, \ac{LACP}-Bonds für Ceph- und
 \ac{PVE}/Management-Netz sowie die Anbindung von
-\texttt{odcf-fs04} -- befindet sich in
+\texttt{odcf-fs04}) befindet sich in
 \Anhang{app:ClusterTopologie}.
 
 
