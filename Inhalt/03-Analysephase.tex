@@ -68,49 +68,39 @@ werden in der Entwurfsphase
 
 \subsection{Wirtschaftlichkeitsanalyse}
 \label{sec:Wirtschaftlichkeitsanalyse}
-Die Wirtschaftlichkeit des Projekts ergibt sich vor allem aus zwei
-Faktoren: Die Reduktion des Risikos eines Datenverlusts durch eine von
-der Primär-Storage getrennte Sicherung sowie die deutlich vereinfachte
-und schnellere Wiederherstellung einzelner \acp{VM} und Container.
-
-\subsubsection*{Annahmen}
-Da konkrete interne Stundensätze und Hardware-Listenpreise zum
-Zeitpunkt der Erstellung nicht abschließend vorliegen, werden für die
-folgende Kalkulation plausible Platzhalterwerte angesetzt
-(\emph{Platzhalter -- in der finalen Fassung durch reale Zahlen aus
-der Personal- bzw.\ Beschaffungsabteilung ersetzen}).
+Die Wirtschaftlichkeit des Projekts ergibt sich aus der Reduktion des
+Risikos eines Datenverlusts durch eine von der Primär-Storage
+getrennte Sicherung sowie der vereinfachten und schnelleren
+Wiederherstellung einzelner \acp{VM} und Container.
 
 \subsubsection*{Projektkosten}
-\begin{itemize}
-    \item \textbf{Personalkosten Prüfling:} 40\,h $\times$
-          ca.\ 25\,\texteuro/h (Vollkostensatz Azubi inkl.\ Gemeinkosten,
-          Platzhalter) $=$ ca.\ 1\,000\,\texteuro.
-    \item \textbf{Betreuung / Abstimmung:} ca.\ 5\,h $\times$
-          80\,\texteuro/h (Platzhalter Senior-Admin) $=$ 400\,\texteuro.
-    \item \textbf{Hardware:} keine Beschaffungskosten, da ein
-          vorhandener IBM System x3755 (32~Kerne AMD Opteron~6220,
-          32\,GB \ac{RAM}, 6\,$\times$\,4\,TB HDD) nachgenutzt wird.
-          Anzusetzen sind lediglich Strom- und Standkosten (Platzhalter
-          ca.\ 200\,\texteuro\ über die Projektlaufzeit).
-    \item \textbf{Software:} keine Lizenzkosten, da \ac{PBS} unter der
-          AGPLv3 verfügbar ist (no-subscription-Repository).
-\end{itemize}
+Die Personalkosten des Prüflings ergeben sich aus dem monatlichen
+Bruttolohn von 1\,422{,}33\,\texteuro. Bei durchschnittlich 174
+Arbeitsstunden pro Monat (21{,}75~Tage $\times$ 8\,h) beträgt der
+Bruttostundensatz ca.~8{,}17\,\texteuro. Hinzu kommen der
+Arbeitgeberanteil zur Sozialversicherung (ca.~20\,\%, $\approx$
+1{,}63\,\texteuro/h) sowie der Beitrag zur Zusatzversorgung VBL
+(76{,}89\,\texteuro/Monat $\approx$ 0{,}44\,\texteuro/h). Daraus
+ergibt sich ein Vollkostensatz von ca.~\textbf{10{,}24\,\texteuro/h}.
+
+\begin{tabular}{lr}
+\rowcolor{heading}\textbf{Position} & \textbf{Kosten} \\
+Personalkosten Prüfling (40\,h $\times$ 10{,}24\,\texteuro) & 409{,}60\,\texteuro \\
+\rowcolor{odd}Betreuung / Abstimmung (5\,h, Schätzung) & 400{,}00\,\texteuro \\
+Hardware (nachgenutzt, keine Beschaffung) & 0{,}00\,\texteuro \\
+\rowcolor{odd}Strom / Stellplatz IBM x3755 (Schätzung) & 200{,}00\,\texteuro \\
+Software (\ac{PBS}, Open Source / AGPLv3) & 0{,}00\,\texteuro \\
+\hline\hline
+\rowcolor{heading}\textbf{Gesamtkosten} & \textbf{ca.\ 1\,010\,\texteuro} \\
+\end{tabular}
 
 \subsubsection*{Nutzen}
-\begin{itemize}
-    \item Deutlich kürzere Restore-Zeiten gegenüber dem heutigen
-          Vorgehen über \ac{TSM}/Tape -- bereits ein einziger
-          vermiedener mehrstündiger Restore-Vorgang pro Jahr
-          amortisiert die kalkulierten Projektkosten.
-    \item Reduzierung des Risikos eines Totalverlusts bei einem
-          Ausfall des Ceph-Clusters.
-    \item Zentrale Verwaltung, Monitoring und Integritätsprüfung der
-          Sicherungen senken den laufenden administrativen Aufwand.
-\end{itemize}
-
-% TODO: nach Rücksprache mit Frank / Personalabteilung echte Zahlen
-% einsetzen und ggfs. eine Tabelle in Tabellen/Kostenaufstellung.tex
-% pflegen.
+Kürzere Restore-Zeiten gegenüber dem heutigen Vorgehen über
+\ac{TSM}/Tape, Risikoreduktion durch Trennung von Primär- und
+Sicherungsdaten sowie zentrale Verwaltung, Monitoring und
+automatische Integritätsprüfung der Sicherungen. Bereits ein
+einziger vermiedener mehrstündiger Restore-Vorgang pro Jahr
+amortisiert die kalkulierten Projektkosten.
 
 
 \subsection{Lasten-/Pflichtenheft}
