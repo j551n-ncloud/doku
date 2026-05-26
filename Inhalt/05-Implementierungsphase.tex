@@ -55,7 +55,7 @@ Die NTP-Synchronisation läuft gegen die internen Zeitserver des
 \url{https://10.131.196.78:8007} erreichbar.
 
 Tatsächlicher Zeitaufwand für Installation und Grundkonfiguration:
-ca.~fünf Stunden -- der Mehraufwand gegenüber den geplanten vier
+ca.~fünf Stunden. Der Mehraufwand gegenüber den geplanten vier
 Stunden resultiert aus den Hardware-\ac{RAID}-Komplikationen beim
 initialen Disk-Einrichtung.
 
@@ -142,8 +142,8 @@ Zur Härtung des Hosts wird \texttt{firewalld}~\citep{FirewalldDocs} eingesetzt:
 sind ausschließlich \texttt{ssh} (22/tcp), der \ac{PBS}-Port
 (8007/tcp) und der Exporter-Port (9100/tcp); alle übrigen
 Default-Dienste (cockpit, http, https) sind entfernt. Der Ablauf
-eines File-Restores -- vom Login an der Web-Oberfläche bis zur
-Datei-Extraktion aus einem Snapshot -- ist in
+eines File-Restores, vom Login an der Web-Oberfläche bis zur
+Datei-Extraktion aus einem Snapshot, ist in
 Abbildung~\ref{fig:RestoreSeq} dargestellt.
 
 \begin{figure}[htbp]

@@ -40,8 +40,8 @@ Die \ac{ODCF} betreibt einen \ac{PVE}-Cluster, der eine Vielzahl
 Infrastrukturaufgaben bereitstellt.
 Eine grundlegende Backup-Infrastruktur ist vorhanden, jedoch
 heterogen aufgebaut: Sicherungen der \acp{VM} und Container werden
-auf den \emph{lokalen} Storages der älteren Hypervisor-Knoten -- im
-Zusammenspiel mit Ceph~\citep{CephDocs} als Primärspeicher --
+auf den \emph{lokalen} Storages der älteren Hypervisor-Knoten, im
+Zusammenspiel mit Ceph~\citep{CephDocs} als Primärspeicher,
 abgelegt. Zusätzlich werden Daten einzelner \acp{VM} per
 \texttt{rsync} auf einen separaten Backup-Server übertragen und von
 dort über \ac{TSM} auf Tape (Bandlaufwerk) ausgelagert.
