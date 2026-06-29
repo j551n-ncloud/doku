@@ -23,6 +23,7 @@ pip install python-pptx pymupdf
 | `rebuild_slides_7_8_12.py` | Baut Folien 7 (Analyse), 8 (Entscheidungen), 12 (Fazit) sauber neu auf und entfernt En-/Em-Dashes deckweit |
 | `slide4.py` | Baut Folie 4 (Unternehmen) neu, Projektrahmen als grösserer Block |
 | `slide5.py` | Baut Folie 5 (Ausgangssituation/Projektziel) neu, gleichmässige Abstände, einheitliche Marker |
+| `fix_slide12_hours.py` | Baut Folie 12 mit den echten Zahlen aus `Tabellen/Zeitnachher.tex` (40 h / 34,5 h / -5,5 h), konsistent zu Folie 14 |
 | `renumber_sections.py` | Setzt die Abschnittsnummern der Inhaltsfolien auf 01..11 (passend zur Gliederung) |
 | `normalize_footer.py` | Fusszeile vereinheitlichen: Balken navy, Text weiss |
 | `add_notes.py` | Sprechernotizen zu allen 15 Folien |

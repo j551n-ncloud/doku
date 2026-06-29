@@ -45,10 +45,10 @@ rect(s,0,0,W,HDR,CN); rect(s,0,HDR,W,Cm(0.05),CL)
 txt(s,LM,Cm(0.2),W-Cm(7.5),Cm(1.45),"Unternehmen und Projektumfeld",sz=23,bold=True,color=CW)
 txt(s,LM,Cm(1.6),W-Cm(7.5),Cm(0.85),"02",sz=12,color=CL)
 pic(s,LOGO,W-Cm(6.8),Cm(0.3),Cm(6.2))
-rect(s,0,H-FTR,W,FTR,CDK)
+rect(s,0,H-FTR,W,FTR,CN)  # Footer einheitlich navy
 txt(s,LM,H-FTR+Cm(0.1),W-Cm(4),FTR-Cm(0.15),
-    "Johannes Nguyen  |  Fachinformatiker Systemintegration  |  DKFZ / ODCF  |  IHK Rhein-Neckar",sz=8,color=CG)
-txt(s,W-Cm(3.5),H-FTR+Cm(0.1),Cm(3.2),FTR-Cm(0.15),"4 / 15",sz=8,color=CG,align=PP_ALIGN.RIGHT)
+    "Johannes Nguyen  |  Fachinformatiker Systemintegration  |  DKFZ / ODCF  |  IHK Rhein-Neckar",sz=8,color=CW)
+txt(s,W-Cm(3.5),H-FTR+Cm(0.1),Cm(3.2),FTR-Cm(0.15),"4 / 15",sz=8,color=CW,align=PP_ALIGN.RIGHT)
 
 # two top cards
 cw2=(CWF-Cm(0.5))/2

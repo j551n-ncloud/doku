@@ -69,12 +69,12 @@ def chrome(sl,title,sub,page):
     if sub:
         txt(sl,LM,Cm(1.6),W-Cm(7.5),Cm(0.85),sub,sz=12,color=CL)
     pic(sl,LOGO,W-Cm(6.8),Cm(0.3),Cm(6.2))
-    rect(sl,0,H-FTR,W,FTR,CDK)
+    rect(sl,0,H-FTR,W,FTR,CN)  # Footer einheitlich navy
     txt(sl,LM,H-FTR+Cm(0.1),W-Cm(4),FTR-Cm(0.15),
         "Johannes Nguyen  |  Fachinformatiker Systemintegration  |  DKFZ / ODCF  |  IHK Rhein-Neckar",
-        sz=8,color=CG)
+        sz=8,color=CW)
     txt(sl,W-Cm(3.5),H-FTR+Cm(0.1),Cm(3.2),FTR-Cm(0.15),
-        f"{page} / 15",sz=8,color=CG,align=PP_ALIGN.RIGHT)
+        f"{page} / 15",sz=8,color=CW,align=PP_ALIGN.RIGHT)
 
 def card(sl,l,t,w,h,title,lines,tbg=CN,bbg=COW,tfg=CW,bfg=CD,
          blt="▸",fsz=14,tsz=13):
@@ -227,21 +227,25 @@ for i,(col,title,tag,bullets) in enumerate(DEC):
 # ════════════════════════════════════════════════════════════════════════════
 s = prs.slides[11]
 clear(s)
-chrome(s, "Fazit: Soll-Ist-Vergleich", "08", 12)
+chrome(s, "Fazit: Soll-Ist-Vergleich", "10", 12)
 
-PD = [("Analyse",6,4.5),("Entwurf",6,5.5),("Beschaffung / Vorbereitung",4,6.0),
-      ("PBS-Installation",4,5.0),("Konfiguration",8,6.0),("Abnahme / Tests",4,3.5),
-      ("Einführung / Übergabe",2,1.5),("Dokumentation",8,10.0)]
+# ECHTE Zahlen aus Tabellen/Zeitnachher.tex (Betriebs- + Projektdoku zusammengefasst):
+# Gesamt 40 h geplant / 34,5 h tatsaechlich / -5,5 h. Diff>0 rot, <0 gruen, 0 dunkel.
+PD = [("Analyse","4 h","1,5 h","-2,5 h"),
+      ("Planung & Konzeption","5 h","3 h","-2 h"),
+      ("Beschaffung & Vorbereitung","3 h","5 h","+2 h"),
+      ("Installation PBS","4 h","5 h","+1 h"),
+      ("Konfiguration Datastore","4 h","2 h","-2 h"),
+      ("PVE-Integration","4 h","1 h","-3 h"),
+      ("Backup-Jobs","5 h","2 h","-3 h"),
+      ("Test & Validierung","3 h","3 h","0 h"),
+      ("Monitoring","2 h","2 h","0 h"),
+      ("Dokumentation","6 h","10 h","+4 h")]
 rows=[]
-tp=ta=0
-for ph,p,a in PD:
-    tp+=p; ta+=a; d=a-p
-    dc = CR if d>0 else (CGR if d<0 else CD)
-    rows.append([ph, f"{p} h", f"{a} h",
-                 (("+" if d>0 else "")+f"{d} h", dc)])
-dt=ta-tp
-rows.append([("GESAMT",CW),(f"{tp} h",CW),(f"{ta} h",CW),
-             ((("+" if dt>0 else "")+f"{dt} h"), CW)])
+for ph,g,t,d in PD:
+    dc = CR if d.startswith("+") else (CGR if d.startswith("-") else CD)
+    rows.append([ph, g, t, (d, dc)])
+rows.append([("Gesamt",CW),("40 h",CW),("34,5 h",CW),("-5,5 h",CW)])
 
 col_w=[Cm(13.0),Cm(5.0),Cm(6.0),Cm(6.0)]
 col_x=[Cm(1.3), Cm(14.3),Cm(19.3),Cm(25.3)]
